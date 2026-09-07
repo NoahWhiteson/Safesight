@@ -34,16 +34,19 @@ struct ScanAnnotatedImageView: View {
                     let local = hazard.boundingBox.cgRect(in: placed.size)
                     let rect = local.offsetBy(dx: placed.minX, dy: placed.minY)
                     let active = highlightedID == nil || highlightedID == hazard.id
+                    let boxW = max(36, rect.width)
+                    let boxH = max(36, rect.height)
 
                     RoundedRectangle(cornerRadius: 6, style: .continuous)
-                        .strokeBorder(hazard.severity.color, lineWidth: active ? 2.5 : 1.2)
+                        .strokeBorder(hazard.severity.color, lineWidth: active ? 3 : 1.5)
                         .background(
                             RoundedRectangle(cornerRadius: 6, style: .continuous)
-                                .fill(hazard.severity.color.opacity(active ? 0.14 : 0.05))
+                                .fill(hazard.severity.color.opacity(active ? 0.18 : 0.08))
                         )
-                        .frame(width: max(24, rect.width), height: max(24, rect.height))
+                        .frame(width: boxW, height: boxH)
                         .position(x: rect.midX, y: rect.midY)
-                        .opacity(active ? 1 : 0.35)
+                        .opacity(active ? 1 : 0.4)
+                        .allowsHitTesting(false)
 
                     Text(hazard.title)
                         .font(.system(size: 11, weight: .bold))
@@ -51,13 +54,14 @@ struct ScanAnnotatedImageView: View {
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
                         .background(
-                            Capsule().fill(hazard.severity.color.opacity(0.92))
+                            Capsule().fill(hazard.severity.color.opacity(0.95))
                         )
                         .position(
                             x: min(geo.size.width - 60, max(60, rect.midX)),
-                            y: max(18, rect.minY - 14)
+                            y: max(placed.minY + 18, rect.minY - 14)
                         )
-                        .opacity(active ? 1 : 0.4)
+                        .opacity(active ? 1 : 0.45)
+                        .allowsHitTesting(false)
                 }
             }
             .frame(width: geo.size.width, height: geo.size.height)

@@ -142,3 +142,16 @@ struct ScanThinkingOverlay: View {
         AppleIntelligenceThinkingChrome(image: image)
     }
 }
+
+extension UIImage {
+    /// Bake EXIF orientation into pixel buffer so overlays match Gemini boxes.
+    func normalizedUp() -> UIImage {
+        guard imageOrientation != .up else { return self }
+        let format = UIGraphicsImageRendererFormat.default()
+        format.scale = scale
+        let renderer = UIGraphicsImageRenderer(size: size, format: format)
+        return renderer.image { _ in
+            draw(in: CGRect(origin: .zero, size: size))
+        }
+    }
+}

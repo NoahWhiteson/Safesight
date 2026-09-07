@@ -26,6 +26,74 @@ struct NormalizedRect: Codable, Hashable {
             height: height * size.height
         )
     }
+
+    /// Always returns a drawable on-screen box. Fixes missing / 0–100 / tiny / full-frame junk from the model.
+    static func sanitized(
+        x: Double?,
+        y: Double?,
+        width: Double?,
+        height: Double?,
+        index: Int,
+        total: Int
+    ) -> NormalizedRect {
+        let fallback = fallback(index: index, total: max(total, 1))
+        var sx = x ?? fallback.x
+        var sy = y ?? fallback.y
+        var sw = width ?? fallback.width
+        var sh = height ?? fallback.height
+
+        // Model sometimes returns 0…100 percentages.
+        if sx > 1 || sy > 1 || sw > 1 || sh > 1 {
+            sx /= 100
+            sy /= 100
+            sw /= 100
+            sh /= 100
+        }
+
+        sx = clamp01(sx)
+        sy = clamp01(sy)
+        sw = clamp01(sw)
+        sh = clamp01(sh)
+
+        let tooSmall = sw < 0.08 || sh < 0.08
+        let nearlyFull = sw > 0.92 && sh > 0.92
+        let zeroed = (x == nil && y == nil && width == nil && height == nil)
+            || ((x ?? 0) == 0 && (y ?? 0) == 0 && (width ?? 0) == 0 && (height ?? 0) == 0)
+
+        if tooSmall || nearlyFull || zeroed {
+            return fallback
+        }
+
+        sw = min(max(sw, 0.12), 0.85)
+        sh = min(max(sh, 0.12), 0.85)
+        if sx + sw > 1 { sx = max(0, 1 - sw) }
+        if sy + sh > 1 { sy = max(0, 1 - sh) }
+        return NormalizedRect(x: sx, y: sy, width: sw, height: sh)
+    }
+
+    /// Spread fallback boxes so multiple hazards never stack on the same default rect.
+    static func fallback(index: Int, total: Int) -> NormalizedRect {
+        let columns = min(2, max(total, 1))
+        let rows = Int(ceil(Double(total) / Double(columns)))
+        let col = index % columns
+        let row = index / columns
+        let cellW = 0.36
+        let cellH = 0.28
+        let xPad = (1.0 - (cellW * Double(columns)) - 0.08) / 2
+        let yPad = 0.14
+        let x = xPad + Double(col) * (cellW + 0.08)
+        let y = yPad + Double(row) * (cellH + 0.06)
+        return NormalizedRect(
+            x: clamp01(x),
+            y: clamp01(y),
+            width: cellW,
+            height: cellH
+        )
+    }
+
+    private static func clamp01(_ value: Double) -> Double {
+        min(1, max(0, value))
+    }
 }
 
 // MARK: - AI wire format

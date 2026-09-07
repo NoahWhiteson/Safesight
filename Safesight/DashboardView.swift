@@ -47,9 +47,14 @@ enum Haptics {
 struct DashboardView: View {
     let profile: UserProfile
     @State private var showPaywall = false
+    @ObservedObject private var chrome = ScanChromeState.shared
 
     var body: some View {
-        DashboardTabController(profile: profile, showPaywall: $showPaywall)
+        DashboardTabController(
+            profile: profile,
+            showPaywall: $showPaywall,
+            hidesTabBar: chrome.hidesTabBar
+        )
             .ignoresSafeArea()
             .preferredColorScheme(.light)
             .sheet(isPresented: $showPaywall) {
@@ -65,6 +70,7 @@ struct DashboardView: View {
 private struct DashboardTabController: UIViewControllerRepresentable {
     let profile: UserProfile
     @Binding var showPaywall: Bool
+    var hidesTabBar: Bool
 
     func makeCoordinator() -> Coordinator {
         Coordinator(showPaywall: $showPaywall)
@@ -132,6 +138,13 @@ private struct DashboardTabController: UIViewControllerRepresentable {
 
     func updateUIViewController(_ tabBar: UITabBarController, context: Context) {
         context.coordinator.showPaywall = $showPaywall
+        if tabBar.tabBar.isHidden != hidesTabBar {
+            UIView.performWithoutAnimation {
+                tabBar.tabBar.isHidden = hidesTabBar
+            }
+            tabBar.view.setNeedsLayout()
+            tabBar.view.layoutIfNeeded()
+        }
     }
 
     final class Coordinator: NSObject, UITabBarControllerDelegate {
@@ -685,6 +698,7 @@ private struct ScanScreen: View {
     @ObservedObject private var subs = SubscriptionStore.shared
     @ObservedObject private var history = ScanHistoryStore.shared
     @ObservedObject private var profiles = ProfileStore.shared
+    @ObservedObject private var chrome = ScanChromeState.shared
     @StateObject private var camera = CameraController()
     @State private var showPaywall = false
     @State private var thinkingImage: UIImage?
@@ -716,8 +730,8 @@ private struct ScanScreen: View {
                     .tint(.white)
             }
 
-            // Top chrome (hidden while reviewing a scan so the photo stays clear)
-            if scanResult == nil {
+            // Top chrome (hidden while reviewing / analyzing)
+            if scanResult == nil && !showThinking {
                 VStack {
                     HStack {
                         Image("AppLogo")
@@ -788,9 +802,10 @@ private struct ScanScreen: View {
                 }
             }
 
-            // In-hierarchy overlay (avoids presenting from a detached UIKit-hosted ScanScreen).
+            // Covers the whole Scan tab; tab bar is hidden via ScanChromeState.
             if showThinking, let thinkingImage {
                 ScanThinkingOverlay(image: thinkingImage)
+                    .ignoresSafeArea()
                     .transition(.opacity)
                     .zIndex(20)
             }
@@ -828,8 +843,12 @@ private struct ScanScreen: View {
             await camera.requestAccessAndConfigure()
             camera.start()
         }
+        .onChange(of: showThinking) { _, active in
+            chrome.hidesTabBar = active
+        }
         .onDisappear {
             camera.stop()
+            chrome.hidesTabBar = false
         }
     }
 
@@ -877,14 +896,17 @@ private struct ScanScreen: View {
         }
 
         isCapturing = true
-        let image = await camera.capturePhoto()
+        let captured = await camera.capturePhoto()
         isCapturing = false
 
-        guard let image else { return }
+        guard let captured else { return }
+        // Bake orientation so Gemini boxes line up with the on-screen photo.
+        let image = captured.normalizedUp()
         subs.recordScan()
 
         let scanId = UUID()
         thinkingImage = image
+        chrome.hidesTabBar = true
         var present = Transaction()
         present.disablesAnimations = true
         withTransaction(present) {

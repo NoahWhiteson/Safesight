@@ -20,7 +20,12 @@ enum GeminiScanPrompt {
     1. focusArea on each hazard MUST exactly match one selected Focus Area string.
     2. Do not invent unseen hazards. If none apply, return hazards: [] and a short summary.
     3. Camera-visible issues only (no gas/CO/radon/invisible risks).
-    4. Bounding boxes: normalized 0…1, origin top-left, tight crop, stay in bounds.
+    4. EVERY hazard MUST include boundingBox. Required. Never omit. Never null.
+       - Normalized 0…1 fractions of the IMAGE (not pixels, not 0–100).
+       - Origin = top-left of the photo.
+       - Box must tightly cover the visible hazard object (not the whole room).
+       - width and height each between 0.12 and 0.55. Keep fully inside 0…1.
+       - If unsure of exact edges, still output your best visible box — never skip it.
     5. Severity: High = immediate injury/fire/egress; Medium = fix soon; Low = minor.
     6. score: 0–100 for THIS frame vs selected focus areas only.
     7. icon: short SF Symbol name (bolt.fill, figure.stairs, lightbulb.fill, etc.).
@@ -71,6 +76,7 @@ enum GeminiScanPrompt {
         let home = dwelling ?? "unknown dwelling type"
         return """
         Analyze this photo for Safesight. Keep all text short per length limits.
+        Every hazard MUST include a tight boundingBox (0…1) around the visible problem.
 
         Dwelling: \(home)
 
@@ -92,7 +98,8 @@ struct GeminiScanAnalyzer: ScanAnalyzing {
     }()
 
     func analyze(request: ScanAnalysisRequest, image: UIImage) async throws -> ScanAnalysisResponse {
-        guard let jpeg = Self.compressedJPEG(from: image) else {
+        let upright = Self.upright(image)
+        guard let jpeg = Self.compressedJPEG(from: upright) else {
             throw ScanAnalysisError.invalidResponse
         }
 
@@ -185,9 +192,21 @@ struct GeminiScanAnalyzer: ScanAnalyzing {
         throw ScanAnalysisError.network(lastError ?? URLError(.unknown))
     }
 
+    /// Bake EXIF orientation so Gemini boxes match on-screen pixels.
+    private static func upright(_ image: UIImage) -> UIImage {
+        guard image.imageOrientation != .up else { return image }
+        let format = UIGraphicsImageRendererFormat.default()
+        format.scale = image.scale
+        let renderer = UIGraphicsImageRenderer(size: image.size, format: format)
+        return renderer.image { _ in
+            image.draw(in: CGRect(origin: .zero, size: image.size))
+        }
+    }
+
     /// Downscale + compress so multimodal POSTs survive flaky Wi‑Fi.
     private static func compressedJPEG(from image: UIImage, maxDimension: CGFloat = 1280) -> Data? {
-        let size = image.size
+        let uprightImage = upright(image)
+        let size = uprightImage.size
         let longest = max(size.width, size.height)
         let scaled: UIImage
         if longest > maxDimension {
@@ -195,10 +214,10 @@ struct GeminiScanAnalyzer: ScanAnalyzing {
             let target = CGSize(width: size.width * scale, height: size.height * scale)
             let renderer = UIGraphicsImageRenderer(size: target)
             scaled = renderer.image { _ in
-                image.draw(in: CGRect(origin: .zero, size: target))
+                uprightImage.draw(in: CGRect(origin: .zero, size: target))
             }
         } else {
-            scaled = image
+            scaled = uprightImage
         }
         return scaled.jpegData(compressionQuality: 0.55)
             ?? scaled.jpegData(compressionQuality: 0.4)
@@ -338,6 +357,30 @@ private struct GeminiScanPayload: Decodable {
         var focusArea: String?
         var boundingBox: Box?
         var fixSteps: [String]?
+
+        enum CodingKeys: String, CodingKey {
+            case title, detail, severity, icon, focusArea, fixSteps
+            case boundingBox
+            case bounding_box
+            case bbox
+        }
+
+        init(from decoder: Decoder) throws {
+            let c = try decoder.container(keyedBy: CodingKeys.self)
+            title = try c.decodeIfPresent(String.self, forKey: .title)
+            detail = try c.decodeIfPresent(String.self, forKey: .detail)
+            severity = try c.decodeIfPresent(String.self, forKey: .severity)
+            icon = try c.decodeIfPresent(String.self, forKey: .icon)
+            focusArea = try c.decodeIfPresent(String.self, forKey: .focusArea)
+            fixSteps = try c.decodeIfPresent([String].self, forKey: .fixSteps)
+            if let box = try c.decodeIfPresent(Box.self, forKey: .boundingBox) {
+                boundingBox = box
+            } else if let box = try c.decodeIfPresent(Box.self, forKey: .bounding_box) {
+                boundingBox = box
+            } else {
+                boundingBox = try c.decodeIfPresent(Box.self, forKey: .bbox)
+            }
+        }
     }
 
     struct Product: Decodable {
@@ -352,11 +395,46 @@ private struct GeminiScanPayload: Decodable {
         var y: Double?
         var width: Double?
         var height: Double?
+
+        enum CodingKeys: String, CodingKey {
+            case x, y, width, height
+            case w, h
+            case xmin, ymin, xmax, ymax
+        }
+
+        init(from decoder: Decoder) throws {
+            // Prefer object {x,y,width,height}; also accept [x,y,w,h].
+            if var arr = try? decoder.unkeyedContainer() {
+                x = try? arr.decode(Double.self)
+                y = try? arr.decode(Double.self)
+                width = try? arr.decode(Double.self)
+                height = try? arr.decode(Double.self)
+                return
+            }
+            let c = try decoder.container(keyedBy: CodingKeys.self)
+            x = try c.decodeIfPresent(Double.self, forKey: .x)
+                ?? c.decodeIfPresent(Double.self, forKey: .xmin)
+            y = try c.decodeIfPresent(Double.self, forKey: .y)
+                ?? c.decodeIfPresent(Double.self, forKey: .ymin)
+            if let w = try c.decodeIfPresent(Double.self, forKey: .width)
+                ?? c.decodeIfPresent(Double.self, forKey: .w) {
+                width = w
+            } else if let xmin = x, let xmax = try c.decodeIfPresent(Double.self, forKey: .xmax) {
+                width = xmax - xmin
+            }
+            if let h = try c.decodeIfPresent(Double.self, forKey: .height)
+                ?? c.decodeIfPresent(Double.self, forKey: .h) {
+                height = h
+            } else if let ymin = y, let ymax = try c.decodeIfPresent(Double.self, forKey: .ymax) {
+                height = ymax - ymin
+            }
+        }
     }
 
     func toScanAnalysisResponse(allowedFocusAreas: Set<String>) -> ScanAnalysisResponse {
         let allowed = allowedFocusAreas
-        let mappedHazards: [ScanHazardDTO] = (hazards ?? []).compactMap { h in
+        let rawHazards = hazards ?? []
+        let mappedHazards: [ScanHazardDTO] = rawHazards.enumerated().compactMap { index, h in
             guard let title = h.title?.trimmingCharacters(in: .whitespacesAndNewlines), !title.isEmpty else {
                 return nil
             }
@@ -367,11 +445,13 @@ private struct GeminiScanPayload: Decodable {
 
             let severity = HazardSeverity(rawValue: h.severity ?? "") ?? .medium
             let box = h.boundingBox
-            let normalized = NormalizedRect(
-                x: clamp01(box?.x ?? 0.1),
-                y: clamp01(box?.y ?? 0.1),
-                width: clamp01(box?.width ?? 0.2),
-                height: clamp01(box?.height ?? 0.2)
+            let normalized = NormalizedRect.sanitized(
+                x: box?.x,
+                y: box?.y,
+                width: box?.width,
+                height: box?.height,
+                index: index,
+                total: rawHazards.count
             )
 
             let icon = (h.icon?.isEmpty == false) ? h.icon! : defaultIcon(for: focus)
@@ -422,10 +502,6 @@ private struct GeminiScanPayload: Decodable {
             products: Array(mappedProducts.prefix(3)),
             nextSteps: steps
         )
-    }
-
-    private func clamp01(_ value: Double) -> Double {
-        min(1, max(0, value))
     }
 
     private func defaultIcon(for focus: String?) -> String {
