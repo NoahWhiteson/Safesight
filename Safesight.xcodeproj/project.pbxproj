@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		A11RC001304C9848003E4442 /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = A11RC011304C9848003E4442 /* RevenueCat */; };
+		A11RC002304C9848003E4442 /* RevenueCatUI in Frameworks */ = {isa = PBXBuildFile; productRef = A11RC012304C9848003E4442 /* RevenueCatUI */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		2EBD01B7304C9848003E4442 /* Safesight.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Safesight.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +28,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A11RC001304C9848003E4442 /* RevenueCat in Frameworks */,
+				A11RC002304C9848003E4442 /* RevenueCatUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +72,8 @@
 			);
 			name = Safesight;
 			packageProductDependencies = (
+				A11RC011304C9848003E4442 /* RevenueCat */,
+				A11RC012304C9848003E4442 /* RevenueCatUI */,
 			);
 			productName = Safesight;
 			productReference = 2EBD01B7304C9848003E4442 /* Safesight.app */;
@@ -94,6 +103,9 @@
 			);
 			mainGroup = 2EBD01AE304C9848003E4442;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				A11RC010304C9848003E4442 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 2EBD01B8304C9848003E4442 /* Products */;
 			projectDirPath = "";
@@ -251,8 +263,10 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3VQVFBNN76;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Safesight needs the camera to scan rooms for visible safety hazards.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -282,8 +296,10 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3VQVFBNN76;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Safesight needs the camera to scan rooms for visible safety hazards.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -328,6 +344,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A11RC010304C9848003E4442 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RevenueCat/purchases-ios-spm.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A11RC011304C9848003E4442 /* RevenueCat */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A11RC010304C9848003E4442 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */;
+			productName = RevenueCat;
+		};
+		A11RC012304C9848003E4442 /* RevenueCatUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A11RC010304C9848003E4442 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */;
+			productName = RevenueCatUI;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 2EBD01AF304C9848003E4442 /* Project object */;
 }
