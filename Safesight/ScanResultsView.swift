@@ -65,51 +65,88 @@ struct RecommendedProductCard: View {
     private let blue = Color(red: 0.0, green: 0.48, blue: 1.0)
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(Color(white: 0.96))
-                    .frame(height: 120)
+        Button {
+            Haptics.light()
+            if let raw = product.productURL, let url = URL(string: raw) {
+                UIApplication.shared.open(url)
+            } else if let asin = product.asin,
+                      let url = URL(string: "https://www.amazon.com/dp/\(asin)") {
+                UIApplication.shared.open(url)
+            }
+        } label: {
+            VStack(alignment: .leading, spacing: 12) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .fill(Color(white: 0.96))
+                        .frame(height: 120)
 
-                if let name = product.imageName, UIImage(named: name) != nil {
-                    Image(name)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(maxWidth: .infinity)
+                    if let urlString = product.imageURL, let url = URL(string: urlString) {
+                        AsyncImage(url: url) { phase in
+                            switch phase {
+                            case .success(let image):
+                                image
+                                    .resizable()
+                                    .scaledToFit()
+                                    .padding(10)
+                            case .failure:
+                                placeholderIcon
+                            default:
+                                ProgressView()
+                            }
+                        }
                         .frame(height: 110)
-                        .padding(.horizontal, 10)
-                } else {
-                    Image(systemName: product.icon)
-                        .font(.system(size: 32, weight: .semibold))
+                    } else if let name = product.imageName, UIImage(named: name) != nil {
+                        Image(name)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 110)
+                            .padding(.horizontal, 10)
+                    } else {
+                        placeholderIcon
+                    }
+                }
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(product.name)
+                        .font(.system(size: 16, weight: .bold))
+                        .foregroundStyle(ink)
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    Text(product.reason)
+                        .font(.system(size: 13))
+                        .foregroundStyle(mute)
+                        .lineLimit(3)
+                        .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                HStack {
+                    Text(product.priceLabel)
+                        .font(.system(size: 13, weight: .semibold))
                         .foregroundStyle(blue)
+                    Spacer(minLength: 0)
+                    Text("Amazon")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundStyle(mute)
                 }
             }
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(product.name)
-                    .font(.system(size: 16, weight: .bold))
-                    .foregroundStyle(ink)
-                    .lineLimit(2)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                Text(product.reason)
-                    .font(.system(size: 13))
-                    .foregroundStyle(mute)
-                    .lineLimit(3)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-
-            Text(product.priceLabel)
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(blue)
+            .padding(16)
+            .frame(width: 200, alignment: .leading)
+            .background(
+                RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    .fill(Color.white)
+            )
         }
-        .padding(16)
-        .frame(width: 200, alignment: .leading)
-        .frame(maxHeight: .infinity, alignment: .top)
-        .background(
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .fill(Color.white)
-        )
+        .buttonStyle(.plain)
+    }
+
+    private var placeholderIcon: some View {
+        Image(systemName: product.icon)
+            .font(.system(size: 32, weight: .semibold))
+            .foregroundStyle(blue)
     }
 }
 

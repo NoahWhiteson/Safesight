@@ -80,9 +80,12 @@ struct ScanProductDTO: Codable, Identifiable, Hashable {
     var reason: String
     var priceLabel: String
     var icon: String
-    /// Asset catalog name for card art (Home-style cards).
+    /// Asset catalog name for card art (legacy / offline).
     var imageName: String?
+    /// Remote product image (Amazon CDN / RapidAPI).
+    var imageURL: String?
     var productURL: String?
+    var asin: String?
 
     init(
         id: UUID = UUID(),
@@ -91,7 +94,9 @@ struct ScanProductDTO: Codable, Identifiable, Hashable {
         priceLabel: String,
         icon: String,
         imageName: String? = nil,
-        productURL: String? = nil
+        imageURL: String? = nil,
+        productURL: String? = nil,
+        asin: String? = nil
     ) {
         self.id = id
         self.name = name
@@ -99,7 +104,9 @@ struct ScanProductDTO: Codable, Identifiable, Hashable {
         self.priceLabel = priceLabel
         self.icon = icon
         self.imageName = imageName
+        self.imageURL = imageURL
         self.productURL = productURL
+        self.asin = asin
     }
 }
 
@@ -219,29 +226,7 @@ enum ScanPlaceholderPayload {
                     ]
                 )
             ],
-            products: [
-                ScanProductDTO(
-                    name: "Non-slip stair treads",
-                    reason: "Secures loose runners and adds grip on steps.",
-                    priceLabel: "From $18",
-                    icon: "square.stack.3d.up.fill",
-                    imageName: "HazardTape"
-                ),
-                ScanProductDTO(
-                    name: "Surge-protected power strip",
-                    reason: "Replaces daisy-chained outlets with a safer single strip.",
-                    priceLabel: "From $24",
-                    icon: "powerstrip.fill",
-                    imageName: "HazardPipes"
-                ),
-                ScanProductDTO(
-                    name: "Motion hallway light",
-                    reason: "Fills the dark stretch without a full fixture swap.",
-                    priceLabel: "From $15",
-                    icon: "sensor.fill",
-                    imageName: "HazardGood"
-                )
-            ],
+            products: [], // filled by AmazonProductService after analyze
             nextSteps: [
                 "Secure or replace the stair runner before the next high-traffic day.",
                 "Unplug the daisy chain and consolidate into one surge strip.",

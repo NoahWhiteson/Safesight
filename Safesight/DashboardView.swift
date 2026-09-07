@@ -84,6 +84,13 @@ private struct DashboardTabController: UIViewControllerRepresentable {
             selectedImage: UIImage(systemName: "camera.fill")
         )
 
+        let hazards = UIHostingController(rootView: HazardsScreen())
+        hazards.tabBarItem = UITabBarItem(
+            title: "Hazards",
+            image: UIImage(systemName: "exclamationmark.triangle"),
+            selectedImage: UIImage(systemName: "exclamationmark.triangle.fill")
+        )
+
         // Placeholder only — selecting Premium opens the paywall sheet.
         let premium = UIViewController()
         premium.view.backgroundColor = UIColor(Theme.bg)
@@ -113,12 +120,12 @@ private struct DashboardTabController: UIViewControllerRepresentable {
             selectedImage: UIImage(systemName: "person.fill")
         )
 
-        for host in [home, scan, you] {
+        for host in [home, scan, hazards, you] {
             host.view.backgroundColor = UIColor(Theme.bg)
             host.view.clipsToBounds = true
         }
 
-        tabBar.viewControllers = [home, scan, premium, you]
+        tabBar.viewControllers = [home, scan, hazards, premium, you]
         tabBar.view.tintColor = UIColor(red: 0, green: 0.48, blue: 1, alpha: 1)
         tabBar.view.backgroundColor = UIColor(Theme.bg)
 
@@ -185,26 +192,34 @@ private struct HomeScrollLock: UIViewControllerRepresentable {
             } else {
                 root = view
             }
-            for scroll in Self.scrollViews(in: root) {
-                scroll.alwaysBounceHorizontal = false
-                scroll.isDirectionalLockEnabled = true
-                scroll.showsHorizontalScrollIndicator = false
 
-                if scroll.contentSize.width > scroll.bounds.width + 0.5 {
-                    scroll.contentSize = CGSize(
-                        width: max(scroll.bounds.width, 0),
-                        height: scroll.contentSize.height
-                    )
-                }
-                if scroll.contentOffset.x != 0 {
-                    scroll.contentOffset.x = 0
-                }
-
-                if attachedScroll !== scroll {
-                    attachedScroll = scroll
-                    installAxisLock(on: scroll)
-                }
+            // Only lock the primary vertical page scroll — never crush nested
+            // horizontal product rails (that was killing Recommended swipes).
+            let vertical = Self.scrollViews(in: root).filter { scroll in
+                !Self.isHorizontalRail(scroll)
             }
+            guard let scroll = vertical.max(by: {
+                $0.bounds.height * $0.contentSize.height < $1.bounds.height * $1.contentSize.height
+            }) else { return }
+
+            scroll.alwaysBounceHorizontal = false
+            scroll.isDirectionalLockEnabled = true
+            scroll.showsHorizontalScrollIndicator = false
+
+            if scroll.contentOffset.x != 0 {
+                scroll.contentOffset.x = 0
+            }
+
+            if attachedScroll !== scroll {
+                attachedScroll = scroll
+                installAxisLock(on: scroll)
+            }
+        }
+
+        private static func isHorizontalRail(_ scroll: UIScrollView) -> Bool {
+            let wider = scroll.contentSize.width > scroll.bounds.width + 24
+            let short = scroll.bounds.height < 360
+            return wider && short
         }
 
         private func installAxisLock(on scroll: UIScrollView) {
@@ -698,7 +713,10 @@ private struct HomeScreen: View {
                             RecommendedProductCard(product: product)
                         }
                     }
+                    .padding(.vertical, 2)
                 }
+                // Give the nested rail a stable height so it doesn't fight vertical scroll.
+                .frame(height: 260)
             }
         }
     }
@@ -946,12 +964,15 @@ private struct ScanScreen: View {
         )
 
         let analyzer = ScanAnalyzerFactory.make()
-        let response: ScanAnalysisResponse
+        var response: ScanAnalysisResponse
         do {
             response = try await analyzer.analyze(request: request, image: image)
         } catch {
             response = ScanPlaceholderPayload.response()
         }
+
+        // Real Amazon picks matched to detected hazards (live RapidAPI if key set).
+        response.products = await AmazonProductService.shared.products(for: response.hazards)
 
         // Keep the thinking chrome up long enough to feel intentional.
         try? await Task.sleep(nanoseconds: 1_200_000_000)
