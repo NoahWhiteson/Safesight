@@ -10,16 +10,46 @@ function trimTo(text, max) {
   return t.slice(0, max - 1).trimEnd() + "…";
 }
 
-function sanitizeBox(box, index, total) {
-  let x = box?.x;
-  let y = box?.y;
-  let width = box?.width ?? box?.w;
-  let height = box?.height ?? box?.h;
+function normalizeBoxUnits(sx, sy, sw, sh) {
+  const maxV = Math.max(sx, sy, sw, sh);
+  // 0…1000 (or pixel-ish on ~1k images)
+  if (maxV > 100) {
+    return { sx: sx / 1000, sy: sy / 1000, sw: sw / 1000, sh: sh / 1000 };
+  }
+  // 0…100 percentages — only when clearly not already normalized
+  if (maxV > 1.5) {
+    return { sx: sx / 100, sy: sy / 100, sw: sw / 100, sh: sh / 100 };
+  }
+  return { sx, sy, sw, sh };
+}
 
-  if (x == null && box?.xmin != null) x = box.xmin;
-  if (y == null && box?.ymin != null) y = box.ymin;
-  if (width == null && box?.xmin != null && box?.xmax != null) width = box.xmax - box.xmin;
-  if (height == null && box?.ymin != null && box?.ymax != null) height = box.ymax - box.ymin;
+function fallbackBox(index, total) {
+  const n = Math.max(total, 1);
+  const spread = Math.min(0.18, 0.06 * (n - 1));
+  const offset = (index - (n - 1) / 2) * (spread / Math.max(n - 1, 1));
+  return {
+    x: clamp01(0.34 + offset),
+    y: clamp01(0.36 + offset * 0.4),
+    width: 0.28,
+    height: 0.22,
+  };
+}
+
+function sanitizeBox(box, index, total) {
+  let raw = box;
+  if (Array.isArray(box) && box.length >= 4) {
+    raw = { x: box[0], y: box[1], width: box[2], height: box[3] };
+  }
+
+  let x = raw?.x;
+  let y = raw?.y;
+  let width = raw?.width ?? raw?.w;
+  let height = raw?.height ?? raw?.h;
+
+  if (x == null && raw?.xmin != null) x = raw.xmin;
+  if (y == null && raw?.ymin != null) y = raw.ymin;
+  if (width == null && raw?.xmin != null && raw?.xmax != null) width = raw.xmax - raw.xmin;
+  if (height == null && raw?.ymin != null && raw?.ymax != null) height = raw.ymax - raw.ymin;
 
   const missing = x == null || y == null || width == null || height == null;
   let sx = Number(x) || 0;
@@ -27,12 +57,7 @@ function sanitizeBox(box, index, total) {
   let sw = Number(width) || 0;
   let sh = Number(height) || 0;
 
-  if (sx > 1 || sy > 1 || sw > 1 || sh > 1) {
-    sx /= 100;
-    sy /= 100;
-    sw /= 100;
-    sh /= 100;
-  }
+  ({ sx, sy, sw, sh } = normalizeBoxUnits(sx, sy, sw, sh));
 
   sx = clamp01(sx);
   sy = clamp01(sy);
@@ -42,23 +67,23 @@ function sanitizeBox(box, index, total) {
   const zeroed = sw < 0.01 || sh < 0.01;
   const nearlyFull = sw > 0.95 && sh > 0.95;
   if (missing || zeroed || nearlyFull) {
-    const n = Math.max(total, 1);
-    const spread = Math.min(0.18, 0.06 * (n - 1));
-    const offset = (index - (n - 1) / 2) * (spread / Math.max(n - 1, 1));
-    return {
-      x: clamp01(0.34 + offset),
-      y: clamp01(0.36 + offset * 0.4),
-      width: 0.28,
-      height: 0.22,
-    };
+    return fallbackBox(index, total);
   }
 
   sw = Math.min(sw, 1 - sx);
   sh = Math.min(sh, 1 - sy);
   if (sw < 0.01 || sh < 0.01) {
-    return { x: 0.34, y: 0.36, width: 0.28, height: 0.22 };
+    return fallbackBox(index, total);
   }
   return { x: sx, y: sy, width: sw, height: sh };
+}
+
+function sanitizeConfidence(raw) {
+  let n = Number(raw);
+  if (!Number.isFinite(n)) return 72;
+  // Model sometimes returns 0…1
+  if (n > 0 && n <= 1) n *= 100;
+  return Math.min(99, Math.max(40, Math.round(n)));
 }
 
 function defaultIcon(focus) {
@@ -113,6 +138,7 @@ export function toScanAnalysisResponse(payload, { allowedFocusAreas, maxHazards 
       boundingBox: sanitizeBox(box, index, rawHazards.length),
       fixSteps: clampedSteps,
       focusArea: focus,
+      confidence: sanitizeConfidence(h?.confidence ?? h?.accuracy ?? h?.certainty),
       status: "open",
     });
   }

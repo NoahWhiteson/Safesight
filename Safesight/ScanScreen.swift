@@ -4,6 +4,7 @@
 //
 
 import SwiftUI
+import PhotosUI
 import UIKit
 
 // MARK: - Scan
@@ -27,6 +28,7 @@ struct ScanScreen: View {
     @State private var retryImage: UIImage?
     @State private var showScanFailed = false
     @State private var isRetrying = false
+    @State private var photoPickerItem: PhotosPickerItem?
 
     private let resultsPeekDetent = PresentationDetent.height(156)
 
@@ -91,7 +93,16 @@ struct ScanScreen: View {
                     Spacer()
 
                     HStack(alignment: .center) {
-                        Color.clear.frame(width: 52, height: 52)
+                        PhotosPicker(selection: $photoPickerItem, matching: .images) {
+                            Image(systemName: "photo.badge.plus")
+                                .font(.system(size: 20, weight: .semibold))
+                                .foregroundStyle(.white)
+                                .frame(width: 52, height: 52)
+                                .background(Circle().fill(.white.opacity(0.18)))
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(isCapturing || showThinking || isRetrying)
+                        .accessibilityLabel("Upload photo")
 
                         Spacer()
 
@@ -185,6 +196,10 @@ struct ScanScreen: View {
         .task {
             await camera.requestAccessAndConfigure()
             camera.start()
+        }
+        .onChange(of: photoPickerItem) { _, item in
+            guard let item else { return }
+            Task { await analyzeUploadedPhoto(item) }
         }
         .onChange(of: showThinking) { _, active in
             chrome.hidesTabBar = active || showScanFailed
@@ -334,6 +349,22 @@ struct ScanScreen: View {
         guard let captured else { return }
         let image = captured.normalizedUp()
         await runAnalysis(on: image)
+    }
+
+    private func analyzeUploadedPhoto(_ item: PhotosPickerItem) async {
+        defer { photoPickerItem = nil }
+        guard !showThinking, !isCapturing, !isRetrying else { return }
+        if !subs.canScan {
+            showPaywall = true
+            return
+        }
+
+        guard let data = try? await item.loadTransferable(type: Data.self),
+              let raw = UIImage(data: data) else {
+            return
+        }
+        Haptics.medium()
+        await runAnalysis(on: raw.normalizedUp())
     }
 
     private func retryFailedScan() async {

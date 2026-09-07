@@ -130,6 +130,14 @@ struct ScanAnnotatedImageView: View {
                     .font(.system(size: 10, weight: .bold))
                     .foregroundStyle(.white)
                     .lineLimit(1)
+                    .layoutPriority(1)
+                Spacer(minLength: 2)
+                if let confidence = marker.confidence {
+                    Text("\(confidence)%")
+                        .font(.system(size: 9, weight: .semibold, design: .rounded))
+                        .foregroundStyle(.white.opacity(0.92))
+                        .monospacedDigit()
+                }
                 if marker.isGroup {
                     Image(systemName: marker.isExpanded ? "chevron.up" : "chevron.down")
                         .font(.system(size: 8, weight: .bold))
@@ -207,6 +215,8 @@ struct ScanAnnotatedImageView: View {
         let isExpanded: Bool
         let isRevealedChild: Bool
         let memberIDs: [UUID]
+        /// Per-hazard AI confidence; nil on group tabs.
+        let confidence: Int?
     }
 
     private func tabShape(for side: LabelSide) -> UnevenRoundedRectangle {
@@ -367,15 +377,15 @@ struct ScanAnnotatedImageView: View {
                 return ar.minX < br.minX
             }
 
-            for (index, item) in sorted {
-                let hazard = item.hazard
-                let box = boxes[index]
+            for pair in sorted {
+                let hazard = pair.element.hazard
+                let box = pair.element.box
                 let text = hazard.status == .fixed ? "Fixed · \(hazard.title)" : hazard.title
                 let color = hazard.status == .fixed
                     ? Color(red: 0.20, green: 0.68, blue: 0.45)
                     : hazard.severity.color
-                let size = estimatedLabelSize(text, extra: 0)
-                let foreign = boxes.enumerated().compactMap { i, r in i == index ? nil : r }
+                let size = estimatedLabelSize(text, extra: 0, showConfidence: true)
+                let foreign = boxes.enumerated().compactMap { i, r in i == pair.offset ? nil : r }
                 let picked = bestPlacement(
                     box: box,
                     labelSize: size,
@@ -397,7 +407,8 @@ struct ScanAnnotatedImageView: View {
                         isGroup: false,
                         isExpanded: false,
                         isRevealedChild: revealed,
-                        memberIDs: [hazard.id]
+                        memberIDs: [hazard.id],
+                        confidence: hazard.confidence
                     )
                 )
             }
@@ -425,7 +436,7 @@ struct ScanAnnotatedImageView: View {
         let color = allFixed
             ? Color(red: 0.20, green: 0.68, blue: 0.45)
             : worst.color
-        let size = estimatedLabelSize(text, extra: 14)
+        let size = estimatedLabelSize(text, extra: 14, showConfidence: false)
         let picked = bestPlacement(
             box: cluster.box,
             labelSize: size,
@@ -447,13 +458,15 @@ struct ScanAnnotatedImageView: View {
                 isGroup: true,
                 isExpanded: expanded,
                 isRevealedChild: false,
-                memberIDs: cluster.memberIDs
+                memberIDs: cluster.memberIDs,
+                confidence: nil
             )
         )
     }
 
-    private static func estimatedLabelSize(_ text: String, extra: CGFloat) -> CGSize {
-        let w = min(180, max(44, CGFloat(text.count) * 6.35 + 16 + extra))
+    private static func estimatedLabelSize(_ text: String, extra: CGFloat, showConfidence: Bool) -> CGSize {
+        let confidencePad: CGFloat = showConfidence ? 30 : 0
+        let w = min(210, max(44, CGFloat(text.count) * 6.35 + 16 + extra + confidencePad))
         return CGSize(width: w, height: 20)
     }
 

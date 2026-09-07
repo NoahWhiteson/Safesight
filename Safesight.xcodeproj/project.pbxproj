@@ -15,9 +15,22 @@
 		2EBD01B7304C9848003E4442 /* Safesight.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Safesight.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		2EBD01BA304C9848003E4442 /* Exceptions for "Safesight" folder in "Safesight" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 2EBD01B6304C9848003E4442 /* Safesight */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		2EBD01B9304C9848003E4442 /* Safesight */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				2EBD01BA304C9848003E4442 /* Exceptions for "Safesight" folder in "Safesight" target */,
+			);
 			path = Safesight;
 			sourceTree = "<group>";
 		};
@@ -266,7 +279,7 @@
 				DEVELOPMENT_TEAM = 3VQVFBNN76;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = AppInfo.plist;
+				INFOPLIST_FILE = Safesight/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Safesight needs the camera to scan rooms for visible safety hazards.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -300,7 +313,7 @@
 				DEVELOPMENT_TEAM = 3VQVFBNN76;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = AppInfo.plist;
+				INFOPLIST_FILE = Safesight/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Safesight needs the camera to scan rooms for visible safety hazards.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

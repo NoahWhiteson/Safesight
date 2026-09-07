@@ -35,16 +35,17 @@ enum GeminiScanPrompt {
         2. Do not invent totally unseen hazards. At \(level)% aggressiveness you may include borderline visible risks.
         3. Camera-visible issues only (no gas/CO/radon/invisible risks).
         4. EVERY hazard MUST include boundingBox. Required. Never omit. Never null.
-           - Normalized 0…1 fractions of the IMAGE (not pixels, not 0–100).
+           - Normalized 0…1 fractions of the IMAGE ONLY (never pixels, never 0–100, never 0–1000).
            - Origin = top-left of the photo.
-           - Box must tightly cover the visible hazard object (not the whole room).
-           - width and height each between 0.12 and 0.55. Keep fully inside 0…1.
-           - If unsure of exact edges, still output your best visible box — never skip it.
+           - Box must tightly hug the visible hazard object — not the whole room, wall, or frame.
+           - Typical width/height ≈ 0.05–0.40. Keep fully inside 0…1. Never return a near-full-image box.
+           - If unsure of exact edges, still output your best tight visible box — never skip it.
         5. Severity: High = immediate injury/fire/egress; Medium = fix soon; Low = minor.
         6. score: 0–100 for THIS frame vs selected focus areas only.
         7. icon: short SF Symbol name (bolt.fill, figure.stairs, lightbulb.fill, etc.).
         8. Recommend ONLY products that fix the listed hazards.
-        9. JSON only — no markdown.
+        9. confidence: integer 0–100 — how sure you are THIS hazard is real and correctly identified in the photo. Be honest (clear cord tip-over ≈ 90–98; ambiguous clutter ≈ 55–75).
+        10. JSON only — no markdown.
 
         STRICT LENGTH LIMITS (never exceed)
         - summary: max 110 characters, 1 sentence
@@ -68,7 +69,8 @@ enum GeminiScanPrompt {
               "icon": string,
               "focusArea": string,
               "boundingBox": { "x": number, "y": number, "width": number, "height": number },
-              "fixSteps": [string, string]
+              "fixSteps": [string, string],
+              "confidence": number
             }
           ],
           "products": [
@@ -384,12 +386,14 @@ private struct GeminiScanPayload: Decodable {
         var focusArea: String?
         var boundingBox: Box?
         var fixSteps: [String]?
+        var confidence: Double?
 
         enum CodingKeys: String, CodingKey {
-            case title, detail, severity, icon, focusArea, fixSteps
+            case title, detail, severity, icon, focusArea, fixSteps, confidence
             case boundingBox
             case bounding_box
             case bbox
+            case accuracy, certainty
         }
 
         init(from decoder: Decoder) throws {
@@ -400,6 +404,13 @@ private struct GeminiScanPayload: Decodable {
             icon = try c.decodeIfPresent(String.self, forKey: .icon)
             focusArea = try c.decodeIfPresent(String.self, forKey: .focusArea)
             fixSteps = try c.decodeIfPresent([String].self, forKey: .fixSteps)
+            if let conf = try c.decodeIfPresent(Double.self, forKey: .confidence)
+                ?? c.decodeIfPresent(Double.self, forKey: .accuracy)
+                ?? c.decodeIfPresent(Double.self, forKey: .certainty) {
+                confidence = conf
+            } else {
+                confidence = nil
+            }
             if let box = try c.decodeIfPresent(Box.self, forKey: .boundingBox) {
                 boundingBox = box
             } else if let box = try c.decodeIfPresent(Box.self, forKey: .bounding_box) {
@@ -487,6 +498,8 @@ private struct GeminiScanPayload: Decodable {
                 .map { $0.trimmed(to: 70) }
                 .filter { !$0.isEmpty }
             let clampedSteps = Array((steps.isEmpty ? ["Inspect and fix this issue."] : steps).prefix(2))
+            var conf = h.confidence ?? 72
+            if conf > 0, conf <= 1 { conf *= 100 }
 
             return ScanHazardDTO(
                 title: title.trimmed(to: 36),
@@ -495,7 +508,8 @@ private struct GeminiScanPayload: Decodable {
                 icon: icon,
                 boundingBox: normalized,
                 fixSteps: clampedSteps,
-                focusArea: focus
+                focusArea: focus,
+                confidence: Int(conf.rounded())
             )
         }
 

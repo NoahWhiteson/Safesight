@@ -13,6 +13,8 @@ struct ScanGalleryView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var isSelecting = false
     @State private var selectedIDs: Set<UUID> = []
+    @State private var shareItems: [Any]?
+    @State private var isPreparingShare = false
 
     private let ink = Color(white: 0.08)
     private let mute = Color(white: 0.45)
@@ -44,6 +46,15 @@ struct ScanGalleryView: View {
                     if isSelecting { selectionBar }
                 }
                 .onAppear { store.purgeExpired() }
+                .sheet(isPresented: Binding(
+                    get: { shareItems != nil },
+                    set: { if !$0 { shareItems = nil } }
+                )) {
+                    if let shareItems {
+                        ShareSheet(items: shareItems)
+                            .presentationDetents([.medium, .large])
+                    }
+                }
         }
     }
 
@@ -126,7 +137,24 @@ struct ScanGalleryView: View {
     }
 
     private var selectionBar: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 10) {
+            Button {
+                Haptics.light()
+                shareSelected()
+            } label: {
+                Label("Share", systemImage: "square.and.arrow.up")
+                    .font(.system(size: 15, weight: .semibold))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+                    .background(
+                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .fill(Color.white)
+                    )
+                    .foregroundStyle(selectedIDs.isEmpty || isPreparingShare ? mute : blue)
+            }
+            .buttonStyle(.plain)
+            .disabled(selectedIDs.isEmpty || isPreparingShare)
+
             Button {
                 Haptics.light()
                 guard !selectedIDs.isEmpty else { return }
@@ -136,7 +164,7 @@ struct ScanGalleryView: View {
                     allSelectedStarred ? "Unstar" : "Star",
                     systemImage: allSelectedStarred ? "star.slash.fill" : "star.fill"
                 )
-                .font(.system(size: 16, weight: .semibold))
+                .font(.system(size: 15, weight: .semibold))
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 14)
                 .background(
@@ -157,7 +185,7 @@ struct ScanGalleryView: View {
                 if store.scans.isEmpty { exitSelection() }
             } label: {
                 Label("Delete", systemImage: "trash.fill")
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(.system(size: 15, weight: .semibold))
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
                     .background(
@@ -183,6 +211,12 @@ struct ScanGalleryView: View {
     private func contextMenu(for scan: ScanResult) -> some View {
         Button {
             Haptics.light()
+            share(scan)
+        } label: {
+            Label("Share", systemImage: "square.and.arrow.up")
+        }
+        Button {
+            Haptics.light()
             store.toggleStarred(scan)
         } label: {
             Label(
@@ -196,6 +230,45 @@ struct ScanGalleryView: View {
             selectedIDs.remove(scan.id)
         } label: {
             Label("Delete", systemImage: "trash")
+        }
+    }
+
+    private func share(_ scan: ScanResult) {
+        guard !isPreparingShare else { return }
+        isPreparingShare = true
+        let image = store.image(for: scan)
+        Task { @MainActor in
+            let items = await ScanSharePresenter.makeShareItems(for: scan, image: image)
+            isPreparingShare = false
+            if let items {
+                shareItems = items
+            } else {
+                Haptics.warning()
+            }
+        }
+    }
+
+    private func shareSelected() {
+        guard !isPreparingShare else { return }
+        let scans = selectedScans
+        guard !scans.isEmpty else { return }
+        isPreparingShare = true
+        Task { @MainActor in
+            var items: [Any] = []
+            for scan in scans {
+                if let part = await ScanSharePresenter.makeShareItems(
+                    for: scan,
+                    image: store.image(for: scan)
+                ) {
+                    items.append(contentsOf: part)
+                }
+            }
+            isPreparingShare = false
+            if items.isEmpty {
+                Haptics.warning()
+            } else {
+                shareItems = items
+            }
         }
     }
 

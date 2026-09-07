@@ -15,6 +15,7 @@ final class ScanHistoryStore: ObservableObject {
     static let retentionDays: Int = 60
 
     @Published private(set) var scans: [ScanResult] = []
+    @Published private(set) var isReady = false
 
     private let indexKey = "safesight.scanHistory.index"
     private let folderName = "Scans"
@@ -29,8 +30,8 @@ final class ScanHistoryStore: ObservableObject {
     }
 
     init() {
-        load()
-        purgeExpired()
+        // Never block first frame — history can be large after updates.
+        Task(priority: .userInitiated) { await bootstrap() }
     }
 
     var latest: ScanResult? { scans.first }
@@ -168,24 +169,43 @@ final class ScanHistoryStore: ObservableObject {
         return expired.count
     }
 
+    private func bootstrap() async {
+        let key = indexKey
+        let raw = UserDefaults.standard.data(forKey: key)
+
+        let prepared: (scans: [ScanResult], dirty: Bool) = await Task.detached(priority: .userInitiated) {
+            guard let data = raw else { return ([], false) }
+            guard var decoded = try? JSONDecoder().decode([ScanResult].self, from: data) else {
+                return ([], false)
+            }
+
+            var dirty = false
+            for i in decoded.indices {
+                let needsRefresh = decoded[i].products.contains {
+                    AmazonCatalog.isUnusableImageURL($0.imageURL)
+                } || decoded[i].products.isEmpty && !decoded[i].hazards.isEmpty
+                if needsRefresh {
+                    decoded[i].products = AmazonCatalog.products(for: decoded[i].hazards)
+                    dirty = true
+                }
+            }
+
+            decoded.sort { $0.createdAt > $1.createdAt }
+            return (decoded, dirty)
+        }.value
+
+        scans = prepared.scans
+        if prepared.dirty {
+            persistIndex()
+        }
+        syncInsights()
+        purgeExpired()
+        isReady = true
+    }
+
     private func persistIndex() {
         if let data = try? JSONEncoder().encode(scans) {
             UserDefaults.standard.set(data, forKey: indexKey)
         }
-    }
-
-    private func load() {
-        guard let data = UserDefaults.standard.data(forKey: indexKey),
-              var decoded = try? JSONDecoder().decode([ScanResult].self, from: data) else {
-            scans = []
-            return
-        }
-        // Refresh products so old amazon-adsystem / ASIN cards never render again.
-        for i in decoded.indices {
-            decoded[i].products = AmazonCatalog.products(for: decoded[i].hazards)
-        }
-        scans = decoded.sorted { $0.createdAt > $1.createdAt }
-        persistIndex()
-        syncInsights()
     }
 }

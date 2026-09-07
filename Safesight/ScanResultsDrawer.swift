@@ -13,6 +13,8 @@ struct ScanResultsDrawer: View {
 
     @ObservedObject private var history = ScanHistoryStore.shared
     @State private var expandedHazardID: UUID?
+    @State private var shareItems: [Any]?
+    @State private var isPreparingShare = false
 
     private let ink = Color(white: 0.08)
     private let mute = Color(white: 0.45)
@@ -51,6 +53,20 @@ struct ScanResultsDrawer: View {
             .navigationTitle("Scan results")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        Haptics.light()
+                        prepareShare()
+                    } label: {
+                        if isPreparingShare {
+                            ProgressView()
+                        } else {
+                            Image(systemName: "square.and.arrow.up")
+                        }
+                    }
+                    .disabled(isPreparingShare)
+                    .accessibilityLabel("Share scan")
+                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") {
                         Haptics.light()
@@ -58,6 +74,31 @@ struct ScanResultsDrawer: View {
                     }
                     .fontWeight(.semibold)
                 }
+            }
+            .sheet(isPresented: Binding(
+                get: { shareItems != nil },
+                set: { if !$0 { shareItems = nil } }
+            )) {
+                if let shareItems {
+                    ShareSheet(items: shareItems)
+                        .presentationDetents([.medium, .large])
+                }
+            }
+        }
+    }
+
+    private func prepareShare() {
+        guard !isPreparingShare else { return }
+        isPreparingShare = true
+        let scan = result
+        let image = history.image(for: scan)
+        Task { @MainActor in
+            let items = await ScanSharePresenter.makeShareItems(for: scan, image: image)
+            isPreparingShare = false
+            if let items {
+                shareItems = items
+            } else {
+                Haptics.warning()
             }
         }
     }

@@ -28,6 +28,30 @@ Safesight is a **Shipaton 2026 Next Gen** project: a student-built app with a re
 
 ---
 
+## Safesight in real rooms
+
+Real scans from the app — boxes on the photo, confidence on each label, House Score on the share card.
+
+<p align="center">
+  <img src="docs/assets/share-examples/desk.jpg" alt="Desk scan — House Score 88" width="46%" />
+  &nbsp;
+  <img src="docs/assets/share-examples/bathroom.jpg" alt="Bathroom scan — House Score 82" width="46%" />
+</p>
+<p align="center">
+  <sub>Desk · 88/100 &nbsp;·&nbsp; Bathroom · 82/100</sub>
+</p>
+
+<p align="center">
+  <img src="docs/assets/share-examples/hallway.jpg" alt="Hallway scan — House Score 68" width="46%" />
+  &nbsp;
+  <img src="docs/assets/share-examples/kitchen.jpg" alt="Kitchen scan — House Score 78" width="46%" />
+</p>
+<p align="center">
+  <sub>Hallway · 68/100 &nbsp;·&nbsp; Kitchen · 78/100</sub>
+</p>
+
+---
+
 ## The problem
 
 Home safety advice is usually:
@@ -45,14 +69,16 @@ That’s the gap Safesight fills.
 ## What the app does
 
 ### Scan a room
-Open **Scan**, capture a photo, and Safesight analyzes the image against your chosen **focus areas** (fire, water leaks, electric, child-proofing, trip hazards, blocked exits, and more). You get:
+Open **Scan**, capture a photo **or upload one from your library**, and Safesight analyzes the image against your chosen **focus areas** (fire, water leaks, electric, child-proofing, trip hazards, blocked exits, and more). You get:
 
 - a **House Score** for that frame  
 - a short **AI summary**  
 - a list of hazards with severity  
 
+You can **share** any scan as a branded PNG — annotated photo with boxes and titles, the Safesight logo, and the score — through Messages, Instagram, Mail, or anything else the system share sheet supports.
+
 ### See hazards on the photo
-Findings aren’t buried in text. Safesight draws **bounding boxes** on the image and fuses **labels** to the outline so you can see exactly where each issue is.
+Findings aren’t buried in text. Safesight draws **bounding boxes** on the image and fuses **labels** to the outline so you can see exactly where each issue is. Each hazard label includes an **accuracy metre** — a percentage showing how sure the model is that the named hazard is actually there.
 
 When detections stack or nest inside each other, they collapse into **one group box**. Tap to expand and inspect the hazards inside — then collapse again when you’re done.
 
@@ -88,7 +114,7 @@ At a high level:
    (structured JSON)
           │
           ▼
-  Hazards · boxes · score · summary · products
+  Hazards · boxes · confidence · score · summary · products
           │
           ▼
   Overlays on photo · lifecycle · Home / Hazards · Premium
@@ -98,7 +124,7 @@ At a high level:
 Onboarding captures who you are, what kind of home you’re in, and which **focus areas** matter. Those choices gate what the model is allowed to report — so a child-proofing scan doesn’t invent unrelated noise.
 
 ### 2. Vision in, structure out
-The room photo is sent to the **Safesight API**, which calls **Gemini** with a strict schema. The model returns hazards with titles, details, severity, fix steps, and a **normalized bounding box** (`0…1` coordinates on the image). The app maps those fractions onto the displayed photo and draws the overlays.
+The room photo is sent to the **Safesight API**, which calls **Gemini** with a strict schema. The model returns hazards with titles, details, severity, fix steps, a **normalized bounding box** (`0…1` coordinates on the image), and a **confidence** score (0–100). The app maps those fractions onto the displayed photo, draws the overlays, and shows the confidence as a percentage on each label tab.
 
 ### 3. Product layer on top
 Boxes get collision-aware labels. Nested detections become expandable groups. History stores scans on-device. The Hazards tab aggregates what’s still open. RevenueCat checks entitlement for Premium unlocks.

@@ -28,7 +28,8 @@ struct DashboardTabController: UIViewControllerRepresentable {
             selectedImage: UIImage(systemName: "house.fill")
         )
 
-        let scan = UIHostingController(rootView: ScanScreen())
+        // Defer camera / Photos stack until the user opens Scan.
+        let scan = LazyScanHostingController()
         scan.tabBarItem = UITabBarItem(
             title: "Scan",
             image: UIImage(systemName: "camera"),
@@ -69,10 +70,11 @@ struct DashboardTabController: UIViewControllerRepresentable {
             selectedImage: UIImage(systemName: "person.fill")
         )
 
-        for host in [home, scan, hazards, you] {
+        for host in [home, hazards, you] {
             host.view.backgroundColor = UIColor(Theme.bg)
             host.view.clipsToBounds = false
         }
+        scan.view.backgroundColor = .black
 
         tabBar.viewControllers = [home, scan, hazards, premium, you]
         tabBar.view.tintColor = UIColor(red: 0, green: 0.48, blue: 1, alpha: 1)
@@ -123,5 +125,37 @@ struct DashboardTabController: UIViewControllerRepresentable {
             }
             return true
         }
+    }
+}
+
+/// Builds `ScanScreen` on first visit so camera setup never blocks app launch.
+private final class LazyScanHostingController: UIViewController {
+    private var hosted: UIHostingController<ScanScreen>?
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .black
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        installScanIfNeeded()
+    }
+
+    private func installScanIfNeeded() {
+        guard hosted == nil else { return }
+        let host = UIHostingController(rootView: ScanScreen())
+        hosted = host
+        addChild(host)
+        host.view.translatesAutoresizingMaskIntoConstraints = false
+        host.view.backgroundColor = .black
+        view.addSubview(host.view)
+        NSLayoutConstraint.activate([
+            host.view.topAnchor.constraint(equalTo: view.topAnchor),
+            host.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            host.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            host.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+        host.didMove(toParent: self)
     }
 }

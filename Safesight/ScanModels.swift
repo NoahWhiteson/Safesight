@@ -27,6 +27,22 @@ struct NormalizedRect: Codable, Hashable {
         )
     }
 
+    /// Fix 0…100 / 0…1000 units without inventing a new box.
+    func unitNormalized() -> NormalizedRect {
+        var sx = x, sy = y, sw = width, sh = height
+        let maxV = max(sx, sy, sw, sh)
+        if maxV > 100 {
+            sx /= 1000; sy /= 1000; sw /= 1000; sh /= 1000
+        } else if maxV > 1.5 {
+            sx /= 100; sy /= 100; sw /= 100; sh /= 100
+        }
+        sx = Self.clamp01(sx)
+        sy = Self.clamp01(sy)
+        sw = max(0, min(sw, 1 - sx))
+        sh = max(0, min(sh, 1 - sy))
+        return NormalizedRect(x: sx, y: sy, width: sw, height: sh)
+    }
+
     /// Keep AI boxes precise. Only invent a rect when coords are missing / nonsense.
     static func sanitized(
         x: Double?,
@@ -42,12 +58,12 @@ struct NormalizedRect: Codable, Hashable {
         var sw = width ?? 0
         var sh = height ?? 0
 
-        // Model sometimes returns 0…100 percentages.
-        if sx > 1 || sy > 1 || sw > 1 || sh > 1 {
-            sx /= 100
-            sy /= 100
-            sw /= 100
-            sh /= 100
+        // Normalize units without crushing already-correct 0…1 boxes.
+        let maxV = max(sx, sy, sw, sh)
+        if maxV > 100 {
+            sx /= 1000; sy /= 1000; sw /= 1000; sh /= 1000
+        } else if maxV > 1.5 {
+            sx /= 100; sy /= 100; sw /= 100; sh /= 100
         }
 
         sx = clamp01(sx)
@@ -151,6 +167,8 @@ struct ScanHazardDTO: Codable, Identifiable, Hashable {
     var fixSteps: [String]
     /// Matches `SafetyInterest.rawValue` for filtering on the Hazards tab.
     var focusArea: String?
+    /// Model confidence 0–100 that this hazard is real / correctly identified.
+    var confidence: Int
     /// User lifecycle — open until Fixed or Dismissed.
     var status: HazardLifecycleStatus
 
@@ -163,6 +181,7 @@ struct ScanHazardDTO: Codable, Identifiable, Hashable {
         boundingBox: NormalizedRect,
         fixSteps: [String],
         focusArea: String? = nil,
+        confidence: Int = 72,
         status: HazardLifecycleStatus = .open
     ) {
         self.id = id
@@ -173,11 +192,12 @@ struct ScanHazardDTO: Codable, Identifiable, Hashable {
         self.boundingBox = boundingBox
         self.fixSteps = fixSteps
         self.focusArea = focusArea
+        self.confidence = Self.sanitizeConfidence(confidence)
         self.status = status
     }
 
     enum CodingKeys: String, CodingKey {
-        case id, title, detail, severity, icon, boundingBox, fixSteps, focusArea, status
+        case id, title, detail, severity, icon, boundingBox, fixSteps, focusArea, confidence, status
     }
 
     init(from decoder: Decoder) throws {
@@ -187,10 +207,26 @@ struct ScanHazardDTO: Codable, Identifiable, Hashable {
         detail = try c.decode(String.self, forKey: .detail)
         severity = try c.decode(HazardSeverity.self, forKey: .severity)
         icon = try c.decode(String.self, forKey: .icon)
-        boundingBox = try c.decode(NormalizedRect.self, forKey: .boundingBox)
+        boundingBox = try c.decode(NormalizedRect.self, forKey: .boundingBox).unitNormalized()
         fixSteps = try c.decode([String].self, forKey: .fixSteps)
         focusArea = try c.decodeIfPresent(String.self, forKey: .focusArea)
+        confidence = Self.decodeConfidence(from: c)
         status = try c.decodeIfPresent(HazardLifecycleStatus.self, forKey: .status) ?? .open
+    }
+
+    static func sanitizeConfidence(_ raw: Int) -> Int {
+        min(99, max(40, raw))
+    }
+
+    private static func decodeConfidence(from c: KeyedDecodingContainer<CodingKeys>) -> Int {
+        if let i = try? c.decode(Int.self, forKey: .confidence) {
+            return sanitizeConfidence(i)
+        }
+        if let d = try? c.decode(Double.self, forKey: .confidence) {
+            let scaled = (d > 0 && d <= 1) ? d * 100 : d
+            return sanitizeConfidence(Int(scaled.rounded()))
+        }
+        return 72
     }
 
     var focusInterest: SafetyInterest? {
@@ -363,7 +399,8 @@ enum ScanPlaceholderPayload {
                         "Apply double-sided stair tape or non-slip treads along each step.",
                         "Press firmly and test the stair with a slow walk-down."
                     ],
-                    focusArea: SafetyInterest.stairs.rawValue
+                    focusArea: SafetyInterest.stairs.rawValue,
+                    confidence: 91
                 ),
                 ScanHazardDTO(
                     title: "Overloaded outlet",
@@ -376,7 +413,8 @@ enum ScanPlaceholderPayload {
                         "Consolidate devices onto one surge-protected strip.",
                         "Route cables with clips so the outlet stays clear."
                     ],
-                    focusArea: SafetyInterest.electric.rawValue
+                    focusArea: SafetyInterest.electric.rawValue,
+                    confidence: 86
                 ),
                 ScanHazardDTO(
                     title: "Blocked secondary exit",
@@ -389,7 +427,8 @@ enum ScanPlaceholderPayload {
                         "Keep the door swing fully clear.",
                         "Recheck the route with lights off."
                     ],
-                    focusArea: SafetyInterest.blocked.rawValue
+                    focusArea: SafetyInterest.blocked.rawValue,
+                    confidence: 78
                 ),
                 ScanHazardDTO(
                     title: "Dim hallway lighting",
@@ -402,7 +441,8 @@ enum ScanPlaceholderPayload {
                         "Add a plug-in motion light for overnight coverage.",
                         "Confirm both ends of the hallway are lit."
                     ],
-                    focusArea: SafetyInterest.nightLighting.rawValue
+                    focusArea: SafetyInterest.nightLighting.rawValue,
+                    confidence: 64
                 )
             ],
             products: [], // filled by AmazonProductService after analyze

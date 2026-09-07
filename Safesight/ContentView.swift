@@ -9,20 +9,22 @@ import SwiftUI
 
 struct ContentView: View {
     @ObservedObject private var store = ProfileStore.shared
-    @State private var phase: AppPhase = .resolving
+    @State private var phase: AppPhase
 
     private enum AppPhase: Equatable {
-        case resolving
         case onboarding
         case settingUp
         case dashboard
     }
 
+    init() {
+        let onboarded = ProfileStore.shared.hasCompletedOnboarding
+        _phase = State(initialValue: onboarded ? .dashboard : .onboarding)
+    }
+
     var body: some View {
         Group {
             switch phase {
-            case .resolving:
-                Color(white: 0.96).ignoresSafeArea()
             case .onboarding:
                 OnboardingFlow { name, dwelling, hazards in
                     var focusAreas = hazards
@@ -55,9 +57,6 @@ struct ContentView: View {
             }
         }
         .animation(.default, value: phase)
-        .onAppear {
-            phase = store.hasCompletedOnboarding ? .dashboard : .onboarding
-        }
         .onChange(of: store.profile) { _, profile in
             if profile == nil {
                 withAnimation(.default) {

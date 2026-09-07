@@ -48,7 +48,7 @@ struct SetupLoadingView: View {
             withAnimation(.default) { appeared = true }
             withAnimation(.linear(duration: 0.9).repeatForever(autoreverses: false)) { spin = true }
 
-            let delay = Double.random(in: 2.0...5.0)
+            let delay = Double.random(in: 0.7...1.2)
             DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
                 onFinished()
             }

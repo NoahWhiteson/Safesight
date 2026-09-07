@@ -24,16 +24,17 @@ HARD RULES
 2. Do not invent totally unseen hazards. At ${level}% aggressiveness you may include borderline visible risks.
 3. Camera-visible issues only (no gas/CO/radon/invisible risks).
 4. EVERY hazard MUST include boundingBox. Required. Never omit. Never null.
-   - Normalized 0…1 fractions of the IMAGE (not pixels, not 0–100).
+   - Normalized 0…1 fractions of the IMAGE ONLY (never pixels, never 0–100, never 0–1000).
    - Origin = top-left of the photo.
-   - Box must tightly cover the visible hazard object (not the whole room).
-   - width and height each between 0.12 and 0.55. Keep fully inside 0…1.
-   - If unsure of exact edges, still output your best visible box — never skip it.
+   - Box must tightly hug the visible hazard object — not the whole room, wall, or frame.
+   - Typical width/height ≈ 0.05–0.40. Keep fully inside 0…1. Never return a near-full-image box.
+   - If unsure of exact edges, still output your best tight visible box — never skip it.
 5. Severity: High = immediate injury/fire/egress; Medium = fix soon; Low = minor.
 6. score: 0–100 for THIS frame vs selected focus areas only.
 7. icon: short SF Symbol name (bolt.fill, figure.stairs, lightbulb.fill, etc.).
 8. Recommend ONLY products that fix the listed hazards.
-9. JSON only — no markdown.
+9. confidence: integer 0–100 — how sure you are THIS hazard is real and correctly identified in the photo. Be honest (clear cord tip-over ≈ 90–98; ambiguous clutter ≈ 55–75).
+10. JSON only — no markdown.
 
 STRICT LENGTH LIMITS (never exceed)
 - summary: max 110 characters, 1 sentence
@@ -56,6 +57,7 @@ OUTPUT SCHEMA
       "severity": "High" | "Medium" | "Low",
       "icon": string,
       "focusArea": string,
+      "confidence": number,
       "boundingBox": { "x": number, "y": number, "width": number, "height": number },
       "fixSteps": [string, string]
     }

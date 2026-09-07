@@ -10,17 +10,21 @@ import SwiftUI
 
 @main
 struct SafesightApp: App {
-    init() {
-        #if DEBUG
-        Purchases.logLevel = .debug
-        #endif
-        Purchases.configure(withAPIKey: RevenueCatConfig.apiKey)
-        SubscriptionStore.shared.start()
-    }
+    @State private var didConfigurePurchases = false
 
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .task {
+                    guard !didConfigurePurchases else { return }
+                    didConfigurePurchases = true
+                    #if DEBUG
+                    Purchases.logLevel = .debug
+                    #endif
+                    // After first frame — configure must not block the launch screen.
+                    Purchases.configure(withAPIKey: RevenueCatConfig.apiKey)
+                    SubscriptionStore.shared.start()
+                }
         }
     }
 }
