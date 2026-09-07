@@ -44,6 +44,37 @@ enum Haptics {
     }
 }
 
+/// Locks parent UIScrollView to vertical-only rubber-banding.
+private struct VerticalScrollLock: UIViewRepresentable {
+    func makeUIView(context: Context) -> UIView {
+        let view = UIView(frame: .zero)
+        view.isUserInteractionEnabled = false
+        view.backgroundColor = .clear
+        DispatchQueue.main.async { Self.lock(from: view) }
+        return view
+    }
+
+    func updateUIView(_ uiView: UIView, context: Context) {
+        DispatchQueue.main.async { Self.lock(from: uiView) }
+    }
+
+    private static func lock(from view: UIView) {
+        var node: UIView? = view
+        while let current = node {
+            if let scroll = current as? UIScrollView {
+                scroll.alwaysBounceHorizontal = false
+                scroll.isDirectionalLockEnabled = true
+                scroll.contentInsetAdjustmentBehavior = .automatic
+                // Prevent sideways content from creating a horizontal scrollable range.
+                if scroll.contentSize.width > scroll.bounds.width {
+                    scroll.contentSize.width = scroll.bounds.width
+                }
+            }
+            node = current.superview
+        }
+    }
+}
+
 struct DashboardView: View {
     let profile: UserProfile
     @State private var showPaywall = false
@@ -186,6 +217,11 @@ private struct HomeScreen: View {
         "\(subs.houseScore)"
     }
 
+    /// Activity tab shows the newest 20 scans only.
+    private var recentActivity: [ScanResult] {
+        Array(history.scans.prefix(20))
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView(.vertical, showsIndicators: false) {
@@ -207,6 +243,8 @@ private struct HomeScreen: View {
                 .padding(.bottom, 28)
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
+            .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
+            .background(VerticalScrollLock())
             .navigationTitle("Home")
             .navigationBarTitleDisplayMode(.large)
             .toolbarBackground(.automatic, for: .navigationBar)
@@ -359,7 +397,7 @@ private struct HomeScreen: View {
 
     private var activityContent: some View {
         VStack(alignment: .leading, spacing: 14) {
-            if history.scans.isEmpty {
+            if recentActivity.isEmpty {
                 Text("No activity yet")
                     .font(.system(size: 28, weight: .bold))
                     .foregroundStyle(Theme.ink)
@@ -377,13 +415,13 @@ private struct HomeScreen: View {
                     .padding(.horizontal, 22)
                     .padding(.top, 22)
 
-                Text("\(history.scans.count) saved scan\(history.scans.count == 1 ? "" : "s") · unstarred drop after 60 days")
+                Text("Showing latest \(recentActivity.count) · unstarred drop after 60 days")
                     .font(.system(size: 14))
                     .foregroundStyle(Theme.mute)
                     .padding(.horizontal, 22)
 
                 VStack(spacing: 10) {
-                    ForEach(history.scans) { scan in
+                    ForEach(recentActivity) { scan in
                         activityRow(scan)
                     }
                 }
@@ -391,10 +429,11 @@ private struct HomeScreen: View {
                 .padding(.top, 4)
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private func activityRow(_ scan: ScanResult) -> some View {
-        HStack(spacing: 14) {
+        HStack(alignment: .top, spacing: 14) {
             Group {
                 if let image = history.image(for: scan) {
                     Image(uiImage: image)
@@ -412,6 +451,7 @@ private struct HomeScreen: View {
                     Text(scan.createdAt.formatted(date: .abbreviated, time: .shortened))
                         .font(.system(size: 15, weight: .semibold))
                         .foregroundStyle(Theme.ink)
+                        .lineLimit(1)
                     if scan.isStarred {
                         Image(systemName: "star.fill")
                             .font(.system(size: 11, weight: .bold))
@@ -423,17 +463,21 @@ private struct HomeScreen: View {
                     .font(.system(size: 13))
                     .foregroundStyle(Theme.mute)
                     .lineLimit(2)
+                    .multilineTextAlignment(.leading)
+                    .fixedSize(horizontal: false, vertical: true)
 
                 Text("Score \(scan.score) · \(scan.hazards.count) hazard\(scan.hazards.count == 1 ? "" : "s")")
                     .font(.system(size: 12, weight: .medium))
                     .foregroundStyle(Theme.mute)
+                    .lineLimit(1)
             }
-
-            Spacer(minLength: 0)
+            .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
 
             severityDot(for: scan)
+                .padding(.top, 6)
         }
         .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 20, style: .continuous)
                 .fill(Color.white)
