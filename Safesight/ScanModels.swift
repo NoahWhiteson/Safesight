@@ -114,6 +114,22 @@ struct ScanAnalysisResponse: Codable {
     var nextSteps: [String]
 }
 
+enum HazardLifecycleStatus: String, Codable, CaseIterable, Hashable {
+    case open
+    case fixed
+    case dismissed
+
+    var isOpen: Bool { self == .open }
+
+    var label: String {
+        switch self {
+        case .open: return "Open"
+        case .fixed: return "Fixed"
+        case .dismissed: return "Dismissed"
+        }
+    }
+}
+
 struct ScanHazardDTO: Codable, Identifiable, Hashable {
     var id: UUID
     var title: String
@@ -124,6 +140,8 @@ struct ScanHazardDTO: Codable, Identifiable, Hashable {
     var fixSteps: [String]
     /// Matches `SafetyInterest.rawValue` for filtering on the Hazards tab.
     var focusArea: String?
+    /// User lifecycle — open until Fixed or Dismissed.
+    var status: HazardLifecycleStatus
 
     init(
         id: UUID = UUID(),
@@ -133,7 +151,8 @@ struct ScanHazardDTO: Codable, Identifiable, Hashable {
         icon: String,
         boundingBox: NormalizedRect,
         fixSteps: [String],
-        focusArea: String? = nil
+        focusArea: String? = nil,
+        status: HazardLifecycleStatus = .open
     ) {
         self.id = id
         self.title = title
@@ -143,11 +162,31 @@ struct ScanHazardDTO: Codable, Identifiable, Hashable {
         self.boundingBox = boundingBox
         self.fixSteps = fixSteps
         self.focusArea = focusArea
+        self.status = status
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case id, title, detail, severity, icon, boundingBox, fixSteps, focusArea, status
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decodeIfPresent(UUID.self, forKey: .id) ?? UUID()
+        title = try c.decode(String.self, forKey: .title)
+        detail = try c.decode(String.self, forKey: .detail)
+        severity = try c.decode(HazardSeverity.self, forKey: .severity)
+        icon = try c.decode(String.self, forKey: .icon)
+        boundingBox = try c.decode(NormalizedRect.self, forKey: .boundingBox)
+        fixSteps = try c.decode([String].self, forKey: .fixSteps)
+        focusArea = try c.decodeIfPresent(String.self, forKey: .focusArea)
+        status = try c.decodeIfPresent(HazardLifecycleStatus.self, forKey: .status) ?? .open
     }
 
     var focusInterest: SafetyInterest? {
         focusArea.flatMap { SafetyInterest(rawValue: $0) }
     }
+
+    var isOpen: Bool { status.isOpen }
 }
 
 struct ScanProductDTO: Codable, Identifiable, Hashable {
@@ -268,6 +307,29 @@ struct ScanResult: Codable, Identifiable, Hashable {
         products = try c.decode([ScanProductDTO].self, forKey: .products)
         nextSteps = try c.decode([String].self, forKey: .nextSteps)
         isStarred = try c.decodeIfPresent(Bool.self, forKey: .isStarred) ?? false
+    }
+
+    var openHazards: [ScanHazardDTO] {
+        hazards.filter(\.isOpen)
+    }
+
+    var openHazardCount: Int { openHazards.count }
+
+    var fixedHazardCount: Int {
+        hazards.filter { $0.status == .fixed }.count
+    }
+
+    /// Recalculate score from remaining open hazards after lifecycle changes.
+    mutating func recomputeScoreFromOpenHazards() {
+        let open = openHazards
+        if open.isEmpty {
+            score = hazards.isEmpty ? score : max(score, 94)
+            return
+        }
+        let high = open.filter { $0.severity == .high }.count
+        let medium = open.filter { $0.severity == .medium }.count
+        let low = open.filter { $0.severity == .low }.count
+        score = max(18, min(98, 100 - high * 18 - medium * 10 - low * 4))
     }
 }
 

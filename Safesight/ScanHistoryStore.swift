@@ -52,6 +52,7 @@ final class ScanHistoryStore: ObservableObject {
         let result = ScanResult(id: scanId, imageFileName: fileName, response: response)
         scans.insert(result, at: 0)
         persistIndex()
+        syncInsights()
         return result
     }
 
@@ -87,6 +88,42 @@ final class ScanHistoryStore: ObservableObject {
         setStarred([result.id], starred: !result.isStarred)
     }
 
+    @discardableResult
+    func setHazardStatus(
+        scanID: UUID,
+        hazardID: UUID,
+        status: HazardLifecycleStatus
+    ) -> ScanResult? {
+        guard let index = scans.firstIndex(where: { $0.id == scanID }),
+              let hIndex = scans[index].hazards.firstIndex(where: { $0.id == hazardID })
+        else { return nil }
+
+        scans[index].hazards[hIndex].status = status
+        scans[index].recomputeScoreFromOpenHazards()
+        persistIndex()
+        syncInsights()
+        return scans[index]
+    }
+
+    /// Open (non-low) hazards across all saved scans — drives Home metrics.
+    var totalOpenActionableHazards: Int {
+        scans
+            .flatMap(\.hazards)
+            .filter { $0.isOpen && $0.severity != .low }
+            .count
+    }
+
+    func syncInsights() {
+        let open = totalOpenActionableHazards
+        let score = scans.first?.score ?? SubscriptionStore.shared.houseScore
+        let summary = scans.first?.summary ?? SubscriptionStore.shared.aiSummary ?? ""
+        SubscriptionStore.shared.applyScanInsights(
+            score: score,
+            openHazards: open,
+            summary: summary
+        )
+    }
+
     /// Drops unstarred scans older than `retentionDays`.
     @discardableResult
     func purgeExpired(now: Date = Date()) -> Int {
@@ -99,6 +136,7 @@ final class ScanHistoryStore: ObservableObject {
         let expired = scans.filter { !$0.isStarred && $0.createdAt < cutoff }
         guard !expired.isEmpty else { return 0 }
         delete(ids: Set(expired.map(\.id)))
+        syncInsights()
         return expired.count
     }
 
@@ -120,5 +158,6 @@ final class ScanHistoryStore: ObservableObject {
         }
         scans = decoded.sorted { $0.createdAt > $1.createdAt }
         persistIndex()
+        syncInsights()
     }
 }

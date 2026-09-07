@@ -10,6 +10,12 @@ import Combine
 import Foundation
 import UIKit
 
+/// Paste your Amazon Associates tracking ID after approval (e.g. `safesight-20`).
+/// Leave empty until approved — links still work, they just won’t pay you.
+enum AmazonAssociatesConfig {
+    static var associateTag: String = ""
+}
+
 struct AmazonCatalogItem: Identifiable, Hashable {
     var id: String { searchQuery }
     let fallbackTitle: String
@@ -25,7 +31,12 @@ struct AmazonCatalogItem: Identifiable, Hashable {
 
     static func amazonSearchURL(query: String) -> URL {
         var components = URLComponents(string: "https://www.amazon.com/s")!
-        components.queryItems = [URLQueryItem(name: "k", value: query)]
+        var items = [URLQueryItem(name: "k", value: query)]
+        let tag = AmazonAssociatesConfig.associateTag.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !tag.isEmpty {
+            items.append(URLQueryItem(name: "tag", value: tag))
+        }
+        components.queryItems = items
         return components.url!
     }
 

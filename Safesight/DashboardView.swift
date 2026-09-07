@@ -448,7 +448,10 @@ private struct HomeScreen: View {
                     .multilineTextAlignment(.leading)
                     .fixedSize(horizontal: false, vertical: true)
 
-                Text("Score \(scan.score) · \(scan.hazards.count) hazard\(scan.hazards.count == 1 ? "" : "s")")
+                Text(
+                    "Score \(scan.score) · \(scan.openHazardCount) open"
+                        + (scan.fixedHazardCount > 0 ? " · \(scan.fixedHazardCount) fixed" : "")
+                )
                     .font(.system(size: 12, weight: .medium))
                     .foregroundStyle(Theme.mute)
                     .lineLimit(1)
@@ -467,10 +470,11 @@ private struct HomeScreen: View {
     }
 
     private func severityDot(for scan: ScanResult) -> some View {
-        let worst = scan.hazards.map(\.severity).max(by: { a, b in
+        let worst = scan.openHazards.map(\.severity).max(by: { a, b in
             severityRank(a) < severityRank(b)
         })
         let color: Color = {
+            if scan.openHazardCount == 0 && !scan.hazards.isEmpty { return Theme.good }
             switch worst {
             case .high: return Theme.warn
             case .medium: return Color(red: 0.95, green: 0.62, blue: 0.12)
@@ -713,10 +717,10 @@ private struct ScanScreen: View {
         ZStack {
             Color.black.ignoresSafeArea()
 
-            if let resultImage, scanResult != nil {
+            if let resultImage, let live = liveScanResult {
                 ScanAnnotatedImageView(
                     image: resultImage,
-                    hazards: scanResult?.hazards ?? [],
+                    hazards: live.hazards,
                     highlightedID: highlightedHazardID
                 )
                 .ignoresSafeArea()
@@ -815,11 +819,13 @@ private struct ScanScreen: View {
             resultImage = nil
         }) { result in
             ScanResultsDrawer(
-                result: result,
-                highlightedHazardID: $highlightedHazardID
-            ) {
-                scanResult = nil
-            }
+                scanID: result.id,
+                highlightedHazardID: $highlightedHazardID,
+                onDone: { scanResult = nil },
+                onScanUpdated: { updated in
+                    scanResult = updated
+                }
+            )
             .presentationDetents([.medium, .large])
             .presentationDragIndicator(.visible)
             .presentationCornerRadius(28)
@@ -850,6 +856,11 @@ private struct ScanScreen: View {
             camera.stop()
             chrome.hidesTabBar = false
         }
+    }
+
+    private var liveScanResult: ScanResult? {
+        guard let id = scanResult?.id else { return nil }
+        return history.scans.first(where: { $0.id == id }) ?? scanResult
     }
 
     private var permissionDenied: some View {
@@ -948,8 +959,7 @@ private struct ScanScreen: View {
         }
 
         let saved = history.save(image: image, response: response, scanId: scanId)
-        let openCount = saved.hazards.filter { $0.severity != .low }.count
-        subs.applyScanInsights(score: saved.score, openHazards: openCount, summary: saved.summary)
+        history.syncInsights()
 
         var dismiss = Transaction()
         dismiss.disablesAnimations = true

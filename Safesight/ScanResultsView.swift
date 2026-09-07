@@ -31,37 +31,41 @@ struct ScanAnnotatedImageView: View {
                     .clipped()
 
                 ForEach(hazards) { hazard in
-                    let local = hazard.boundingBox.cgRect(in: placed.size)
-                    let rect = local.offsetBy(dx: placed.minX, dy: placed.minY)
-                    let active = highlightedID == nil || highlightedID == hazard.id
-                    let boxW = max(36, rect.width)
-                    let boxH = max(36, rect.height)
+                    if hazard.status != .dismissed {
+                        let local = hazard.boundingBox.cgRect(in: placed.size)
+                        let rect = local.offsetBy(dx: placed.minX, dy: placed.minY)
+                        let active = highlightedID == nil || highlightedID == hazard.id
+                        let boxW = max(36, rect.width)
+                        let boxH = max(36, rect.height)
+                        let stroke = hazard.status == .fixed
+                            ? Color(red: 0.20, green: 0.68, blue: 0.45)
+                            : hazard.severity.color
+                        let label = hazard.status == .fixed ? "Fixed · \(hazard.title)" : hazard.title
 
-                    RoundedRectangle(cornerRadius: 6, style: .continuous)
-                        .strokeBorder(hazard.severity.color, lineWidth: active ? 3 : 1.5)
-                        .background(
-                            RoundedRectangle(cornerRadius: 6, style: .continuous)
-                                .fill(hazard.severity.color.opacity(active ? 0.18 : 0.08))
-                        )
-                        .frame(width: boxW, height: boxH)
-                        .position(x: rect.midX, y: rect.midY)
-                        .opacity(active ? 1 : 0.4)
-                        .allowsHitTesting(false)
+                        RoundedRectangle(cornerRadius: 6, style: .continuous)
+                            .strokeBorder(stroke, lineWidth: active ? 3 : 1.5)
+                            .background(
+                                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                                    .fill(stroke.opacity(active ? 0.18 : 0.08))
+                            )
+                            .frame(width: boxW, height: boxH)
+                            .position(x: rect.midX, y: rect.midY)
+                            .opacity(hazard.status == .fixed ? 0.45 : (active ? 1 : 0.4))
+                            .allowsHitTesting(false)
 
-                    Text(hazard.title)
-                        .font(.system(size: 11, weight: .bold))
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(
-                            Capsule().fill(hazard.severity.color.opacity(0.95))
-                        )
-                        .position(
-                            x: min(geo.size.width - 60, max(60, rect.midX)),
-                            y: max(placed.minY + 18, rect.minY - 14)
-                        )
-                        .opacity(active ? 1 : 0.45)
-                        .allowsHitTesting(false)
+                        Text(label)
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Capsule().fill(stroke.opacity(0.95)))
+                            .position(
+                                x: min(geo.size.width - 60, max(60, rect.midX)),
+                                y: max(placed.minY + 18, rect.minY - 14)
+                            )
+                            .opacity(hazard.status == .fixed ? 0.5 : (active ? 1 : 0.45))
+                            .allowsHitTesting(false)
+                    }
                 }
             }
             .frame(width: geo.size.width, height: geo.size.height)
@@ -76,11 +80,12 @@ struct ScanAnnotatedImageView: View {
         hazards: [ScanHazardDTO]
     ) -> CGRect {
         let fill = aspectFillRect(imageSize: imageSize, in: bounds)
-        guard !hazards.isEmpty else { return fill }
+        let visibleHazards = hazards.filter { $0.status != .dismissed }
+        guard !visibleHazards.isEmpty else { return fill }
 
         let pad: CGFloat = 12
         let visible = CGRect(origin: .zero, size: bounds).insetBy(dx: pad, dy: pad)
-        let allVisible = hazards.allSatisfy { hazard in
+        let allVisible = visibleHazards.allSatisfy { hazard in
             let local = hazard.boundingBox.cgRect(in: fill.size)
             let mapped = local.offsetBy(dx: fill.minX, dy: fill.minY)
             return visible.contains(mapped)
@@ -220,16 +225,32 @@ struct RecommendedProductCard: View {
 // MARK: - Results drawer
 
 struct ScanResultsDrawer: View {
-    let result: ScanResult
+    let scanID: UUID
     @Binding var highlightedHazardID: UUID?
     var onDone: () -> Void
+    var onScanUpdated: ((ScanResult) -> Void)? = nil
 
+    @ObservedObject private var history = ScanHistoryStore.shared
     @State private var expandedHazardID: UUID?
 
     private let ink = Color(white: 0.08)
     private let mute = Color(white: 0.45)
     private let blue = Color(red: 0.0, green: 0.48, blue: 1.0)
+    private let good = Color(red: 0.20, green: 0.68, blue: 0.45)
     private let bg = Color(red: 0.96, green: 0.96, blue: 0.97)
+
+    private var result: ScanResult {
+        history.scans.first(where: { $0.id == scanID })
+            ?? ScanResult(
+                id: scanID,
+                imageFileName: "",
+                score: 0,
+                summary: "",
+                hazards: [],
+                products: [],
+                nextSteps: []
+            )
+    }
 
     var body: some View {
         NavigationStack {
@@ -237,7 +258,9 @@ struct ScanResultsDrawer: View {
                 VStack(alignment: .leading, spacing: 22) {
                     scoreHeader
                     hazardsSection
-                    productsSection
+                    if !result.products.isEmpty {
+                        productsSection
+                    }
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 8)
@@ -291,6 +314,16 @@ struct ScanResultsDrawer: View {
                 .foregroundStyle(mute)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 8)
+
+            HStack(spacing: 16) {
+                metricPill(title: "Open", value: "\(result.openHazardCount)")
+                metricPill(title: "Fixed", value: "\(result.fixedHazardCount)")
+                metricPill(
+                    title: "Dismissed",
+                    value: "\(result.hazards.filter { $0.status == .dismissed }.count)"
+                )
+            }
+            .padding(.top, 4)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 18)
@@ -301,13 +334,26 @@ struct ScanResultsDrawer: View {
         )
     }
 
+    private func metricPill(title: String, value: String) -> some View {
+        VStack(spacing: 2) {
+            Text(value)
+                .font(.system(size: 16, weight: .bold))
+                .foregroundStyle(ink)
+            Text(title)
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundStyle(mute)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
     private var scoreColor: Color {
-        if result.score >= 85 { return Color(red: 0.20, green: 0.68, blue: 0.45) }
+        if result.score >= 85 { return good }
         if result.score >= 65 { return Color(red: 0.95, green: 0.62, blue: 0.12) }
         return Color(red: 0.92, green: 0.28, blue: 0.25)
     }
 
     private var scoreLabel: String {
+        if result.openHazardCount == 0 && !result.hazards.isEmpty { return "All clear here" }
         if result.score >= 85 { return "Looking solid" }
         if result.score >= 65 { return "Needs attention" }
         return "High risk areas"
@@ -315,97 +361,198 @@ struct ScanResultsDrawer: View {
 
     private var hazardsSection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            sectionTitle("Hazards found")
+            sectionTitle("Hazards")
 
-            VStack(spacing: 0) {
-                ForEach(Array(result.hazards.enumerated()), id: \.element.id) { index, hazard in
-                    let expanded = expandedHazardID == hazard.id
+            if result.hazards.isEmpty {
+                Text("No hazards in this scan.")
+                    .font(.system(size: 14))
+                    .foregroundStyle(mute)
+                    .padding(16)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(
+                        RoundedRectangle(cornerRadius: 22, style: .continuous)
+                            .fill(Color.white)
+                    )
+            } else {
+                VStack(spacing: 0) {
+                    ForEach(Array(result.hazards.enumerated()), id: \.element.id) { index, hazard in
+                        hazardRow(hazard, expanded: expandedHazardID == hazard.id)
 
-                    Button {
-                        Haptics.select()
-                        withAnimation(.easeInOut(duration: 0.22)) {
-                            if expanded {
-                                expandedHazardID = nil
-                                highlightedHazardID = nil
-                            } else {
-                                expandedHazardID = hazard.id
-                                highlightedHazardID = hazard.id
-                            }
+                        if index < result.hazards.count - 1 {
+                            Divider().padding(.leading, 56)
                         }
-                    } label: {
-                        VStack(alignment: .leading, spacing: 10) {
-                            HStack(alignment: .top, spacing: 12) {
-                                Image(systemName: hazard.icon)
-                                    .font(.system(size: 14, weight: .semibold))
-                                    .foregroundStyle(hazard.severity.color)
-                                    .frame(width: 28, height: 28)
-                                    .background(Circle().fill(hazard.severity.color.opacity(0.12)))
-
-                                VStack(alignment: .leading, spacing: 4) {
-                                    HStack(spacing: 8) {
-                                        Text(hazard.title)
-                                            .font(.system(size: 15, weight: .semibold))
-                                            .foregroundStyle(ink)
-                                            .multilineTextAlignment(.leading)
-                                        Spacer(minLength: 0)
-                                        Text(hazard.severity.rawValue)
-                                            .font(.system(size: 11, weight: .bold))
-                                            .foregroundStyle(hazard.severity.color)
-                                            .padding(.horizontal, 8)
-                                            .padding(.vertical, 4)
-                                            .background(Capsule().fill(hazard.severity.color.opacity(0.12)))
-                                        Image(systemName: expanded ? "chevron.up" : "chevron.down")
-                                            .font(.system(size: 12, weight: .semibold))
-                                            .foregroundStyle(mute)
-                                    }
-                                    Text(hazard.detail)
-                                        .font(.system(size: 13))
-                                        .foregroundStyle(mute)
-                                        .multilineTextAlignment(.leading)
-                                        .fixedSize(horizontal: false, vertical: true)
-                                }
-                            }
-
-                            if expanded {
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text("HOW TO FIX")
-                                        .font(.system(size: 11, weight: .bold))
-                                        .tracking(0.5)
-                                        .foregroundStyle(mute)
-
-                                    ForEach(Array(hazard.fixSteps.enumerated()), id: \.offset) { i, step in
-                                        HStack(alignment: .top, spacing: 10) {
-                                            Text("\(i + 1)")
-                                                .font(.system(size: 12, weight: .bold))
-                                                .foregroundStyle(blue)
-                                                .frame(width: 22, height: 22)
-                                                .background(Circle().fill(blue.opacity(0.12)))
-                                            Text(step)
-                                                .font(.system(size: 13, weight: .medium))
-                                                .foregroundStyle(ink)
-                                                .fixedSize(horizontal: false, vertical: true)
-                                        }
-                                    }
-                                }
-                                .padding(.leading, 40)
-                                .padding(.top, 2)
-                            }
-                        }
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 14)
-                        .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.plain)
-
-                    if index < result.hazards.count - 1 {
-                        Divider().padding(.leading, 56)
                     }
                 }
+                .background(
+                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                        .fill(Color.white)
+                )
             }
-            .background(
-                RoundedRectangle(cornerRadius: 22, style: .continuous)
-                    .fill(Color.white)
-            )
+        }
+    }
+
+    private func hazardRow(_ hazard: ScanHazardDTO, expanded: Bool) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Button {
+                Haptics.select()
+                withAnimation(.easeInOut(duration: 0.22)) {
+                    if expanded {
+                        expandedHazardID = nil
+                        highlightedHazardID = nil
+                    } else {
+                        expandedHazardID = hazard.id
+                        highlightedHazardID = hazard.id
+                    }
+                }
+            } label: {
+                HStack(alignment: .top, spacing: 12) {
+                    Image(systemName: hazard.status == .fixed ? "checkmark.circle.fill" : hazard.icon)
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(hazard.status == .fixed ? good : hazard.severity.color)
+                        .frame(width: 28, height: 28)
+                        .background(
+                            Circle().fill(
+                                (hazard.status == .fixed ? good : hazard.severity.color).opacity(0.12)
+                            )
+                        )
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack(spacing: 8) {
+                            Text(hazard.title)
+                                .font(.system(size: 15, weight: .semibold))
+                                .foregroundStyle(hazard.status == .dismissed ? mute : ink)
+                                .strikethrough(hazard.status == .dismissed)
+                                .multilineTextAlignment(.leading)
+                            Spacer(minLength: 0)
+                            Text(hazard.status.label)
+                                .font(.system(size: 11, weight: .bold))
+                                .foregroundStyle(statusColor(hazard.status))
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(Capsule().fill(statusColor(hazard.status).opacity(0.12)))
+                            Image(systemName: expanded ? "chevron.up" : "chevron.down")
+                                .font(.system(size: 12, weight: .semibold))
+                                .foregroundStyle(mute)
+                        }
+                        Text(hazard.detail)
+                            .font(.system(size: 13))
+                            .foregroundStyle(mute)
+                            .multilineTextAlignment(.leading)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+
+            if expanded {
+                VStack(alignment: .leading, spacing: 10) {
+                    if !hazard.fixSteps.isEmpty {
+                        Text("HOW TO FIX")
+                            .font(.system(size: 11, weight: .bold))
+                            .tracking(0.5)
+                            .foregroundStyle(mute)
+
+                        ForEach(Array(hazard.fixSteps.enumerated()), id: \.offset) { i, step in
+                            HStack(alignment: .top, spacing: 10) {
+                                Text("\(i + 1)")
+                                    .font(.system(size: 12, weight: .bold))
+                                    .foregroundStyle(blue)
+                                    .frame(width: 22, height: 22)
+                                    .background(Circle().fill(blue.opacity(0.12)))
+                                Text(step)
+                                    .font(.system(size: 13, weight: .medium))
+                                    .foregroundStyle(ink)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                        }
+                    }
+
+                    lifecycleButtons(for: hazard)
+                }
+                .padding(.leading, 40)
+                .padding(.top, 2)
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
+        .opacity(hazard.status == .dismissed ? 0.55 : 1)
+    }
+
+    private func lifecycleButtons(for hazard: ScanHazardDTO) -> some View {
+        HStack(spacing: 8) {
+            if hazard.status != .fixed {
+                Button {
+                    applyStatus(.fixed, hazardID: hazard.id)
+                } label: {
+                    Label("Fixed", systemImage: "checkmark.circle.fill")
+                        .font(.system(size: 13, weight: .semibold))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 10)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .fill(good.opacity(0.14))
+                        )
+                        .foregroundStyle(good)
+                }
+                .buttonStyle(.plain)
+            }
+
+            if hazard.status != .dismissed {
+                Button {
+                    applyStatus(.dismissed, hazardID: hazard.id)
+                } label: {
+                    Label("Dismiss", systemImage: "xmark.circle")
+                        .font(.system(size: 13, weight: .semibold))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 10)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .fill(Color.black.opacity(0.05))
+                        )
+                        .foregroundStyle(mute)
+                }
+                .buttonStyle(.plain)
+            }
+
+            if hazard.status != .open {
+                Button {
+                    applyStatus(.open, hazardID: hazard.id)
+                } label: {
+                    Label("Reopen", systemImage: "arrow.uturn.backward")
+                        .font(.system(size: 13, weight: .semibold))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 10)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .fill(blue.opacity(0.12))
+                        )
+                        .foregroundStyle(blue)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+
+    private func applyStatus(_ status: HazardLifecycleStatus, hazardID: UUID) {
+        Haptics.medium()
+        if let updated = history.setHazardStatus(
+            scanID: scanID,
+            hazardID: hazardID,
+            status: status
+        ) {
+            onScanUpdated?(updated)
+            if status != .open {
+                highlightedHazardID = nil
+            }
+        }
+    }
+
+    private func statusColor(_ status: HazardLifecycleStatus) -> Color {
+        switch status {
+        case .open: return Color(red: 0.95, green: 0.62, blue: 0.12)
+        case .fixed: return good
+        case .dismissed: return mute
         }
     }
 
@@ -685,7 +832,7 @@ private struct ScanGalleryCell: View {
                 .font(.system(size: 12, weight: .semibold))
                 .foregroundStyle(mute)
 
-            Text("\(scan.hazards.count) hazard\(scan.hazards.count == 1 ? "" : "s")")
+            Text("\(scan.openHazardCount) open · \(scan.hazards.count) total")
                 .font(.system(size: 13, weight: .medium))
                 .foregroundStyle(ink)
         }
