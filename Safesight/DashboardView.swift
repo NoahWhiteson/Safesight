@@ -747,7 +747,10 @@ private struct ScanScreen: View {
     @State private var scanResult: ScanResult?
     @State private var resultImage: UIImage?
     @State private var highlightedHazardID: UUID?
+    @State private var resultsDetent: PresentationDetent = .medium
     @State private var isCapturing = false
+
+    private let resultsPeekDetent = PresentationDetent.height(156)
 
     var body: some View {
         ZStack {
@@ -757,7 +760,10 @@ private struct ScanScreen: View {
                 ScanAnnotatedImageView(
                     image: resultImage,
                     hazards: live.hazards,
-                    highlightedID: highlightedHazardID
+                    highlightedID: highlightedHazardID,
+                    onSelectHazard: { id in
+                        highlightedHazardID = id
+                    }
                 )
                 .ignoresSafeArea()
             } else if camera.isAuthorized {
@@ -853,6 +859,7 @@ private struct ScanScreen: View {
         .sheet(item: $scanResult, onDismiss: {
             highlightedHazardID = nil
             resultImage = nil
+            resultsDetent = .medium
         }) { result in
             ScanResultsDrawer(
                 scanID: result.id,
@@ -862,10 +869,15 @@ private struct ScanScreen: View {
                     scanResult = updated
                 }
             )
-            .presentationDetents([.medium, .large])
+            .presentationDetents(
+                [resultsPeekDetent, .medium, .large],
+                selection: $resultsDetent
+            )
             .presentationDragIndicator(.visible)
             .presentationCornerRadius(28)
             .presentationBackgroundInteraction(.enabled(upThrough: .medium))
+            .presentationContentInteraction(.resizes)
+            .interactiveDismissDisabled(false)
         }
         .sheet(isPresented: $showGallery) {
             ScanGalleryView(store: history) { scan in
@@ -932,6 +944,7 @@ private struct ScanScreen: View {
     private func openScan(_ scan: ScanResult) {
         resultImage = history.image(for: scan)
         highlightedHazardID = nil
+        resultsDetent = .medium
         scanResult = scan
     }
 
@@ -1007,6 +1020,7 @@ private struct ScanScreen: View {
         thinkingImage = nil
 
         resultImage = image
+        resultsDetent = .medium
         try? await Task.sleep(nanoseconds: 200_000_000)
         scanResult = saved
     }
