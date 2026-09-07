@@ -94,6 +94,13 @@ private struct DashboardTabController: UIViewControllerRepresentable {
             selectedImage: UIImage(systemName: "camera.fill")
         )
 
+        let hazards = UIHostingController(rootView: HazardsTabView())
+        hazards.tabBarItem = UITabBarItem(
+            title: "Hazards",
+            image: UIImage(systemName: "exclamationmark.triangle"),
+            selectedImage: UIImage(systemName: "exclamationmark.triangle.fill")
+        )
+
         // Placeholder only — selecting Premium opens the paywall sheet.
         let premium = UIViewController()
         premium.view.backgroundColor = UIColor(Theme.bg)
@@ -123,12 +130,12 @@ private struct DashboardTabController: UIViewControllerRepresentable {
             selectedImage: UIImage(systemName: "person.fill")
         )
 
-        for host in [home, scan, you] {
+        for host in [home, scan, hazards, you] {
             host.view.backgroundColor = UIColor(Theme.bg)
             host.view.clipsToBounds = false
         }
 
-        tabBar.viewControllers = [home, scan, premium, you]
+        tabBar.viewControllers = [home, scan, hazards, premium, you]
         tabBar.view.tintColor = UIColor(red: 0, green: 0.48, blue: 1, alpha: 1)
         tabBar.view.backgroundColor = UIColor(Theme.bg)
         tabBar.tabBar.isTranslucent = true
@@ -1190,16 +1197,16 @@ private struct YouScreen: View {
 
     private var lookHardnessCard: some View {
         let percent = Int(round(profiles.scanAggressiveness * 100))
-        return VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Label("Look hardness", systemImage: "eye.fill")
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(Theme.ink)
-                Spacer()
+        return VStack(alignment: .leading, spacing: 14) {
+            HStack(alignment: .firstTextBaseline) {
+                Text("Look hardness")
+                    .font(.system(size: 15, weight: .medium))
+                    .foregroundStyle(Theme.mute)
                 Text("\(percent)%")
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.system(size: 15, weight: .bold))
                     .foregroundStyle(Theme.blue)
                     .monospacedDigit()
+                Spacer()
             }
 
             Text(lookHardnessCaption(percent))
@@ -1207,24 +1214,23 @@ private struct YouScreen: View {
                 .foregroundStyle(Theme.mute)
                 .fixedSize(horizontal: false, vertical: true)
 
-            Slider(
-                value: Binding(
-                    get: { profiles.scanAggressiveness },
-                    set: { profiles.setScanAggressiveness($0) }
-                ),
-                in: 0.1...1.0,
-                step: 0.05
-            )
-            .tint(Theme.blue)
+            VStack(spacing: 10) {
+                HStack {
+                    Text("Barely look")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundStyle(Theme.mute)
+                    Spacer()
+                    Text("Look hard")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundStyle(Theme.mute)
+                }
 
-            HStack {
-                Text("Barely look")
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundStyle(Theme.mute)
-                Spacer()
-                Text("Look very hard")
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundStyle(Theme.mute)
+                PixelLookSlider(
+                    value: Binding(
+                        get: { profiles.scanAggressiveness },
+                        set: { profiles.setScanAggressiveness($0) }
+                    )
+                )
             }
 
             Text("Up to \(profiles.maxHazardsPerScan) hazards per photo at this setting.")

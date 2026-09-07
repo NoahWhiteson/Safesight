@@ -258,7 +258,6 @@ struct ScanResultsDrawer: View {
                 VStack(alignment: .leading, spacing: 22) {
                     scoreHeader
                     hazardsSection
-                    priorOpenSection
                     if !result.products.isEmpty {
                         productsSection
                     }
@@ -555,98 +554,6 @@ struct ScanResultsDrawer: View {
         case .fixed: return good
         case .dismissed: return mute
         }
-    }
-
-    private var priorOpenItems: [(scan: ScanResult, hazard: ScanHazardDTO)] {
-        history.openHazards(excludingScanID: scanID)
-    }
-
-    private var priorOpenSection: some View {
-        let items = priorOpenItems
-        return Group {
-            if !items.isEmpty {
-                VStack(alignment: .leading, spacing: 10) {
-                    sectionTitle("Still open from earlier scans")
-
-                    Text("Safesight keeps prior open hazards until you mark them Fixed or Dismissed.")
-                        .font(.system(size: 13))
-                        .foregroundStyle(mute)
-                        .padding(.horizontal, 4)
-
-                    VStack(spacing: 0) {
-                        ForEach(Array(items.enumerated()), id: \.element.hazard.id) { index, item in
-                            HStack(alignment: .top, spacing: 12) {
-                                Image(systemName: item.hazard.icon)
-                                    .font(.system(size: 14, weight: .semibold))
-                                    .foregroundStyle(item.hazard.severity.color)
-                                    .frame(width: 28, height: 28)
-                                    .background(Circle().fill(item.hazard.severity.color.opacity(0.12)))
-
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text(item.hazard.title)
-                                        .font(.system(size: 15, weight: .semibold))
-                                        .foregroundStyle(ink)
-                                    Text(item.hazard.detail)
-                                        .font(.system(size: 13))
-                                        .foregroundStyle(mute)
-                                        .fixedSize(horizontal: false, vertical: true)
-                                    Text(item.scan.createdAt.formatted(date: .abbreviated, time: .shortened))
-                                        .font(.system(size: 11, weight: .medium))
-                                        .foregroundStyle(mute)
-                                }
-
-                                Spacer(minLength: 0)
-
-                                VStack(spacing: 6) {
-                                    Button {
-                                        applyPriorStatus(.fixed, scanID: item.scan.id, hazardID: item.hazard.id)
-                                    } label: {
-                                        Text("Fixed")
-                                            .font(.system(size: 12, weight: .bold))
-                                            .foregroundStyle(good)
-                                            .padding(.horizontal, 10)
-                                            .padding(.vertical, 6)
-                                            .background(Capsule().fill(good.opacity(0.14)))
-                                    }
-                                    .buttonStyle(.plain)
-
-                                    Button {
-                                        applyPriorStatus(.dismissed, scanID: item.scan.id, hazardID: item.hazard.id)
-                                    } label: {
-                                        Text("Dismiss")
-                                            .font(.system(size: 12, weight: .bold))
-                                            .foregroundStyle(mute)
-                                            .padding(.horizontal, 10)
-                                            .padding(.vertical, 6)
-                                            .background(Capsule().fill(Color.black.opacity(0.05)))
-                                    }
-                                    .buttonStyle(.plain)
-                                }
-                            }
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 14)
-
-                            if index < items.count - 1 {
-                                Divider().padding(.leading, 56)
-                            }
-                        }
-                    }
-                    .background(
-                        RoundedRectangle(cornerRadius: 22, style: .continuous)
-                            .fill(Color.white)
-                    )
-                }
-            }
-        }
-    }
-
-    private func applyPriorStatus(
-        _ status: HazardLifecycleStatus,
-        scanID: UUID,
-        hazardID: UUID
-    ) {
-        Haptics.medium()
-        _ = history.setHazardStatus(scanID: scanID, hazardID: hazardID, status: status)
     }
 
     private var productsSection: some View {
