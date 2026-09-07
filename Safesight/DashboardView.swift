@@ -44,37 +44,6 @@ enum Haptics {
     }
 }
 
-/// Locks parent UIScrollView to vertical-only rubber-banding.
-private struct VerticalScrollLock: UIViewRepresentable {
-    func makeUIView(context: Context) -> UIView {
-        let view = UIView(frame: .zero)
-        view.isUserInteractionEnabled = false
-        view.backgroundColor = .clear
-        DispatchQueue.main.async { Self.lock(from: view) }
-        return view
-    }
-
-    func updateUIView(_ uiView: UIView, context: Context) {
-        DispatchQueue.main.async { Self.lock(from: uiView) }
-    }
-
-    private static func lock(from view: UIView) {
-        var node: UIView? = view
-        while let current = node {
-            if let scroll = current as? UIScrollView {
-                scroll.alwaysBounceHorizontal = false
-                scroll.isDirectionalLockEnabled = true
-                scroll.contentInsetAdjustmentBehavior = .automatic
-                // Prevent sideways content from creating a horizontal scrollable range.
-                if scroll.contentSize.width > scroll.bounds.width {
-                    scroll.contentSize.width = scroll.bounds.width
-                }
-            }
-            node = current.superview
-        }
-    }
-}
-
 struct DashboardView: View {
     let profile: UserProfile
     @State private var showPaywall = false
@@ -243,8 +212,8 @@ private struct HomeScreen: View {
                 .padding(.bottom, 28)
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
+            // Soften sideways rubber-banding without mutating UIKit contentSize (that froze the app).
             .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
-            .background(VerticalScrollLock())
             .navigationTitle("Home")
             .navigationBarTitleDisplayMode(.large)
             .toolbarBackground(.automatic, for: .navigationBar)
