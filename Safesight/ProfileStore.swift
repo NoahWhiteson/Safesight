@@ -108,4 +108,11 @@ final class ProfileStore: ObservableObject {
         profile = nil
         UserDefaults.standard.removeObject(forKey: key)
     }
+
+    /// Clears profile + look-hardness. Call after wiping scans / local progress.
+    func logout() {
+        reset()
+        scanAggressiveness = 0.55
+        UserDefaults.standard.removeObject(forKey: aggressivenessKey)
+    }
 }

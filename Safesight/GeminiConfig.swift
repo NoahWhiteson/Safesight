@@ -2,14 +2,14 @@
 //  GeminiConfig.swift
 //  Safesight
 //
-//  API key lives in GeminiSecrets.plist (gitignored). Copy
-//  GeminiSecrets.example.plist → GeminiSecrets.plist and paste your key.
+//  Gemini runs on the Safesight server now. This file is kept only for
+//  optional local/debug tooling — the app scan path uses SafesightAPIConfig.
 //
 
 import Foundation
 
 enum GeminiConfig {
-    /// Google AI / Gemini API key (from local GeminiSecrets.plist).
+    /// Prefer server-side key (`server/.env`). Local plist is legacy/debug only.
     static var apiKey: String {
         guard
             let url = Bundle.main.url(forResource: "GeminiSecrets", withExtension: "plist"),
@@ -21,7 +21,6 @@ enum GeminiConfig {
         return key.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
-    /// Gemini 3.8 Flash — vision + structured JSON for room scans.
     static let model = "gemini-3.8-flash"
 
     static var generateContentURL: URL {

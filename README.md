@@ -98,7 +98,7 @@ At a high level:
 Onboarding captures who you are, what kind of home you’re in, and which **focus areas** matter. Those choices gate what the model is allowed to report — so a child-proofing scan doesn’t invent unrelated noise.
 
 ### 2. Vision in, structure out
-The room photo goes to **Gemini** with a strict schema. The model returns hazards with titles, details, severity, fix steps, and a **normalized bounding box** (`0…1` coordinates on the image). Safesight maps those fractions onto the displayed photo and draws the overlays.
+The room photo is sent to the **Safesight API**, which calls **Gemini** with a strict schema. The model returns hazards with titles, details, severity, fix steps, and a **normalized bounding box** (`0…1` coordinates on the image). The app maps those fractions onto the displayed photo and draws the overlays.
 
 ### 3. Product layer on top
 Boxes get collision-aware labels. Nested detections become expandable groups. History stores scans on-device. The Hazards tab aggregates what’s still open. RevenueCat checks entitlement for Premium unlocks.
@@ -136,7 +136,8 @@ Supporting pieces: onboarding, scan gallery (star / auto-purge), haptic feedback
 | Layer | Choice |
 |-------|--------|
 | UI | SwiftUI (+ UIKit tab host) |
-| Vision | Google Gemini (multimodal → JSON) |
+| API | Safesight server (`server/`) — Gemini key stays off-device |
+| Vision | Google Gemini via `POST /v1/analyze` |
 | Subscriptions | RevenueCat (`monthly` / `yearly` → `safesight_pro`) |
 | Commerce hints | Amazon-style search picks tied to hazards |
 | Persistence | On-device scan images + history index |

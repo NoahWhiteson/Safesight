@@ -2,8 +2,7 @@
 //  ScanAnalysisService.swift
 //  Safesight
 //
-//  Analyze a captured frame. Placeholder today; replace body of
-//  RemoteScanAnalyzer with your API call — request/response types stay stable.
+//  Analyze a captured frame via the Safesight server API.
 //
 
 import Foundation
@@ -32,27 +31,37 @@ struct PlaceholderScanAnalyzer: ScanAnalyzing {
     }
 }
 
-/// Skeleton for a future HTTPS endpoint. Wire `endpoint` + auth when ready.
+/// Calls Safesight server `POST /v1/analyze` (Gemini key stays on the server).
 struct RemoteScanAnalyzer: ScanAnalyzing {
-    var endpoint: URL
-    var session: URLSession = .shared
+    var endpoint: URL = SafesightAPIConfig.analyzeURL
+    var session: URLSession = {
+        let config = URLSessionConfiguration.ephemeral
+        config.timeoutIntervalForRequest = 90
+        config.timeoutIntervalForResource = 120
+        return URLSession(configuration: config)
+    }()
 
     func analyze(request: ScanAnalysisRequest, image: UIImage) async throws -> ScanAnalysisResponse {
-        guard let jpeg = image.jpegData(compressionQuality: 0.85) else {
+        let upright = image.normalizedUp()
+        guard let jpeg = compressedJPEG(from: upright) else {
             throw ScanAnalysisError.invalidResponse
         }
 
+        var meta = request
+        meta.imageBase64 = nil
+
         var req = URLRequest(url: endpoint)
         req.httpMethod = "POST"
+        req.timeoutInterval = 90
         let boundary = "Boundary-\(UUID().uuidString)"
         req.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
 
         var body = Data()
-        if let meta = try? JSONEncoder().encode(request) {
+        if let metaData = try? JSONEncoder().encode(meta) {
             body.append("--\(boundary)\r\n")
             body.append("Content-Disposition: form-data; name=\"meta\"\r\n")
             body.append("Content-Type: application/json\r\n\r\n")
-            body.append(meta)
+            body.append(metaData)
             body.append("\r\n")
         }
         body.append("--\(boundary)\r\n")
@@ -65,7 +74,14 @@ struct RemoteScanAnalyzer: ScanAnalyzing {
 
         do {
             let (data, response) = try await session.data(for: req)
-            guard let http = response as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
+            guard let http = response as? HTTPURLResponse else {
+                throw ScanAnalysisError.invalidResponse
+            }
+            guard (200...299).contains(http.statusCode) else {
+                #if DEBUG
+                let message = String(data: data, encoding: .utf8) ?? ""
+                print("Safesight API error \(http.statusCode): \(message.prefix(400))")
+                #endif
                 throw ScanAnalysisError.invalidResponse
             }
             return try JSONDecoder().decode(ScanAnalysisResponse.self, from: data)
@@ -74,6 +90,24 @@ struct RemoteScanAnalyzer: ScanAnalyzing {
         } catch {
             throw ScanAnalysisError.network(error)
         }
+    }
+
+    private func compressedJPEG(from image: UIImage, maxDimension: CGFloat = 1280) -> Data? {
+        let size = image.size
+        let longest = max(size.width, size.height)
+        let scaled: UIImage
+        if longest > maxDimension {
+            let scale = maxDimension / longest
+            let target = CGSize(width: size.width * scale, height: size.height * scale)
+            let renderer = UIGraphicsImageRenderer(size: target)
+            scaled = renderer.image { _ in
+                image.draw(in: CGRect(origin: .zero, size: target))
+            }
+        } else {
+            scaled = image
+        }
+        return scaled.jpegData(compressionQuality: 0.55)
+            ?? scaled.jpegData(compressionQuality: 0.4)
     }
 }
 
@@ -87,6 +121,6 @@ private extension Data {
 
 enum ScanAnalyzerFactory {
     static func make() -> any ScanAnalyzing {
-        GeminiScanAnalyzer()
+        RemoteScanAnalyzer()
     }
 }

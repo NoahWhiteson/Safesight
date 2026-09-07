@@ -1,0 +1,7 @@
+# Local secrets — never commit
+.env
+node_modules/
+.DS_Store
+npm-debug.log*
+uploads/
+tmp/

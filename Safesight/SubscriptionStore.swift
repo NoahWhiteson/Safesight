@@ -141,6 +141,18 @@ final class SubscriptionStore: NSObject, ObservableObject {
         UserDefaults.standard.set(scanCount, forKey: scansKey)
     }
 
+    /// Clears local free-scan counters / house insights (logout). Does not touch RevenueCat.
+    func resetLocalProgress() {
+        scanCount = 0
+        houseScore = 0
+        openHazards = 0
+        aiSummary = nil
+        UserDefaults.standard.removeObject(forKey: scansKey)
+        UserDefaults.standard.removeObject(forKey: scoreKey)
+        UserDefaults.standard.removeObject(forKey: hazardsKey)
+        UserDefaults.standard.removeObject(forKey: summaryKey)
+    }
+
     func applyScanInsights(score: Int, openHazards: Int, summary: String) {
         houseScore = score
         self.openHazards = openHazards

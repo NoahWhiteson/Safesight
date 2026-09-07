@@ -1,4 +1,4 @@
- //
+//
 //  ContentView.swift
 //  Safesight
 //
@@ -11,7 +11,7 @@ struct ContentView: View {
     @ObservedObject private var store = ProfileStore.shared
     @State private var phase: AppPhase = .resolving
 
-    private enum AppPhase {
+    private enum AppPhase: Equatable {
         case resolving
         case onboarding
         case settingUp
@@ -48,13 +48,22 @@ struct ContentView: View {
                     DashboardView(profile: profile)
                         .transition(.opacity)
                 } else {
-                    Color.clear.onAppear { phase = .onboarding }
+                    Color.clear.onAppear {
+                        withAnimation(.default) { phase = .onboarding }
+                    }
                 }
             }
         }
         .animation(.default, value: phase)
         .onAppear {
             phase = store.hasCompletedOnboarding ? .dashboard : .onboarding
+        }
+        .onChange(of: store.profile) { _, profile in
+            if profile == nil {
+                withAnimation(.default) {
+                    phase = .onboarding
+                }
+            }
         }
     }
 }

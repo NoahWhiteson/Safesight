@@ -72,6 +72,23 @@ final class ScanHistoryStore: ObservableObject {
         persistIndex()
     }
 
+    /// Wipes every saved scan + image (logout).
+    func clearAll() {
+        let ids = Set(scans.map(\.id))
+        delete(ids: ids)
+        if let contents = try? FileManager.default.contentsOfDirectory(
+            at: folderURL,
+            includingPropertiesForKeys: nil
+        ) {
+            for url in contents {
+                try? FileManager.default.removeItem(at: url)
+            }
+        }
+        scans = []
+        UserDefaults.standard.removeObject(forKey: indexKey)
+        syncInsights()
+    }
+
     func setStarred(_ ids: Set<UUID>, starred: Bool) {
         guard !ids.isEmpty else { return }
         var changed = false

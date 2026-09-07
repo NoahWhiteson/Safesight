@@ -16,6 +16,7 @@ struct YouScreen: View {
     @State private var showCustomerCenter = false
     @State private var showEditFocus = false
     @State private var showEditDwelling = false
+    @State private var showLogoutConfirm = false
 
     private var current: UserProfile {
         profiles.profile ?? profile
@@ -110,6 +111,22 @@ struct YouScreen: View {
                     }
                     .padding(.horizontal, 22)
 
+                    settingsSection(title: "Account") {
+                        Button {
+                            Haptics.warning()
+                            showLogoutConfirm = true
+                        } label: {
+                            settingsRow(
+                                icon: "rectangle.portrait.and.arrow.right",
+                                title: "Log out",
+                                value: nil,
+                                showsChevron: true
+                            )
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    .padding(.horizontal, 22)
+
                     if let err = subs.lastErrorMessage {
                         Text(err)
                             .font(.system(size: 12))
@@ -153,10 +170,31 @@ struct YouScreen: View {
             .sheet(isPresented: $showEditDwelling) {
                 EditDwellingSheet(initial: current.dwelling)
             }
+            .confirmationDialog(
+                "Log out?",
+                isPresented: $showLogoutConfirm,
+                titleVisibility: .visible
+            ) {
+                Button("Log out", role: .destructive) {
+                    Haptics.warning()
+                    performLogout()
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("You can lose your data. Scans, house score, and profile on this device will be erased. This can’t be undone.")
+            }
             .onAppear {
                 Task { await subs.refresh() }
             }
         }
+    }
+
+    private func performLogout() {
+        ScanHistoryStore.shared.clearAll()
+        SubscriptionStore.shared.resetLocalProgress()
+        AppNavigation.shared.selectedTab = 0
+        AppNavigation.shared.pendingScanID = nil
+        profiles.logout()
     }
 
     private var profileHeader: some View {
