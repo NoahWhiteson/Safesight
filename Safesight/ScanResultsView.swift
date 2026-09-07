@@ -14,11 +14,15 @@ struct ScanAnnotatedImageView: View {
 
     var body: some View {
         GeometryReader { geo in
-            // Fill the screen when safe; fall back to fit if a hazard would be cropped.
             let placed = placementRect(
                 imageSize: image.size,
                 in: geo.size,
                 hazards: hazards
+            )
+            let labels = Self.resolvedLabels(
+                hazards: hazards,
+                imageFrame: placed,
+                canvas: geo.size
             )
 
             ZStack {
@@ -40,7 +44,6 @@ struct ScanAnnotatedImageView: View {
                         let stroke = hazard.status == .fixed
                             ? Color(red: 0.20, green: 0.68, blue: 0.45)
                             : hazard.severity.color
-                        let label = hazard.status == .fixed ? "Fixed · \(hazard.title)" : hazard.title
 
                         RoundedRectangle(cornerRadius: 6, style: .continuous)
                             .strokeBorder(stroke, lineWidth: active ? 3 : 1.5)
@@ -52,25 +55,165 @@ struct ScanAnnotatedImageView: View {
                             .position(x: rect.midX, y: rect.midY)
                             .opacity(hazard.status == .fixed ? 0.45 : (active ? 1 : 0.4))
                             .allowsHitTesting(false)
-
-                        Text(label)
-                            .font(.system(size: 11, weight: .bold))
-                            .foregroundStyle(.white)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(Capsule().fill(stroke.opacity(0.95)))
-                            .position(
-                                x: min(geo.size.width - 60, max(60, rect.midX)),
-                                y: max(placed.minY + 18, rect.minY - 14)
-                            )
-                            .opacity(hazard.status == .fixed ? 0.5 : (active ? 1 : 0.45))
-                            .allowsHitTesting(false)
                     }
+                }
+
+                ForEach(labels) { item in
+                    let active = highlightedID == nil || highlightedID == item.id
+                    Text(item.text)
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Capsule().fill(item.color.opacity(0.95)))
+                        .position(item.center)
+                        .opacity(item.isFixed ? 0.5 : (active ? 1 : 0.45))
+                        .allowsHitTesting(false)
+                        .zIndex(2)
                 }
             }
             .frame(width: geo.size.width, height: geo.size.height)
             .clipped()
         }
+    }
+
+    private struct LabelItem: Identifiable {
+        let id: UUID
+        let text: String
+        let color: Color
+        let isFixed: Bool
+        let center: CGPoint
+        let size: CGSize
+    }
+
+    /// Place capsules so nearby hazards don’t stack on the same spot.
+    private static func resolvedLabels(
+        hazards: [ScanHazardDTO],
+        imageFrame: CGRect,
+        canvas: CGSize
+    ) -> [LabelItem] {
+        let visible = hazards.filter { $0.status != .dismissed }
+        var occupied: [CGRect] = []
+        var out: [LabelItem] = []
+
+        let sorted = visible.sorted { a, b in
+            let ar = a.boundingBox.cgRect(in: imageFrame.size)
+            let br = b.boundingBox.cgRect(in: imageFrame.size)
+            if abs(ar.minY - br.minY) > 2 { return ar.minY < br.minY }
+            return ar.minX < br.minX
+        }
+
+        for hazard in sorted {
+            let local = hazard.boundingBox.cgRect(in: imageFrame.size)
+            let box = local.offsetBy(dx: imageFrame.minX, dy: imageFrame.minY)
+            let text = hazard.status == .fixed ? "Fixed · \(hazard.title)" : hazard.title
+            let color = hazard.status == .fixed
+                ? Color(red: 0.20, green: 0.68, blue: 0.45)
+                : hazard.severity.color
+            let size = estimatedLabelSize(text)
+            let center = firstNonOverlappingCenter(
+                box: box,
+                labelSize: size,
+                canvas: canvas,
+                occupied: occupied
+            )
+            let rect = CGRect(
+                x: center.x - size.width / 2,
+                y: center.y - size.height / 2,
+                width: size.width,
+                height: size.height
+            )
+            occupied.append(rect.insetBy(dx: -6, dy: -4))
+            out.append(
+                LabelItem(
+                    id: hazard.id,
+                    text: text,
+                    color: color,
+                    isFixed: hazard.status == .fixed,
+                    center: center,
+                    size: size
+                )
+            )
+        }
+        return out
+    }
+
+    private static func estimatedLabelSize(_ text: String) -> CGSize {
+        let w = min(168, max(52, CGFloat(text.count) * 6.6 + 20))
+        return CGSize(width: w, height: 24)
+    }
+
+    private static func firstNonOverlappingCenter(
+        box: CGRect,
+        labelSize: CGSize,
+        canvas: CGSize,
+        occupied: [CGRect]
+    ) -> CGPoint {
+        let pad: CGFloat = 8
+        let candidates: [CGPoint] = [
+            CGPoint(x: box.midX, y: box.minY - 14),
+            CGPoint(x: box.midX, y: box.maxY + 14),
+            CGPoint(x: box.maxX + labelSize.width / 2 + 6, y: box.minY + 12),
+            CGPoint(x: box.minX - labelSize.width / 2 - 6, y: box.minY + 12),
+            CGPoint(x: box.midX + 28, y: box.minY - 36),
+            CGPoint(x: box.midX - 28, y: box.minY - 36),
+            CGPoint(x: box.midX + 28, y: box.maxY + 36),
+            CGPoint(x: box.midX - 28, y: box.maxY + 36),
+            CGPoint(x: box.midX, y: box.minY - 52),
+            CGPoint(x: box.midX, y: box.maxY + 52)
+        ]
+
+        for raw in candidates {
+            let c = clampCenter(raw, size: labelSize, canvas: canvas, pad: pad)
+            let rect = CGRect(
+                x: c.x - labelSize.width / 2,
+                y: c.y - labelSize.height / 2,
+                width: labelSize.width,
+                height: labelSize.height
+            )
+            if !occupied.contains(where: { $0.intersects(rect) }) {
+                return c
+            }
+        }
+
+        // Last resort: stack downward from preferred spot.
+        var y = max(pad + labelSize.height / 2, box.minY - 14)
+        for _ in 0..<12 {
+            let c = clampCenter(
+                CGPoint(x: box.midX, y: y),
+                size: labelSize,
+                canvas: canvas,
+                pad: pad
+            )
+            let rect = CGRect(
+                x: c.x - labelSize.width / 2,
+                y: c.y - labelSize.height / 2,
+                width: labelSize.width,
+                height: labelSize.height
+            )
+            if !occupied.contains(where: { $0.intersects(rect) }) {
+                return c
+            }
+            y += labelSize.height + 6
+        }
+        return clampCenter(
+            CGPoint(x: box.midX, y: box.minY - 14),
+            size: labelSize,
+            canvas: canvas,
+            pad: pad
+        )
+    }
+
+    private static func clampCenter(
+        _ point: CGPoint,
+        size: CGSize,
+        canvas: CGSize,
+        pad: CGFloat
+    ) -> CGPoint {
+        CGPoint(
+            x: min(canvas.width - size.width / 2 - pad, max(size.width / 2 + pad, point.x)),
+            y: min(canvas.height - size.height / 2 - pad, max(size.height / 2 + pad, point.y))
+        )
     }
 
     /// Prefer aspect-fill; if any hazard would leave the viewport, use aspect-fit so nothing scanned is cut.

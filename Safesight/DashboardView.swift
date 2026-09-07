@@ -44,6 +44,31 @@ enum Haptics {
     }
 }
 
+/// Disables horizontal rubber-banding on the nearest UIScrollView once.
+/// Does not mutate contentSize (that previously froze Home).
+private struct VerticalScrollAxisLock: UIViewRepresentable {
+    func makeUIView(context: Context) -> UIView {
+        let view = UIView(frame: .zero)
+        view.isUserInteractionEnabled = false
+        view.backgroundColor = .clear
+        DispatchQueue.main.async {
+            var node: UIView? = view.superview
+            while let current = node {
+                if let scroll = current as? UIScrollView {
+                    scroll.alwaysBounceHorizontal = false
+                    scroll.isDirectionalLockEnabled = true
+                    scroll.showsHorizontalScrollIndicator = false
+                    break
+                }
+                node = current.superview
+            }
+        }
+        return view
+    }
+
+    func updateUIView(_ uiView: UIView, context: Context) {}
+}
+
 struct DashboardView: View {
     let profile: UserProfile
     @State private var showPaywall = false
@@ -213,27 +238,29 @@ private struct HomeScreen: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView(.vertical, showsIndicators: false) {
-                VStack(alignment: .leading, spacing: 0) {
-                    weekHeader
-                        .padding(.horizontal, 22)
-                        .padding(.top, 8)
+            GeometryReader { geo in
+                ScrollView(.vertical, showsIndicators: false) {
+                    VStack(alignment: .leading, spacing: 0) {
+                        weekHeader
+                            .padding(.horizontal, 22)
+                            .padding(.top, 8)
 
-                    segmentControl
-                        .padding(.horizontal, 22)
-                        .padding(.top, 16)
+                        segmentControl
+                            .padding(.horizontal, 22)
+                            .padding(.top, 16)
 
-                    if segment == .overview {
-                        overviewContent
-                    } else {
-                        activityContent
+                        if segment == .overview {
+                            overviewContent
+                        } else {
+                            activityContent
+                        }
                     }
+                    .padding(.bottom, 28)
+                    .frame(width: geo.size.width, alignment: .leading)
                 }
-                .padding(.bottom, 28)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
+                .background(VerticalScrollAxisLock())
             }
-            // Soften sideways rubber-banding without mutating UIKit contentSize (that froze the app).
-            .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
             .navigationTitle("Home")
             .navigationBarTitleDisplayMode(.large)
             .toolbarBackground(.automatic, for: .navigationBar)
@@ -678,7 +705,9 @@ private struct HomeScreen: View {
                     .padding(.vertical, 2)
                 }
                 // Give the nested rail a stable height so it doesn't fight vertical scroll.
+                .frame(maxWidth: .infinity)
                 .frame(height: 260)
+                .clipped()
             }
         }
     }
