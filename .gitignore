@@ -13,3 +13,6 @@ DerivedData/
 
 # SwiftPM
 .build/
+
+# Local secrets (never commit)
+Safesight/GeminiSecrets.plist

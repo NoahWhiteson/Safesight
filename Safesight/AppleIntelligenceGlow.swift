@@ -30,13 +30,10 @@ extension View {
     }
 }
 
-/// Drop-in full-screen thinking chrome (photo + edge glow + status capsule).
+/// Full-screen thinking chrome — photo + edge glow only (no status card).
 struct AppleIntelligenceThinkingChrome: View {
     let image: UIImage
-    var title: String = "Analyzing room…"
-    var subtitle: String = "Matching your focus areas"
 
-    @State private var contentOpacity = 0.0
     @State private var glowOpacity = 0.0
 
     var body: some View {
@@ -49,7 +46,7 @@ struct AppleIntelligenceThinkingChrome: View {
                     .scaledToFill()
                     .frame(width: geo.size.width, height: geo.size.height)
                     .clipped()
-                    .overlay { Color.black.opacity(0.16) }
+                    .overlay { Color.black.opacity(0.12) }
 
                 Color.clear
                     .appleIntelligenceGlow(
@@ -59,18 +56,11 @@ struct AppleIntelligenceThinkingChrome: View {
                     )
                     .opacity(glowOpacity)
                     .allowsHitTesting(false)
-
-                ThinkingStatusCapsule(title: title, subtitle: subtitle)
-                    .opacity(contentOpacity)
             }
         }
         .ignoresSafeArea()
         .onAppear {
-            withAnimation(.easeOut(duration: 0.35)) {
-                contentOpacity = 1
-            }
-            // Glow eases in a beat later so the rim “ignites.”
-            withAnimation(.easeInOut(duration: 0.85).delay(0.08)) {
+            withAnimation(.easeInOut(duration: 0.75)) {
                 glowOpacity = 1
             }
         }
@@ -162,7 +152,7 @@ private struct AppleIntelligenceGlowCanvas: View {
                             phase: phase,
                             lineWidth: 28,
                             blur: 36,
-                            opacity: 0.38 * intensity,
+                            opacity: min(1, 0.38 * intensity),
                             rotateSpeed: 9,
                             amplitude: 6.5,
                             waveFreq: 2.2
@@ -172,7 +162,7 @@ private struct AppleIntelligenceGlowCanvas: View {
                             phase: phase,
                             lineWidth: 18,
                             blur: 22,
-                            opacity: 0.48 * intensity,
+                            opacity: min(1, 0.48 * intensity),
                             rotateSpeed: 11,
                             amplitude: 5.5,
                             waveFreq: 2.5
@@ -184,7 +174,7 @@ private struct AppleIntelligenceGlowCanvas: View {
                         phase: phase,
                         lineWidth: lowPower ? 7 : 11,
                         blur: lowPower ? 6 : 10,
-                        opacity: 0.9 * intensity,
+                        opacity: min(1, 0.9 * intensity),
                         rotateSpeed: 16,
                         amplitude: lowPower ? 2.0 : 4.5,
                         waveFreq: 3.0
@@ -195,7 +185,7 @@ private struct AppleIntelligenceGlowCanvas: View {
                         phase: phase,
                         lineWidth: 1.6,
                         blur: 0.15,
-                        opacity: 1.0 * intensity,
+                        opacity: min(1, 1.0 * intensity),
                         rotateSpeed: 22,
                         amplitude: lowPower ? 1.6 : 3.4,
                         waveFreq: 3.4
@@ -209,7 +199,7 @@ private struct AppleIntelligenceGlowCanvas: View {
                             amplitude: lowPower ? 2.4 : 4.5,
                             width: 0.18,
                             blur: lowPower ? 6 : 12,
-                            opacity: 1.2 * intensity
+                            opacity: min(1, intensity)
                         )
 
                         if !lowPower {
@@ -220,7 +210,7 @@ private struct AppleIntelligenceGlowCanvas: View {
                                 amplitude: 3.6,
                                 width: 0.12,
                                 blur: 10,
-                                opacity: 0.85 * intensity
+                                opacity: min(1, 0.85 * intensity)
                             )
                         }
                     }
@@ -446,53 +436,6 @@ private extension Color {
             green: Double((aiHex >> 8) & 0xFF) / 255,
             blue: Double(aiHex & 0xFF) / 255
         )
-    }
-}
-
-// MARK: - Status capsule
-
-private struct ThinkingStatusCapsule: View {
-    let title: String
-    let subtitle: String
-
-    var body: some View {
-        VStack(spacing: 10) {
-            Image(systemName: "sparkles")
-                .font(.system(size: 20, weight: .semibold))
-                .foregroundStyle(
-                    .linearGradient(
-                        colors: AppleIntelligencePalette.sequence,
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-                .symbolEffect(.variableColor.iterative, options: .repeating)
-
-            Text(title)
-                .font(.system(size: 17, weight: .semibold))
-                .foregroundStyle(.white)
-
-            Text(subtitle)
-                .font(.system(size: 13, weight: .medium))
-                .foregroundStyle(.white.opacity(0.72))
-        }
-        .padding(.horizontal, 24)
-        .padding(.vertical, 16)
-        .background {
-            Capsule()
-                .fill(.ultraThinMaterial)
-                .overlay {
-                    Capsule()
-                        .strokeBorder(
-                            AngularGradient(
-                                colors: AppleIntelligencePalette.sequence,
-                                center: .center
-                            ),
-                            lineWidth: 1.1
-                        )
-                        .opacity(0.65)
-                }
-        }
     }
 }
 

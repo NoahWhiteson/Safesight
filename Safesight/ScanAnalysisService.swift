@@ -86,8 +86,7 @@ private extension Data {
 }
 
 enum ScanAnalyzerFactory {
-    /// Flip to `RemoteScanAnalyzer(endpoint:)` when the backend is live.
     static func make() -> any ScanAnalyzing {
-        PlaceholderScanAnalyzer()
+        GeminiScanAnalyzer()
     }
 }

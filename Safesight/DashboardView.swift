@@ -38,6 +38,10 @@ enum Haptics {
     static func soft() {
         UIImpactFeedbackGenerator(style: .soft).impactOccurred()
     }
+
+    static func warning() {
+        UINotificationFeedbackGenerator().notificationOccurred(.warning)
+    }
 }
 
 struct DashboardView: View {
@@ -84,13 +88,6 @@ private struct DashboardTabController: UIViewControllerRepresentable {
             selectedImage: UIImage(systemName: "camera.fill")
         )
 
-        let hazards = UIHostingController(rootView: HazardsScreen())
-        hazards.tabBarItem = UITabBarItem(
-            title: "Hazards",
-            image: UIImage(systemName: "exclamationmark.triangle"),
-            selectedImage: UIImage(systemName: "exclamationmark.triangle.fill")
-        )
-
         // Placeholder only — selecting Premium opens the paywall sheet.
         let premium = UIViewController()
         premium.view.backgroundColor = UIColor(Theme.bg)
@@ -120,14 +117,15 @@ private struct DashboardTabController: UIViewControllerRepresentable {
             selectedImage: UIImage(systemName: "person.fill")
         )
 
-        for host in [home, scan, hazards, you] {
+        for host in [home, scan, you] {
             host.view.backgroundColor = UIColor(Theme.bg)
-            host.view.clipsToBounds = true
+            host.view.clipsToBounds = false
         }
 
-        tabBar.viewControllers = [home, scan, hazards, premium, you]
+        tabBar.viewControllers = [home, scan, premium, you]
         tabBar.view.tintColor = UIColor(red: 0, green: 0.48, blue: 1, alpha: 1)
         tabBar.view.backgroundColor = UIColor(Theme.bg)
+        tabBar.tabBar.isTranslucent = true
 
         return tabBar
     }
@@ -156,157 +154,6 @@ private struct DashboardTabController: UIViewControllerRepresentable {
     }
 }
 
-/// Forces Home's UIScrollView to vertical-only and kills root nav edge-swipe.
-private struct HomeScrollLock: UIViewControllerRepresentable {
-    func makeUIViewController(context: Context) -> UIViewController {
-        LockController()
-    }
-
-    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
-        (uiViewController as? LockController)?.apply()
-    }
-
-    private final class LockController: UIViewController, UIGestureRecognizerDelegate {
-        private weak var attachedScroll: UIScrollView?
-        private var axisLock: UIPanGestureRecognizer?
-
-        override func viewDidAppear(_ animated: Bool) {
-            super.viewDidAppear(animated)
-            apply()
-        }
-
-        override func viewDidLayoutSubviews() {
-            super.viewDidLayoutSubviews()
-            apply()
-        }
-
-        func apply() {
-            navigationController?.interactivePopGestureRecognizer?.isEnabled = false
-            navigationController?.interactivePopGestureRecognizer?.delegate = self
-
-            let root: UIView
-            if let parentView = parent?.view {
-                root = parentView
-            } else if let superview = view.superview {
-                root = superview
-            } else {
-                root = view
-            }
-
-            // Only lock the primary vertical page scroll — never crush nested
-            // horizontal product rails (that was killing Recommended swipes).
-            let vertical = Self.scrollViews(in: root).filter { scroll in
-                !Self.isHorizontalRail(scroll)
-            }
-            guard let scroll = vertical.max(by: {
-                $0.bounds.height * $0.contentSize.height < $1.bounds.height * $1.contentSize.height
-            }) else { return }
-
-            scroll.alwaysBounceHorizontal = false
-            scroll.isDirectionalLockEnabled = true
-            scroll.showsHorizontalScrollIndicator = false
-
-            if scroll.contentOffset.x != 0 {
-                scroll.contentOffset.x = 0
-            }
-
-            if attachedScroll !== scroll {
-                attachedScroll = scroll
-                installAxisLock(on: scroll)
-            }
-        }
-
-        private static func isHorizontalRail(_ scroll: UIScrollView) -> Bool {
-            let wider = scroll.contentSize.width > scroll.bounds.width + 24
-            let short = scroll.bounds.height < 360
-            return wider && short
-        }
-
-        private func installAxisLock(on scroll: UIScrollView) {
-            if let existing = axisLock {
-                existing.view?.removeGestureRecognizer(existing)
-            }
-            let pan = UIPanGestureRecognizer(target: self, action: #selector(handleAxisLock(_:)))
-            pan.delegate = self
-            pan.cancelsTouchesInView = false
-            scroll.addGestureRecognizer(pan)
-            axisLock = pan
-        }
-
-        @objc private func handleAxisLock(_ gesture: UIPanGestureRecognizer) {
-            guard let scroll = attachedScroll else { return }
-            if scroll.contentOffset.x != 0 {
-                scroll.contentOffset.x = 0
-            }
-            if gesture.state == .ended || gesture.state == .cancelled {
-                scroll.contentOffset.x = 0
-            }
-        }
-
-        func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-            if gestureRecognizer === navigationController?.interactivePopGestureRecognizer {
-                return false
-            }
-            guard let pan = gestureRecognizer as? UIPanGestureRecognizer,
-                  gestureRecognizer === axisLock,
-                  let scroll = attachedScroll else { return false }
-            let v = pan.velocity(in: scroll)
-            return abs(v.x) > abs(v.y) && abs(v.x) > 8
-        }
-
-        func gestureRecognizer(
-            _ gestureRecognizer: UIGestureRecognizer,
-            shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
-        ) -> Bool {
-            true
-        }
-
-        private static func scrollViews(in root: UIView) -> [UIScrollView] {
-            var result: [UIScrollView] = []
-            var stack: [UIView] = [root]
-            while let view = stack.popLast() {
-                if let scroll = view as? UIScrollView {
-                    result.append(scroll)
-                }
-                stack.append(contentsOf: view.subviews)
-            }
-            return result
-        }
-    }
-}
-
-private struct NavPopGestureLock: UIViewControllerRepresentable {
-    func makeUIViewController(context: Context) -> UIViewController {
-        LockController()
-    }
-
-    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
-        (uiViewController as? LockController)?.lock()
-    }
-
-    private final class LockController: UIViewController, UIGestureRecognizerDelegate {
-        override func viewDidAppear(_ animated: Bool) {
-            super.viewDidAppear(animated)
-            lock()
-        }
-
-        func lock() {
-            navigationController?.interactivePopGestureRecognizer?.isEnabled = false
-            navigationController?.interactivePopGestureRecognizer?.delegate = self
-        }
-
-        func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-            false
-        }
-    }
-}
-
-private extension View {
-    func lockHorizontalNavDrag() -> some View {
-        background(NavPopGestureLock())
-    }
-}
-
 // MARK: - Home
 
 private struct HomeScreen: View {
@@ -315,7 +162,6 @@ private struct HomeScreen: View {
     @ObservedObject private var subs = SubscriptionStore.shared
     @ObservedObject private var history = ScanHistoryStore.shared
     @State private var segment: HomeSegment = .overview
-    @State private var appeared = false
     @State private var showPaywall = false
 
     private var current: UserProfile {
@@ -327,10 +173,10 @@ private struct HomeScreen: View {
     private var weekDays: [(String, Int, Bool)] {
         let cal = Calendar.current
         let today = Date()
+        let name = DateFormatter()
+        name.dateFormat = "EEE"
         return (-3...3).compactMap { offset -> (String, Int, Bool)? in
             guard let day = cal.date(byAdding: .day, value: offset, to: today) else { return nil }
-            let name = DateFormatter()
-            name.dateFormat = "EEE"
             let num = cal.component(.day, from: day)
             return (String(name.string(from: day).prefix(3)), num, offset == 0)
         }
@@ -360,12 +206,7 @@ private struct HomeScreen: View {
                 }
                 .padding(.bottom, 28)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .containerRelativeFrame(.horizontal, alignment: .leading)
             }
-            .opacity(appeared ? 1 : 0)
-            .animation(.default, value: appeared)
-            .scrollBounceBehavior(.basedOnSize, axes: .vertical)
-            .scrollEdgeEffectStyle(.soft, for: .top)
             .navigationTitle("Home")
             .navigationBarTitleDisplayMode(.large)
             .toolbarBackground(.automatic, for: .navigationBar)
@@ -384,19 +225,12 @@ private struct HomeScreen: View {
                 }
                 .sharedBackgroundVisibility(.hidden)
             }
-            .onAppear {
-                guard !appeared else { return }
-                withAnimation(.default) {
-                    appeared = true
-                }
-            }
             .sheet(isPresented: $showPaywall) {
                 PaywallView(isModal: true)
                     .presentationDetents([.large])
                     .presentationDragIndicator(.visible)
                     .presentationCornerRadius(28)
             }
-            .background(HomeScrollLock())
             .containerBackground(Theme.bg, for: .navigation)
         }
     }
@@ -422,9 +256,7 @@ private struct HomeScreen: View {
             ForEach(HomeSegment.allCases, id: \.self) { item in
                 Button {
                     Haptics.select()
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        segment = item
-                    }
+                    segment = item
                 } label: {
                     Text(item.rawValue)
                         .font(.system(size: 14, weight: .semibold))
@@ -527,16 +359,109 @@ private struct HomeScreen: View {
 
     private var activityContent: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("No activity yet")
-                .font(.system(size: 28, weight: .bold))
-                .foregroundStyle(Theme.ink)
-                .padding(.horizontal, 22)
-                .padding(.top, 22)
+            if history.scans.isEmpty {
+                Text("No activity yet")
+                    .font(.system(size: 28, weight: .bold))
+                    .foregroundStyle(Theme.ink)
+                    .padding(.horizontal, 22)
+                    .padding(.top, 22)
 
-            Text("Scans and fixes will show up here. You’ve completed \(subs.scanCount) scan\(subs.scanCount == 1 ? "" : "s").")
-                .font(.system(size: 15))
-                .foregroundStyle(Theme.mute)
+                Text("Scans and fixes will show up here after you capture a room.")
+                    .font(.system(size: 15))
+                    .foregroundStyle(Theme.mute)
+                    .padding(.horizontal, 22)
+            } else {
+                Text("Recent activity")
+                    .font(.system(size: 28, weight: .bold))
+                    .foregroundStyle(Theme.ink)
+                    .padding(.horizontal, 22)
+                    .padding(.top, 22)
+
+                Text("\(history.scans.count) saved scan\(history.scans.count == 1 ? "" : "s") · unstarred drop after 60 days")
+                    .font(.system(size: 14))
+                    .foregroundStyle(Theme.mute)
+                    .padding(.horizontal, 22)
+
+                VStack(spacing: 10) {
+                    ForEach(history.scans) { scan in
+                        activityRow(scan)
+                    }
+                }
                 .padding(.horizontal, 22)
+                .padding(.top, 4)
+            }
+        }
+    }
+
+    private func activityRow(_ scan: ScanResult) -> some View {
+        HStack(spacing: 14) {
+            Group {
+                if let image = history.image(for: scan) {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFill()
+                } else {
+                    Color(white: 0.92)
+                }
+            }
+            .frame(width: 64, height: 64)
+            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(spacing: 6) {
+                    Text(scan.createdAt.formatted(date: .abbreviated, time: .shortened))
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(Theme.ink)
+                    if scan.isStarred {
+                        Image(systemName: "star.fill")
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundStyle(Color(red: 1.0, green: 0.78, blue: 0.05))
+                    }
+                }
+
+                Text(scan.summary)
+                    .font(.system(size: 13))
+                    .foregroundStyle(Theme.mute)
+                    .lineLimit(2)
+
+                Text("Score \(scan.score) · \(scan.hazards.count) hazard\(scan.hazards.count == 1 ? "" : "s")")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(Theme.mute)
+            }
+
+            Spacer(minLength: 0)
+
+            severityDot(for: scan)
+        }
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(Color.white)
+        )
+    }
+
+    private func severityDot(for scan: ScanResult) -> some View {
+        let worst = scan.hazards.map(\.severity).max(by: { a, b in
+            severityRank(a) < severityRank(b)
+        })
+        let color: Color = {
+            switch worst {
+            case .high: return Theme.warn
+            case .medium: return Color(red: 0.95, green: 0.62, blue: 0.12)
+            case .low: return Theme.good
+            case .none: return Theme.good
+            }
+        }()
+        return Circle()
+            .fill(color)
+            .frame(width: 10, height: 10)
+    }
+
+    private func severityRank(_ s: HazardSeverity) -> Int {
+        switch s {
+        case .low: return 0
+        case .medium: return 1
+        case .high: return 2
         }
     }
 
@@ -849,16 +774,13 @@ private struct ScanScreen: View {
                     .padding(.bottom, 36)
                 }
             }
-        }
-        .fullScreenCover(isPresented: $showThinking) {
-            Group {
-                if let thinkingImage {
-                    ScanThinkingOverlay(image: thinkingImage)
-                } else {
-                    Color.black.ignoresSafeArea()
-                }
+
+            // In-hierarchy overlay (avoids presenting from a detached UIKit-hosted ScanScreen).
+            if showThinking, let thinkingImage {
+                ScanThinkingOverlay(image: thinkingImage)
+                    .transition(.opacity)
+                    .zIndex(20)
             }
-            .presentationBackground(.black)
         }
         .sheet(item: $scanResult, onDismiss: {
             highlightedHazardID = nil
@@ -968,14 +890,27 @@ private struct ScanScreen: View {
         do {
             response = try await analyzer.analyze(request: request, image: image)
         } catch {
-            response = ScanPlaceholderPayload.response()
+            #if DEBUG
+            print("Scan analysis failed: \(error)")
+            #endif
+            response = ScanAnalysisResponse(
+                score: 0,
+                summary: "Analysis failed. Check your connection and try again.",
+                hazards: [],
+                products: [],
+                nextSteps: []
+            )
         }
 
-        // Real Amazon picks matched to detected hazards (live RapidAPI if key set).
-        response.products = await AmazonProductService.shared.products(for: response.hazards)
-
-        // Keep the thinking chrome up long enough to feel intentional.
-        try? await Task.sleep(nanoseconds: 1_200_000_000)
+        // Real Amazon picks: Gemini suggestions first, else strict catalog match.
+        if !response.hazards.isEmpty {
+            response.products = await AmazonProductService.shared.products(
+                for: response.hazards,
+                suggested: response.products
+            )
+        } else {
+            response.products = []
+        }
 
         let saved = history.save(image: image, response: response, scanId: scanId)
         let openCount = saved.hazards.filter { $0.severity != .low }.count
@@ -989,7 +924,7 @@ private struct ScanScreen: View {
         thinkingImage = nil
 
         resultImage = image
-        try? await Task.sleep(nanoseconds: 280_000_000)
+        try? await Task.sleep(nanoseconds: 200_000_000)
         scanResult = saved
     }
 }
@@ -998,7 +933,6 @@ private struct YouScreen: View {
     let profile: UserProfile
     @ObservedObject private var profiles = ProfileStore.shared
     @ObservedObject private var subs = SubscriptionStore.shared
-    @State private var appeared = false
     @State private var showPaywall = false
     @State private var showCustomerCenter = false
     @State private var showEditFocus = false
@@ -1110,15 +1044,10 @@ private struct YouScreen: View {
                 .padding(.bottom, 28)
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .opacity(appeared ? 1 : 0)
-            .animation(.default, value: appeared)
-            .scrollBounceBehavior(.basedOnSize, axes: .vertical)
-            .scrollEdgeEffectStyle(.soft, for: .top)
             .background(Theme.bg)
             .navigationTitle("You")
             .navigationBarTitleDisplayMode(.large)
             .toolbarBackground(.automatic, for: .navigationBar)
-            .lockHorizontalNavDrag()
             .containerBackground(Theme.bg, for: .navigation)
             .sheet(isPresented: $showPaywall) {
                 PaywallView(isModal: true)
@@ -1143,8 +1072,6 @@ private struct YouScreen: View {
                 EditDwellingSheet(initial: current.dwelling)
             }
             .onAppear {
-                guard !appeared else { return }
-                withAnimation(.default) { appeared = true }
                 Task { await subs.refresh() }
             }
         }

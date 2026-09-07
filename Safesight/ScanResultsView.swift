@@ -14,16 +14,25 @@ struct ScanAnnotatedImageView: View {
 
     var body: some View {
         GeometryReader { geo in
-            let size = geo.size
+            // Fill the screen when safe; fall back to fit if a hazard would be cropped.
+            let placed = placementRect(
+                imageSize: image.size,
+                in: geo.size,
+                hazards: hazards
+            )
+
             ZStack {
+                Color.black
+
                 Image(uiImage: image)
                     .resizable()
-                    .scaledToFill()
-                    .frame(width: size.width, height: size.height)
+                    .frame(width: placed.width, height: placed.height)
+                    .position(x: placed.midX, y: placed.midY)
                     .clipped()
 
                 ForEach(hazards) { hazard in
-                    let rect = hazard.boundingBox.cgRect(in: size)
+                    let local = hazard.boundingBox.cgRect(in: placed.size)
+                    let rect = local.offsetBy(dx: placed.minX, dy: placed.minY)
                     let active = highlightedID == nil || highlightedID == hazard.id
 
                     RoundedRectangle(cornerRadius: 6, style: .continuous)
@@ -45,12 +54,61 @@ struct ScanAnnotatedImageView: View {
                             Capsule().fill(hazard.severity.color.opacity(0.92))
                         )
                         .position(
-                            x: min(size.width - 60, max(60, rect.midX)),
+                            x: min(geo.size.width - 60, max(60, rect.midX)),
                             y: max(18, rect.minY - 14)
                         )
                         .opacity(active ? 1 : 0.4)
                 }
             }
+            .frame(width: geo.size.width, height: geo.size.height)
+            .clipped()
+        }
+    }
+
+    /// Prefer aspect-fill; if any hazard would leave the viewport, use aspect-fit so nothing scanned is cut.
+    private func placementRect(
+        imageSize: CGSize,
+        in bounds: CGSize,
+        hazards: [ScanHazardDTO]
+    ) -> CGRect {
+        let fill = aspectFillRect(imageSize: imageSize, in: bounds)
+        guard !hazards.isEmpty else { return fill }
+
+        let pad: CGFloat = 12
+        let visible = CGRect(origin: .zero, size: bounds).insetBy(dx: pad, dy: pad)
+        let allVisible = hazards.allSatisfy { hazard in
+            let local = hazard.boundingBox.cgRect(in: fill.size)
+            let mapped = local.offsetBy(dx: fill.minX, dy: fill.minY)
+            return visible.contains(mapped)
+        }
+        return allVisible ? fill : aspectFitRect(imageSize: imageSize, in: bounds)
+    }
+
+    private func aspectFitRect(imageSize: CGSize, in bounds: CGSize) -> CGRect {
+        let iw = max(imageSize.width, 1)
+        let ih = max(imageSize.height, 1)
+        let imageAspect = iw / ih
+        let boundsAspect = bounds.width / max(bounds.height, 1)
+        if imageAspect > boundsAspect {
+            let h = bounds.width / imageAspect
+            return CGRect(x: 0, y: (bounds.height - h) / 2, width: bounds.width, height: h)
+        } else {
+            let w = bounds.height * imageAspect
+            return CGRect(x: (bounds.width - w) / 2, y: 0, width: w, height: bounds.height)
+        }
+    }
+
+    private func aspectFillRect(imageSize: CGSize, in bounds: CGSize) -> CGRect {
+        let iw = max(imageSize.width, 1)
+        let ih = max(imageSize.height, 1)
+        let imageAspect = iw / ih
+        let boundsAspect = bounds.width / max(bounds.height, 1)
+        if imageAspect > boundsAspect {
+            let w = bounds.height * imageAspect
+            return CGRect(x: (bounds.width - w) / 2, y: 0, width: w, height: bounds.height)
+        } else {
+            let h = bounds.width / imageAspect
+            return CGRect(x: 0, y: (bounds.height - h) / 2, width: bounds.width, height: h)
         }
     }
 }
@@ -80,7 +138,9 @@ struct RecommendedProductCard: View {
                         .fill(Color(white: 0.96))
                         .frame(height: 120)
 
-                    if let urlString = product.imageURL, let url = URL(string: urlString) {
+                    if let urlString = product.imageURL,
+                       !AmazonCatalog.isUnusableImageURL(urlString),
+                       let url = URL(string: urlString) {
                         AsyncImage(url: url) { phase in
                             switch phase {
                             case .success(let image):
@@ -94,8 +154,11 @@ struct RecommendedProductCard: View {
                                 ProgressView()
                             }
                         }
+                        .frame(maxWidth: .infinity)
                         .frame(height: 110)
-                    } else if let name = product.imageName, UIImage(named: name) != nil {
+                    } else if let name = product.imageName,
+                              !name.hasPrefix("Hazard"),
+                              UIImage(named: name) != nil {
                         Image(name)
                             .resizable()
                             .scaledToFit()
@@ -379,88 +442,239 @@ struct ScanGalleryView: View {
     var onSelect: (ScanResult) -> Void
 
     @Environment(\.dismiss) private var dismiss
+    @State private var isSelecting = false
+    @State private var selectedIDs: Set<UUID> = []
 
     private let ink = Color(white: 0.08)
     private let mute = Color(white: 0.45)
     private let bg = Color(red: 0.96, green: 0.96, blue: 0.97)
+    private let blue = Color(red: 0.0, green: 0.48, blue: 1.0)
 
     private let columns = [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
 
+    private var selectedScans: [ScanResult] {
+        store.scans.filter { selectedIDs.contains($0.id) }
+    }
+
+    private var allSelectedStarred: Bool {
+        !selectedScans.isEmpty && selectedScans.allSatisfy(\.isStarred)
+    }
+
+    private var selectedTitle: String {
+        selectedIDs.isEmpty ? "Select Scans" : "\(selectedIDs.count) Selected"
+    }
+
     var body: some View {
         NavigationStack {
-            Group {
-                if store.scans.isEmpty {
-                    VStack(spacing: 12) {
-                        Image(systemName: "photo.on.rectangle.angled")
-                            .font(.system(size: 36, weight: .semibold))
-                            .foregroundStyle(mute)
-                        Text("No scans yet")
-                            .font(.system(size: 20, weight: .bold))
-                            .foregroundStyle(ink)
-                        Text("Take a photo on Scan and past results will land here.")
-                            .font(.system(size: 15))
-                            .foregroundStyle(mute)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 32)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else {
-                    ScrollView {
-                        LazyVGrid(columns: columns, spacing: 12) {
-                            ForEach(store.scans) { scan in
-                                Button {
-                                    Haptics.light()
-                                    onSelect(scan)
-                                    dismiss()
-                                } label: {
-                                    galleryCell(scan)
-                                }
-                                .buttonStyle(.plain)
-                            }
-                        }
-                        .padding(20)
+            content
+                .background(bg.ignoresSafeArea())
+                .navigationTitle(isSelecting ? selectedTitle : "Past scans")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar { toolbarContent }
+                .safeAreaInset(edge: .bottom) {
+                    if isSelecting { selectionBar }
+                }
+                .onAppear { store.purgeExpired() }
+        }
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        if store.scans.isEmpty {
+            emptyState
+        } else {
+            ScrollView {
+                LazyVGrid(columns: columns, spacing: 12) {
+                    ForEach(store.scans) { scan in
+                        ScanGalleryCell(
+                            scan: scan,
+                            image: store.image(for: scan),
+                            isSelecting: isSelecting,
+                            isSelected: selectedIDs.contains(scan.id),
+                            hasSelection: !selectedIDs.isEmpty,
+                            ink: ink,
+                            mute: mute,
+                            blue: blue
+                        )
+                        .contentShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+                        .onTapGesture { handleTap(scan) }
+                        .onLongPressGesture(minimumDuration: 0.35) { handleLongPress(scan) }
+                        .contextMenu { contextMenu(for: scan) }
                     }
                 }
-            }
-            .background(bg.ignoresSafeArea())
-            .navigationTitle("Past scans")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Done") {
-                        Haptics.light()
-                        dismiss()
-                    }
-                    .fontWeight(.semibold)
-                }
+                .padding(20)
+                .padding(.bottom, isSelecting ? 72 : 0)
             }
         }
     }
 
-    private func galleryCell(_ scan: ScanResult) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            ZStack(alignment: .topTrailing) {
-                Group {
-                    if let image = store.image(for: scan) {
-                        Image(uiImage: image)
-                            .resizable()
-                            .scaledToFill()
+    private var emptyState: some View {
+        VStack(spacing: 12) {
+            Image(systemName: "photo.on.rectangle.angled")
+                .font(.system(size: 36, weight: .semibold))
+                .foregroundStyle(mute)
+            Text("No scans yet")
+                .font(.system(size: 20, weight: .bold))
+                .foregroundStyle(ink)
+            Text("Take a photo on Scan and past results will land here.")
+                .font(.system(size: 15))
+                .foregroundStyle(mute)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 32)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    @ToolbarContentBuilder
+    private var toolbarContent: some ToolbarContent {
+        ToolbarItem(placement: .topBarLeading) {
+            if isSelecting {
+                Button("Cancel") {
+                    Haptics.light()
+                    exitSelection()
+                }
+            }
+        }
+        ToolbarItem(placement: .topBarTrailing) {
+            if isSelecting {
+                Button(selectedIDs.count == store.scans.count ? "Deselect All" : "Select All") {
+                    Haptics.light()
+                    if selectedIDs.count == store.scans.count {
+                        selectedIDs.removeAll()
                     } else {
-                        Color(white: 0.92)
+                        selectedIDs = Set(store.scans.map(\.id))
                     }
                 }
-                .frame(maxWidth: .infinity)
-                .frame(height: 140)
-                .clipped()
-                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                .fontWeight(.semibold)
+            } else {
+                Button("Done") {
+                    Haptics.light()
+                    dismiss()
+                }
+                .fontWeight(.semibold)
+            }
+        }
+    }
 
-                Text("\(scan.score)")
-                    .font(.system(size: 13, weight: .bold))
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Capsule().fill(Color.black.opacity(0.55)))
-                    .padding(8)
+    private var selectionBar: some View {
+        HStack(spacing: 12) {
+            Button {
+                Haptics.light()
+                guard !selectedIDs.isEmpty else { return }
+                store.setStarred(selectedIDs, starred: !allSelectedStarred)
+            } label: {
+                Label(
+                    allSelectedStarred ? "Unstar" : "Star",
+                    systemImage: allSelectedStarred ? "star.slash.fill" : "star.fill"
+                )
+                .font(.system(size: 16, weight: .semibold))
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+                .background(
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .fill(Color.white)
+                )
+                .foregroundStyle(selectedIDs.isEmpty ? mute : blue)
+            }
+            .buttonStyle(.plain)
+            .disabled(selectedIDs.isEmpty)
+
+            Button(role: .destructive) {
+                Haptics.warning()
+                guard !selectedIDs.isEmpty else { return }
+                let ids = selectedIDs
+                store.delete(ids: ids)
+                selectedIDs.removeAll()
+                if store.scans.isEmpty { exitSelection() }
+            } label: {
+                Label("Delete", systemImage: "trash.fill")
+                    .font(.system(size: 16, weight: .semibold))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+                    .background(
+                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .fill(Color.white)
+                    )
+                    .foregroundStyle(
+                        selectedIDs.isEmpty
+                            ? mute
+                            : Color(red: 0.92, green: 0.28, blue: 0.25)
+                    )
+            }
+            .buttonStyle(.plain)
+            .disabled(selectedIDs.isEmpty)
+        }
+        .padding(.horizontal, 20)
+        .padding(.top, 10)
+        .padding(.bottom, 10)
+        .background(.ultraThinMaterial)
+    }
+
+    @ViewBuilder
+    private func contextMenu(for scan: ScanResult) -> some View {
+        Button {
+            Haptics.light()
+            store.toggleStarred(scan)
+        } label: {
+            Label(
+                scan.isStarred ? "Unstar" : "Star",
+                systemImage: scan.isStarred ? "star.slash" : "star"
+            )
+        }
+        Button(role: .destructive) {
+            Haptics.warning()
+            store.delete(scan)
+            selectedIDs.remove(scan.id)
+        } label: {
+            Label("Delete", systemImage: "trash")
+        }
+    }
+
+    private func handleTap(_ scan: ScanResult) {
+        Haptics.light()
+        if isSelecting {
+            toggleSelection(scan.id)
+        } else {
+            onSelect(scan)
+            dismiss()
+        }
+    }
+
+    private func handleLongPress(_ scan: ScanResult) {
+        Haptics.medium()
+        if !isSelecting { isSelecting = true }
+        selectedIDs.insert(scan.id)
+    }
+
+    private func toggleSelection(_ id: UUID) {
+        if selectedIDs.contains(id) {
+            selectedIDs.remove(id)
+        } else {
+            selectedIDs.insert(id)
+        }
+    }
+
+    private func exitSelection() {
+        isSelecting = false
+        selectedIDs.removeAll()
+    }
+}
+
+private struct ScanGalleryCell: View {
+    let scan: ScanResult
+    let image: UIImage?
+    let isSelecting: Bool
+    let isSelected: Bool
+    let hasSelection: Bool
+    let ink: Color
+    let mute: Color
+    let blue: Color
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            ZStack(alignment: .topTrailing) {
+                thumb
+                badges
             }
 
             Text(scan.createdAt.formatted(date: .abbreviated, time: .shortened))
@@ -476,5 +690,59 @@ struct ScanGalleryView: View {
             RoundedRectangle(cornerRadius: 22, style: .continuous)
                 .fill(Color.white)
         )
+        .opacity(isSelecting && !isSelected && hasSelection ? 0.72 : 1)
+    }
+
+    private var thumb: some View {
+        Group {
+            if let image {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+            } else {
+                Color(white: 0.92)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .frame(height: 140)
+        .clipped()
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay {
+            if isSelecting {
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .strokeBorder(isSelected ? blue : Color.white.opacity(0.35), lineWidth: isSelected ? 3 : 1)
+            }
+        }
+    }
+
+    private var badges: some View {
+        HStack(spacing: 6) {
+            if scan.isStarred {
+                Image(systemName: "star.fill")
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundStyle(Color(red: 1.0, green: 0.84, blue: 0.04))
+                    .padding(6)
+                    .background(Circle().fill(Color.black.opacity(0.55)))
+            }
+
+            if isSelecting {
+                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                    .font(.system(size: 22, weight: .semibold))
+                    .symbolRenderingMode(.palette)
+                    .foregroundStyle(
+                        isSelected ? Color.white : Color.white.opacity(0.9),
+                        isSelected ? blue : Color.clear
+                    )
+                    .shadow(color: .black.opacity(0.25), radius: 2, y: 1)
+            } else {
+                Text("\(scan.score)")
+                    .font(.system(size: 13, weight: .bold))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Capsule().fill(Color.black.opacity(0.55)))
+            }
+        }
+        .padding(8)
     }
 }

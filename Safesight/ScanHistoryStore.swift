@@ -11,6 +11,9 @@ import UIKit
 final class ScanHistoryStore: ObservableObject {
     static let shared = ScanHistoryStore()
 
+    /// Unstarred scans older than this are purged on launch / when gallery opens.
+    static let retentionDays: Int = 60
+
     @Published private(set) var scans: [ScanResult] = []
 
     private let indexKey = "safesight.scanHistory.index"
@@ -27,6 +30,7 @@ final class ScanHistoryStore: ObservableObject {
 
     init() {
         load()
+        purgeExpired()
     }
 
     var latest: ScanResult? { scans.first }
@@ -52,10 +56,50 @@ final class ScanHistoryStore: ObservableObject {
     }
 
     func delete(_ result: ScanResult) {
-        let url = folderURL.appendingPathComponent(result.imageFileName)
-        try? FileManager.default.removeItem(at: url)
-        scans.removeAll { $0.id == result.id }
+        delete(ids: [result.id])
+    }
+
+    func delete(ids: Set<UUID>) {
+        guard !ids.isEmpty else { return }
+        for id in ids {
+            if let scan = scans.first(where: { $0.id == id }) {
+                let url = folderURL.appendingPathComponent(scan.imageFileName)
+                try? FileManager.default.removeItem(at: url)
+            }
+        }
+        scans.removeAll { ids.contains($0.id) }
         persistIndex()
+    }
+
+    func setStarred(_ ids: Set<UUID>, starred: Bool) {
+        guard !ids.isEmpty else { return }
+        var changed = false
+        for i in scans.indices where ids.contains(scans[i].id) {
+            if scans[i].isStarred != starred {
+                scans[i].isStarred = starred
+                changed = true
+            }
+        }
+        if changed { persistIndex() }
+    }
+
+    func toggleStarred(_ result: ScanResult) {
+        setStarred([result.id], starred: !result.isStarred)
+    }
+
+    /// Drops unstarred scans older than `retentionDays`.
+    @discardableResult
+    func purgeExpired(now: Date = Date()) -> Int {
+        let cutoff = Calendar.current.date(
+            byAdding: .day,
+            value: -Self.retentionDays,
+            to: now
+        ) ?? now.addingTimeInterval(-TimeInterval(Self.retentionDays * 86_400))
+
+        let expired = scans.filter { !$0.isStarred && $0.createdAt < cutoff }
+        guard !expired.isEmpty else { return 0 }
+        delete(ids: Set(expired.map(\.id)))
+        return expired.count
     }
 
     private func persistIndex() {
@@ -66,10 +110,15 @@ final class ScanHistoryStore: ObservableObject {
 
     private func load() {
         guard let data = UserDefaults.standard.data(forKey: indexKey),
-              let decoded = try? JSONDecoder().decode([ScanResult].self, from: data) else {
+              var decoded = try? JSONDecoder().decode([ScanResult].self, from: data) else {
             scans = []
             return
         }
+        // Refresh products so old amazon-adsystem / ASIN cards never render again.
+        for i in decoded.indices {
+            decoded[i].products = AmazonCatalog.products(for: decoded[i].hazards)
+        }
         scans = decoded.sorted { $0.createdAt > $1.createdAt }
+        persistIndex()
     }
 }

@@ -54,6 +54,8 @@ struct ScanHazardDTO: Codable, Identifiable, Hashable {
     var icon: String
     var boundingBox: NormalizedRect
     var fixSteps: [String]
+    /// Matches `SafetyInterest.rawValue` for filtering on the Hazards tab.
+    var focusArea: String?
 
     init(
         id: UUID = UUID(),
@@ -62,7 +64,8 @@ struct ScanHazardDTO: Codable, Identifiable, Hashable {
         severity: HazardSeverity,
         icon: String,
         boundingBox: NormalizedRect,
-        fixSteps: [String]
+        fixSteps: [String],
+        focusArea: String? = nil
     ) {
         self.id = id
         self.title = title
@@ -71,6 +74,11 @@ struct ScanHazardDTO: Codable, Identifiable, Hashable {
         self.icon = icon
         self.boundingBox = boundingBox
         self.fixSteps = fixSteps
+        self.focusArea = focusArea
+    }
+
+    var focusInterest: SafetyInterest? {
+        focusArea.flatMap { SafetyInterest(rawValue: $0) }
     }
 }
 
@@ -82,10 +90,12 @@ struct ScanProductDTO: Codable, Identifiable, Hashable {
     var icon: String
     /// Asset catalog name for card art (legacy / offline).
     var imageName: String?
-    /// Remote product image (Amazon CDN / RapidAPI).
+    /// Remote product image URL.
     var imageURL: String?
     var productURL: String?
     var asin: String?
+    /// Amazon search keywords for this fix (preferred over name alone).
+    var searchQuery: String?
 
     init(
         id: UUID = UUID(),
@@ -96,7 +106,8 @@ struct ScanProductDTO: Codable, Identifiable, Hashable {
         imageName: String? = nil,
         imageURL: String? = nil,
         productURL: String? = nil,
-        asin: String? = nil
+        asin: String? = nil,
+        searchQuery: String? = nil
     ) {
         self.id = id
         self.name = name
@@ -107,6 +118,7 @@ struct ScanProductDTO: Codable, Identifiable, Hashable {
         self.imageURL = imageURL
         self.productURL = productURL
         self.asin = asin
+        self.searchQuery = searchQuery
     }
 }
 
@@ -135,6 +147,8 @@ struct ScanResult: Codable, Identifiable, Hashable {
     var hazards: [ScanHazardDTO]
     var products: [ScanProductDTO]
     var nextSteps: [String]
+    /// Starred scans skip the 60-day auto-delete.
+    var isStarred: Bool
 
     init(
         id: UUID = UUID(),
@@ -144,7 +158,8 @@ struct ScanResult: Codable, Identifiable, Hashable {
         summary: String,
         hazards: [ScanHazardDTO],
         products: [ScanProductDTO],
-        nextSteps: [String]
+        nextSteps: [String],
+        isStarred: Bool = false
     ) {
         self.id = id
         self.createdAt = createdAt
@@ -154,6 +169,7 @@ struct ScanResult: Codable, Identifiable, Hashable {
         self.hazards = hazards
         self.products = products
         self.nextSteps = nextSteps
+        self.isStarred = isStarred
     }
 
     init(id: UUID, imageFileName: String, response: ScanAnalysisResponse) {
@@ -164,8 +180,26 @@ struct ScanResult: Codable, Identifiable, Hashable {
             summary: response.summary,
             hazards: response.hazards,
             products: response.products,
-            nextSteps: response.nextSteps
+            nextSteps: response.nextSteps,
+            isStarred: false
         )
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case id, createdAt, imageFileName, score, summary, hazards, products, nextSteps, isStarred
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decode(UUID.self, forKey: .id)
+        createdAt = try c.decode(Date.self, forKey: .createdAt)
+        imageFileName = try c.decode(String.self, forKey: .imageFileName)
+        score = try c.decode(Int.self, forKey: .score)
+        summary = try c.decode(String.self, forKey: .summary)
+        hazards = try c.decode([ScanHazardDTO].self, forKey: .hazards)
+        products = try c.decode([ScanProductDTO].self, forKey: .products)
+        nextSteps = try c.decode([String].self, forKey: .nextSteps)
+        isStarred = try c.decodeIfPresent(Bool.self, forKey: .isStarred) ?? false
     }
 }
 
@@ -187,7 +221,8 @@ enum ScanPlaceholderPayload {
                         "Lift the loose edge and vacuum grit from under the runner.",
                         "Apply double-sided stair tape or non-slip treads along each step.",
                         "Press firmly and test the stair with a slow walk-down."
-                    ]
+                    ],
+                    focusArea: SafetyInterest.stairs.rawValue
                 ),
                 ScanHazardDTO(
                     title: "Overloaded outlet",
@@ -199,7 +234,8 @@ enum ScanPlaceholderPayload {
                         "Unplug the daisy-chained strip immediately.",
                         "Consolidate devices onto one surge-protected strip.",
                         "Route cables with clips so the outlet stays clear."
-                    ]
+                    ],
+                    focusArea: SafetyInterest.electric.rawValue
                 ),
                 ScanHazardDTO(
                     title: "Blocked secondary exit",
@@ -211,7 +247,8 @@ enum ScanPlaceholderPayload {
                         "Move bins and the plant at least 36\" off the exit path.",
                         "Keep the door swing fully clear.",
                         "Recheck the route with lights off."
-                    ]
+                    ],
+                    focusArea: SafetyInterest.blocked.rawValue
                 ),
                 ScanHazardDTO(
                     title: "Dim hallway lighting",
@@ -223,7 +260,8 @@ enum ScanPlaceholderPayload {
                         "Swap in a higher-lumen bulb (800+ lm).",
                         "Add a plug-in motion light for overnight coverage.",
                         "Confirm both ends of the hallway are lit."
-                    ]
+                    ],
+                    focusArea: SafetyInterest.nightLighting.rawValue
                 )
             ],
             products: [], // filled by AmazonProductService after analyze

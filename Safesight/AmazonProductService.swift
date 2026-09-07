@@ -2,129 +2,225 @@
 //  AmazonProductService.swift
 //  Safesight
 //
-//  Real Amazon product recommendations.
-//  - Curated ASINs always available (title / image / Amazon dp link).
-//  - Optional live enrich via RapidAPI "Real-Time Amazon Data"
-//    (https://rapidapi.com/letscrape-6bRBa3QguO5/api/real-time-amazon-data)
-//    Set AmazonProductConfig.rapidAPIKey to enable live price/title refresh.
+//  Picks products that actually match each hazard (no junk fallback),
+//  links to Amazon search, and loads a real product-style thumbnail.
 //
 
 import Combine
 import Foundation
 import UIKit
 
-enum AmazonProductConfig {
-    /// Paste a RapidAPI key to enable live Amazon product-details fetches.
-    /// Leave empty to use curated Amazon ASIN catalog + CDN images.
-    static var rapidAPIKey: String = ""
-    static let rapidAPIHost = "real-time-amazon-data.p.rapidapi.com"
-}
-
 struct AmazonCatalogItem: Identifiable, Hashable {
-    var id: String { asin }
-    let asin: String
+    var id: String { searchQuery }
     let fallbackTitle: String
+    let searchQuery: String
     let reason: String
     let icon: String
-    let tags: [String] // match hazard keywords
+    /// At least one of these must appear in the hazard text.
+    let requiredAny: [String]
+    let boostTags: [String]
 
-    var productURL: URL {
-        URL(string: "https://www.amazon.com/dp/\(asin)")!
+    var productURL: URL { Self.amazonSearchURL(query: searchQuery) }
+    var imageURL: URL { Self.productImageURL(query: searchQuery) }
+
+    static func amazonSearchURL(query: String) -> URL {
+        var components = URLComponents(string: "https://www.amazon.com/s")!
+        components.queryItems = [URLQueryItem(name: "k", value: query)]
+        return components.url!
     }
 
-    /// Public Amazon image widget — works without an API key.
-    var imageURL: URL {
-        URL(string:
-            "https://ws-na.amazon-adsystem.com/widgets/q?_encoding=UTF8&MarketPlace=US&ASIN=\(asin)&ServiceVersion=20070822&ID=AsinImage&WS=1&Format=_SL500_"
-        )!
+    /// Bing image thumb — real JPEG for the shopping query (Amazon widget host is dead).
+    static func productImageURL(query: String) -> URL {
+        var components = URLComponents(string: "https://www.bing.com/th")!
+        components.queryItems = [
+            URLQueryItem(name: "q", value: query),
+            URLQueryItem(name: "w", value: "400"),
+            URLQueryItem(name: "h", value: "400"),
+            URLQueryItem(name: "c", value: "7"),
+            URLQueryItem(name: "rs", value: "1"),
+            URLQueryItem(name: "p", value: "0"),
+            URLQueryItem(name: "pid", value: "1.7")
+        ]
+        return components.url!
     }
 }
 
 enum AmazonCatalog {
-    /// Real ASINs for common home-safety fixes.
     static let items: [AmazonCatalogItem] = [
         AmazonCatalogItem(
-            asin: "B09TFCYDHY",
-            fallbackTitle: "ToStair Non-Slip Stair Treads (15-Pack)",
-            reason: "Peel-and-stick grip for loose or bare wood stairs.",
+            fallbackTitle: "Furniture Anti-Tip Straps",
+            searchQuery: "furniture anti tip straps bookcase wall anchor",
+            reason: "Anchors tall furniture so it can't tip over.",
+            icon: "screwdriver",
+            requiredAny: [
+                "bookshelf", "bookcase", "dresser", "cabinet", "furniture",
+                "unanchored", "anchor", "tip-over", "tipping", "tall shelf",
+                "armoire", "tv stand", "not secured", "not anchored"
+            ],
+            boostTags: ["child", "quake", "wall", "tip"]
+        ),
+        AmazonCatalogItem(
+            fallbackTitle: "Non-Slip Stair Treads",
+            searchQuery: "non slip stair treads indoor peel and stick",
+            reason: "Adds grip on loose or bare stairs.",
             icon: "figure.stairs",
-            tags: ["stair", "runner", "trip", "carpet"]
+            requiredAny: ["stair", "steps", "tread", "banister", "handrail"],
+            boostTags: ["trip", "slip", "fall"]
         ),
         AmazonCatalogItem(
-            asin: "B07X35CL1F",
-            fallbackTitle: "Non-Slip Carpet Stair Treads (15pcs)",
-            reason: "Soft indoor treads for elders, kids, and pets.",
-            icon: "square.stack.3d.up.fill",
-            tags: ["stair", "runner", "trip"]
-        ),
-        AmazonCatalogItem(
-            asin: "B00DQFGH0R",
-            fallbackTitle: "Amazon Basics 6-Outlet Surge Protector",
-            reason: "Replace daisy-chained strips with one protected outlet strip.",
+            fallbackTitle: "Surge Protector Power Strip",
+            searchQuery: "surge protector power strip",
+            reason: "Replace daisy-chained outlets safely.",
             icon: "bolt.fill",
-            tags: ["outlet", "electric", "power", "surge", "cable"]
+            requiredAny: ["outlet", "electric", "power strip", "surge", "extension cord", "daisy"],
+            boostTags: ["cable", "plug", "overloaded"]
         ),
         AmazonCatalogItem(
-            asin: "B07GFLP1C7",
-            fallbackTitle: "Amazon Basics 8-Outlet Surge Protector Power Strip",
-            reason: "Extra outlets with surge protection for desks and entertainment.",
-            icon: "powerstrip.fill",
-            tags: ["outlet", "electric", "power", "surge"]
-        ),
-        AmazonCatalogItem(
-            asin: "B07S95Y6PC",
-            fallbackTitle: "LEPOWER Motion Sensor Night Light (2-Pack)",
-            reason: "Plug-in motion light for dark hallways and stair landings.",
+            fallbackTitle: "Motion Sensor Night Light",
+            searchQuery: "motion sensor night light plug in hallway",
+            reason: "Lights dark paths automatically.",
             icon: "lightbulb.fill",
-            tags: ["light", "hallway", "dim", "night"]
+            requiredAny: ["dark", "night light", "hallway light", "dim hallway", "poor lighting"],
+            boostTags: ["motion", "light", "hallway"]
         ),
         AmazonCatalogItem(
-            asin: "B08GJ9M8Y5",
-            fallbackTitle: "eufy Security Motion Sensor Night Light",
-            reason: "Battery motion light you can stick anywhere along a dark path.",
-            icon: "sensor.fill",
-            tags: ["light", "hallway", "motion", "dim"]
-        ),
-        AmazonCatalogItem(
-            asin: "B07YQ4P8M4",
-            fallbackTitle: "SimpleHouseware Over-the-Door Organizer",
-            reason: "Clear floor clutter that blocks secondary exits.",
+            fallbackTitle: "Over-the-Door Organizer",
+            searchQuery: "over the door organizer storage clear clutter",
+            reason: "Clears clutter blocking exits.",
             icon: "door.left.hand.open",
-            tags: ["exit", "blocked", "clutter", "storage", "path"]
+            requiredAny: ["blocked exit", "blocked door", "egress", "path blocked", "clutter blocking"],
+            boostTags: ["exit", "doorway"]
         ),
         AmazonCatalogItem(
-            asin: "B08CZQXK4V",
-            fallbackTitle: "Cable Clips Cord Management (40pcs)",
-            reason: "Route desk cables so outlets stay clear and trip-free.",
+            fallbackTitle: "Cable Management Clips",
+            searchQuery: "cable clips cord management adhesive",
+            reason: "Keeps cords off the floor.",
             icon: "cable.connector",
-            tags: ["cable", "outlet", "trip", "clutter"]
+            requiredAny: ["cord", "cable across", "loose cable", "wire on floor", "trip hazard cord"],
+            boostTags: ["trip", "clutter"]
+        ),
+        AmazonCatalogItem(
+            fallbackTitle: "Child Safety Outlet Covers",
+            searchQuery: "child proof outlet covers safety caps",
+            reason: "Covers unused outlets for kids.",
+            icon: "figure.and.child.holdinghands",
+            requiredAny: ["child", "outlet cover", "baby proof", "kid", "toddler"],
+            boostTags: ["outlet", "electric", "proof"]
+        ),
+        AmazonCatalogItem(
+            fallbackTitle: "Smoke / CO Detector",
+            searchQuery: "combination smoke and carbon monoxide detector",
+            reason: "Detects fire and CO early.",
+            icon: "flame.fill",
+            requiredAny: ["smoke", "detector", "fire alarm", "carbon monoxide", "co alarm"],
+            boostTags: ["fire"]
+        ),
+        AmazonCatalogItem(
+            fallbackTitle: "Doorway Baby Gate",
+            searchQuery: "pressure mount baby safety gate doorway",
+            reason: "Blocks stairs or rooms for toddlers.",
+            icon: "rectangle.split.2x1",
+            requiredAny: ["baby gate", "stair gate", "child gate", "toddler access"],
+            boostTags: ["child", "stair"]
         )
     ]
 
+    /// Strict match — return nothing rather than unrelated junk.
     static func matches(for hazards: [ScanHazardDTO]) -> [AmazonCatalogItem] {
+        guard !hazards.isEmpty else { return [] }
+
         var scored: [(AmazonCatalogItem, Int)] = []
         for item in items {
             var score = 0
             for hazard in hazards {
-                let hay = (hazard.title + " " + hazard.detail).lowercased()
-                for tag in item.tags where hay.contains(tag) {
+                let hay = (
+                    hazard.title + " " + hazard.detail + " " + (hazard.focusArea ?? "")
+                ).lowercased()
+
+                guard item.requiredAny.contains(where: { hay.contains($0.lowercased()) }) else {
+                    continue
+                }
+                score += 10
+                for tag in item.boostTags where hay.contains(tag.lowercased()) {
                     score += 2
                 }
             }
             if score > 0 { scored.append((item, score)) }
         }
-        let picked = scored.sorted { $0.1 > $1.1 }.map(\.0)
-        if picked.isEmpty {
-            return Array(items.prefix(3))
-        }
-        // Unique by ASIN, cap at 6
+
         var seen = Set<String>()
         var out: [AmazonCatalogItem] = []
-        for item in picked where seen.insert(item.asin).inserted {
+        for item in scored.sorted(by: { $0.1 > $1.1 }).map(\.0) where seen.insert(item.id).inserted {
             out.append(item)
-            if out.count >= 6 { break }
+            if out.count >= 4 { break }
         }
         return out
+    }
+
+    static func products(for hazards: [ScanHazardDTO]) -> [ScanProductDTO] {
+        matches(for: hazards).map(dto(from:))
+    }
+
+    static func dto(from item: AmazonCatalogItem) -> ScanProductDTO {
+        ScanProductDTO(
+            id: UUID(uuidString: SeedUUID.stable(from: item.searchQuery)) ?? UUID(),
+            name: item.fallbackTitle,
+            reason: item.reason,
+            priceLabel: "Shop on Amazon",
+            icon: item.icon,
+            imageName: nil,
+            imageURL: item.imageURL.absoluteString,
+            productURL: item.productURL.absoluteString,
+            asin: nil,
+            searchQuery: item.searchQuery
+        )
+    }
+
+    static func enrichSuggestion(name: String, searchQuery: String?, reason: String, icon: String?) -> ScanProductDTO {
+        let q = (searchQuery?.trimmingCharacters(in: .whitespacesAndNewlines)).flatMap { $0.isEmpty ? nil : $0 }
+            ?? name
+        return ScanProductDTO(
+            id: UUID(uuidString: SeedUUID.stable(from: q)) ?? UUID(),
+            name: name.trimmedProduct(to: 42),
+            reason: reason.trimmedProduct(to: 70),
+            priceLabel: "Shop on Amazon",
+            icon: (icon?.isEmpty == false) ? icon! : "cart.fill",
+            imageName: nil,
+            imageURL: AmazonCatalogItem.productImageURL(query: q).absoluteString,
+            productURL: AmazonCatalogItem.amazonSearchURL(query: q).absoluteString,
+            asin: nil,
+            searchQuery: q
+        )
+    }
+
+    static func isUnusableImageURL(_ raw: String?) -> Bool {
+        guard let raw, let host = URL(string: raw)?.host?.lowercased() else { return true }
+        return host.contains("amazon-adsystem")
+    }
+}
+
+enum SeedUUID {
+    static func stable(from string: String) -> String {
+        var hash: UInt64 = 5381
+        for byte in string.utf8 {
+            hash = ((hash << 5) &+ hash) &+ UInt64(byte)
+        }
+        let hex = String(format: "%016llx", hash)
+        let a = String(hex.prefix(8))
+        let b = String(hex.dropFirst(8).prefix(4))
+        let c = "4" + String(hex.dropFirst(12).prefix(3))
+        let d = "a" + String(hex.prefix(3))
+        let e = String((hex + hex).prefix(12))
+        return "\(a)-\(b)-\(c)-\(d)-\(e)"
+    }
+}
+
+private extension String {
+    func trimmedProduct(to max: Int) -> String {
+        let t = trimmingCharacters(in: .whitespacesAndNewlines)
+        guard t.count > max else { return t }
+        let end = t.index(t.startIndex, offsetBy: max - 1)
+        return String(t[..<end]).trimmingCharacters(in: .whitespacesAndNewlines) + "…"
     }
 }
 
@@ -132,85 +228,25 @@ enum AmazonCatalog {
 final class AmazonProductService: ObservableObject {
     static let shared = AmazonProductService()
 
-    @Published private(set) var cache: [String: ScanProductDTO] = [:]
-
-    func products(for hazards: [ScanHazardDTO]) async -> [ScanProductDTO] {
-        let seeds = AmazonCatalog.matches(for: hazards)
-        var results: [ScanProductDTO] = []
-        for seed in seeds {
-            if let live = await fetchDetails(asin: seed.asin) {
-                var merged = live
-                merged.reason = seed.reason
-                merged.icon = seed.icon
-                cache[seed.asin] = merged
-                results.append(merged)
-            } else if let cached = cache[seed.asin] {
-                results.append(cached)
-            } else {
-                let dto = ScanProductDTO(
-                    name: seed.fallbackTitle,
-                    reason: seed.reason,
-                    priceLabel: "View on Amazon",
-                    icon: seed.icon,
-                    imageName: nil,
-                    imageURL: seed.imageURL.absoluteString,
-                    productURL: seed.productURL.absoluteString,
-                    asin: seed.asin
-                )
-                cache[seed.asin] = dto
-                results.append(dto)
-            }
-        }
-        return results
-    }
-
-    /// Live enrich via RapidAPI when a key is configured.
-    private func fetchDetails(asin: String) async -> ScanProductDTO? {
-        let key = AmazonProductConfig.rapidAPIKey.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !key.isEmpty else { return nil }
-
-        var components = URLComponents(string: "https://\(AmazonProductConfig.rapidAPIHost)/product-details")
-        components?.queryItems = [
-            URLQueryItem(name: "asin", value: asin),
-            URLQueryItem(name: "country", value: "US")
-        ]
-        guard let url = components?.url else { return nil }
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        request.setValue(key, forHTTPHeaderField: "x-rapidapi-key")
-        request.setValue(AmazonProductConfig.rapidAPIHost, forHTTPHeaderField: "x-rapidapi-host")
-
-        do {
-            let (data, response) = try await URLSession.shared.data(for: request)
-            guard let http = response as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
-                return nil
-            }
-            let decoded = try JSONDecoder().decode(RapidAmazonProductResponse.self, from: data)
-            guard let product = decoded.data else { return nil }
-            return ScanProductDTO(
-                name: product.product_title ?? "Amazon product",
-                reason: "",
-                priceLabel: product.product_price.map { "\($0)" } ?? "View on Amazon",
-                icon: "cart.fill",
-                imageName: nil,
-                imageURL: product.product_photo,
-                productURL: product.product_url ?? "https://www.amazon.com/dp/\(asin)",
-                asin: asin
+    /// Prefer Gemini suggestions when present; otherwise strict catalog match.
+    func products(
+        for hazards: [ScanHazardDTO],
+        suggested: [ScanProductDTO] = []
+    ) async -> [ScanProductDTO] {
+        let fromGemini = suggested.compactMap { seed -> ScanProductDTO? in
+            let name = seed.name.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !name.isEmpty else { return nil }
+            return AmazonCatalog.enrichSuggestion(
+                name: name,
+                searchQuery: seed.searchQuery,
+                reason: seed.reason,
+                icon: seed.icon
             )
-        } catch {
-            return nil
         }
+
+        if !fromGemini.isEmpty {
+            return Array(fromGemini.prefix(4))
+        }
+        return AmazonCatalog.products(for: hazards)
     }
-}
-
-private struct RapidAmazonProductResponse: Decodable {
-    let data: RapidAmazonProduct?
-}
-
-private struct RapidAmazonProduct: Decodable {
-    let product_title: String?
-    let product_price: String?
-    let product_photo: String?
-    let product_url: String?
 }
