@@ -10,72 +10,89 @@ import Foundation
 import UIKit
 
 enum GeminiScanPrompt {
-    static let system = """
-    You are Safesight, a residential home-safety vision analyst.
-
-    JOB
-    Find ONLY hazards in the user’s selected Focus Areas. Ignore everything else.
-
-    HARD RULES
-    1. focusArea on each hazard MUST exactly match one selected Focus Area string.
-    2. Do not invent unseen hazards. If none apply, return hazards: [] and a short summary.
-    3. Camera-visible issues only (no gas/CO/radon/invisible risks).
-    4. EVERY hazard MUST include boundingBox. Required. Never omit. Never null.
-       - Normalized 0…1 fractions of the IMAGE (not pixels, not 0–100).
-       - Origin = top-left of the photo.
-       - Box must tightly cover the visible hazard object (not the whole room).
-       - width and height each between 0.12 and 0.55. Keep fully inside 0…1.
-       - If unsure of exact edges, still output your best visible box — never skip it.
-    5. Severity: High = immediate injury/fire/egress; Medium = fix soon; Low = minor.
-    6. score: 0–100 for THIS frame vs selected focus areas only.
-    7. icon: short SF Symbol name (bolt.fill, figure.stairs, lightbulb.fill, etc.).
-    8. Recommend ONLY products that fix the listed hazards (e.g. anti-tip straps for unanchored bookshelf — never stair treads unless stairs are the hazard).
-    9. JSON only — no markdown.
-
-    STRICT LENGTH LIMITS (never exceed)
-    - summary: max 110 characters, 1 sentence
-    - title: max 36 characters
-    - detail: max 90 characters, 1 sentence
-    - fixSteps: exactly 2 steps, each max 70 characters
-    - nextSteps: max 3 items, each max 70 characters
-    - hazards: max 4 total
-    - products: max 3; each must map to a listed hazard
-    Prefer blunt, plain language. No filler.
-
-    OUTPUT SCHEMA
-    {
-      "score": number,
-      "summary": string,
-      "hazards": [
-        {
-          "title": string,
-          "detail": string,
-          "severity": "High" | "Medium" | "Low",
-          "icon": string,
-          "focusArea": string,
-          "boundingBox": { "x": number, "y": number, "width": number, "height": number },
-          "fixSteps": [string, string]
+    static func system(maxHazards: Int, aggressiveness: Double) -> String {
+        let level = Int(round(aggressiveness * 100))
+        let stance: String
+        switch aggressiveness {
+        case ..<0.35:
+            stance = "Be conservative. Only report clear, obvious hazards. Prefer fewer findings over uncertain ones."
+        case ..<0.7:
+            stance = "Be balanced. Report clear hazards and likely issues that a careful homeowner should fix."
+        default:
+            stance = "Be aggressive. Surface every plausible visible risk in the focus areas, including borderline / preventive issues. Prefer more findings when unsure."
         }
-      ],
-      "products": [
+
+        return """
+        You are Safesight, a residential home-safety vision analyst.
+
+        JOB
+        Find hazards in the user’s selected Focus Areas. Ignore everything outside those areas.
+
+        AGGRESSIVENESS: \(level)% — \(stance)
+
+        HARD RULES
+        1. focusArea on each hazard MUST exactly match one selected Focus Area string.
+        2. Do not invent totally unseen hazards. At \(level)% aggressiveness you may include borderline visible risks.
+        3. Camera-visible issues only (no gas/CO/radon/invisible risks).
+        4. EVERY hazard MUST include boundingBox. Required. Never omit. Never null.
+           - Normalized 0…1 fractions of the IMAGE (not pixels, not 0–100).
+           - Origin = top-left of the photo.
+           - Box must tightly cover the visible hazard object (not the whole room).
+           - width and height each between 0.12 and 0.55. Keep fully inside 0…1.
+           - If unsure of exact edges, still output your best visible box — never skip it.
+        5. Severity: High = immediate injury/fire/egress; Medium = fix soon; Low = minor.
+        6. score: 0–100 for THIS frame vs selected focus areas only.
+        7. icon: short SF Symbol name (bolt.fill, figure.stairs, lightbulb.fill, etc.).
+        8. Recommend ONLY products that fix the listed hazards.
+        9. JSON only — no markdown.
+
+        STRICT LENGTH LIMITS (never exceed)
+        - summary: max 110 characters, 1 sentence
+        - title: max 36 characters
+        - detail: max 90 characters, 1 sentence
+        - fixSteps: exactly 2 steps, each max 70 characters
+        - nextSteps: max 3 items, each max 70 characters
+        - hazards: up to \(maxHazards) total — list as many distinct visible issues as fit (do not stop early at 1–2 if more exist)
+        - products: max 3; each must map to a listed hazard
+        Prefer blunt, plain language. No filler.
+
+        OUTPUT SCHEMA
         {
-          "name": string,
-          "searchQuery": string,
-          "reason": string,
-          "icon": string
+          "score": number,
+          "summary": string,
+          "hazards": [
+            {
+              "title": string,
+              "detail": string,
+              "severity": "High" | "Medium" | "Low",
+              "icon": string,
+              "focusArea": string,
+              "boundingBox": { "x": number, "y": number, "width": number, "height": number },
+              "fixSteps": [string, string]
+            }
+          ],
+          "products": [
+            {
+              "name": string,
+              "searchQuery": string,
+              "reason": string,
+              "icon": string
+            }
+          ],
+          "nextSteps": [string]
         }
-      ],
-      "nextSteps": [string]
+        """
     }
-    """
 
-    static func userPrompt(focusAreas: [String], dwelling: String?) -> String {
+    static func userPrompt(focusAreas: [String], dwelling: String?, maxHazards: Int, aggressiveness: Double) -> String {
         let areas = focusAreas.isEmpty
             ? "(none selected — return empty hazards)"
             : focusAreas.map { "- \($0)" }.joined(separator: "\n")
         let home = dwelling ?? "unknown dwelling type"
+        let level = Int(round(aggressiveness * 100))
         return """
-        Analyze this photo for Safesight. Keep all text short per length limits.
+        Analyze this photo for Safesight at \(level)% look-hardness.
+        Return up to \(maxHazards) distinct hazards if visible — do not stop at the first 1–2.
         Every hazard MUST include a tight boundingBox (0…1) around the visible problem.
 
         Dwelling: \(home)
@@ -104,13 +121,20 @@ struct GeminiScanAnalyzer: ScanAnalyzing {
         }
 
         let focusAreas = request.focusAreas
+        let maxHazards = max(2, min(8, request.maxHazards))
+        let aggressiveness = ProfileStore.clampAggressiveness(request.aggressiveness)
         let body = GeminiGenerateRequest(
-            systemInstruction: .init(parts: [.init(text: GeminiScanPrompt.system)]),
+            systemInstruction: .init(parts: [.init(text: GeminiScanPrompt.system(
+                maxHazards: maxHazards,
+                aggressiveness: aggressiveness
+            ))]),
             contents: [
                 .init(role: "user", parts: [
                     .init(text: GeminiScanPrompt.userPrompt(
                         focusAreas: focusAreas,
-                        dwelling: request.dwelling
+                        dwelling: request.dwelling,
+                        maxHazards: maxHazards,
+                        aggressiveness: aggressiveness
                     )),
                     .init(inlineData: .init(
                         mimeType: "image/jpeg",
@@ -119,7 +143,7 @@ struct GeminiScanAnalyzer: ScanAnalyzing {
                 ])
             ],
             generationConfig: .init(
-                temperature: 0.2,
+                temperature: aggressiveness >= 0.7 ? 0.35 : 0.2,
                 responseMimeType: "application/json",
                 thinkingConfig: .init(thinkingLevel: "LOW")
             )
@@ -166,7 +190,10 @@ struct GeminiScanAnalyzer: ScanAnalyzing {
                 }
 
                 let parsed = try JSONDecoder().decode(GeminiScanPayload.self, from: jsonData)
-                return parsed.toScanAnalysisResponse(allowedFocusAreas: Set(focusAreas))
+                return parsed.toScanAnalysisResponse(
+                    allowedFocusAreas: Set(focusAreas),
+                    maxHazards: maxHazards
+                )
             } catch let error as ScanAnalysisError {
                 throw error
             } catch {
@@ -431,8 +458,9 @@ private struct GeminiScanPayload: Decodable {
         }
     }
 
-    func toScanAnalysisResponse(allowedFocusAreas: Set<String>) -> ScanAnalysisResponse {
+    func toScanAnalysisResponse(allowedFocusAreas: Set<String>, maxHazards: Int = 4) -> ScanAnalysisResponse {
         let allowed = allowedFocusAreas
+        let cap = max(2, min(8, maxHazards))
         let rawHazards = hazards ?? []
         let mappedHazards: [ScanHazardDTO] = rawHazards.enumerated().compactMap { index, h in
             guard let title = h.title?.trimmingCharacters(in: .whitespacesAndNewlines), !title.isEmpty else {
@@ -471,7 +499,7 @@ private struct GeminiScanPayload: Decodable {
             )
         }
 
-        let limitedHazards = Array(mappedHazards.prefix(4))
+        let limitedHazards = Array(mappedHazards.prefix(cap))
         let score = min(100, max(0, score ?? (limitedHazards.isEmpty ? 92 : 70)))
         let summaryText = (summary ?? "")
             .trimmingCharacters(in: .whitespacesAndNewlines)

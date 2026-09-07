@@ -928,7 +928,9 @@ private struct ScanScreen: View {
             scanId: scanId,
             focusAreas: profiles.profile?.hazards.map(\.rawValue) ?? [],
             dwelling: profiles.profile?.dwelling.rawValue,
-            imageBase64: nil
+            imageBase64: nil,
+            aggressiveness: profiles.scanAggressiveness,
+            maxHazards: profiles.maxHazardsPerScan
         )
 
         let analyzer = ScanAnalyzerFactory.make()
@@ -1036,6 +1038,9 @@ private struct YouScreen: View {
                         )
                     }
                     .padding(.horizontal, 22)
+
+                    lookHardnessCard
+                        .padding(.horizontal, 22)
 
                     focusSection
                         .padding(.horizontal, 22)
@@ -1181,6 +1186,67 @@ private struct YouScreen: View {
             RoundedRectangle(cornerRadius: 22, style: .continuous)
                 .fill(Color.white)
         )
+    }
+
+    private var lookHardnessCard: some View {
+        let percent = Int(round(profiles.scanAggressiveness * 100))
+        return VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Label("Look hardness", systemImage: "eye.fill")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(Theme.ink)
+                Spacer()
+                Text("\(percent)%")
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundStyle(Theme.blue)
+                    .monospacedDigit()
+            }
+
+            Text(lookHardnessCaption(percent))
+                .font(.system(size: 13))
+                .foregroundStyle(Theme.mute)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Slider(
+                value: Binding(
+                    get: { profiles.scanAggressiveness },
+                    set: { profiles.setScanAggressiveness($0) }
+                ),
+                in: 0.1...1.0,
+                step: 0.05
+            )
+            .tint(Theme.blue)
+
+            HStack {
+                Text("Barely look")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundStyle(Theme.mute)
+                Spacer()
+                Text("Look very hard")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundStyle(Theme.mute)
+            }
+
+            Text("Up to \(profiles.maxHazardsPerScan) hazards per photo at this setting.")
+                .font(.system(size: 12, weight: .medium))
+                .foregroundStyle(Theme.mute)
+        }
+        .padding(18)
+        .background(
+            RoundedRectangle(cornerRadius: 22, style: .continuous)
+                .fill(Color.white)
+        )
+    }
+
+    private func lookHardnessCaption(_ percent: Int) -> String {
+        switch percent {
+        case ..<35:
+            return "Only clear, obvious issues. Fewer false alarms."
+        case ..<70:
+            return "Balanced — clear hazards plus likely fixes a careful homeowner should catch."
+        default:
+            return "Aggressive — surfaces borderline and preventive risks in your focus areas."
+        }
     }
 
     private var focusSection: some View {

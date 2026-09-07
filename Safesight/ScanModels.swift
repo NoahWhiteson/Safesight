@@ -104,6 +104,25 @@ struct ScanAnalysisRequest: Codable {
     var dwelling: String?
     /// Optional when the image is uploaded as multipart instead of inline base64.
     var imageBase64: String?
+    /// 0.1…1.0 — how hard Gemini should dig for hazards.
+    var aggressiveness: Double
+    var maxHazards: Int
+
+    init(
+        scanId: UUID,
+        focusAreas: [String],
+        dwelling: String? = nil,
+        imageBase64: String? = nil,
+        aggressiveness: Double = 0.55,
+        maxHazards: Int = 4
+    ) {
+        self.scanId = scanId
+        self.focusAreas = focusAreas
+        self.dwelling = dwelling
+        self.imageBase64 = imageBase64
+        self.aggressiveness = aggressiveness
+        self.maxHazards = maxHazards
+    }
 }
 
 struct ScanAnalysisResponse: Codable {

@@ -105,6 +105,17 @@ final class ScanHistoryStore: ObservableObject {
         return scans[index]
     }
 
+    /// Open hazards from every scan except `scanID` (house memory across photos).
+    func openHazards(excludingScanID scanID: UUID) -> [(scan: ScanResult, hazard: ScanHazardDTO)] {
+        var out: [(ScanResult, ScanHazardDTO)] = []
+        for scan in scans where scan.id != scanID {
+            for hazard in scan.openHazards {
+                out.append((scan, hazard))
+            }
+        }
+        return out
+    }
+
     /// Open (non-low) hazards across all saved scans — drives Home metrics.
     var totalOpenActionableHazards: Int {
         scans
