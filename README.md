@@ -26,9 +26,10 @@
 6. [What’s inside the experience](./docs/experience.md)
 7. [Design principles](./docs/design-principles.md)
 8. [Tech at a glance](./docs/tech.md)
-9. [Shipaton Next Gen](./docs/shipaton-next-gen.md)
-10. [Safesight in real rooms](./docs/real-scans.md)
-11. [Disclaimer & license](./docs/disclaimer-and-license.md)
+9. [FAQ](./docs/faq.md)
+10. [Shipaton Next Gen](./docs/shipaton-next-gen.md)
+11. [Safesight in real rooms](./docs/real-scans.md)
+12. [Disclaimer & license](./docs/disclaimer-and-license.md)
 
 ---
 
