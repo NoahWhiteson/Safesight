@@ -84,7 +84,7 @@ struct RemoteScanAnalyzer: ScanAnalyzing {
                 #endif
                 throw ScanAnalysisError.invalidResponse
             }
-            return try JSONDecoder().decode(ScanAnalysisResponse.self, from: data)
+            return try JSONDecoder().decode(ScanAnalysisResponse.self, from: data).withSanitizedBoxes()
         } catch let error as ScanAnalysisError {
             throw error
         } catch {
@@ -92,7 +92,7 @@ struct RemoteScanAnalyzer: ScanAnalyzing {
         }
     }
 
-    private func compressedJPEG(from image: UIImage, maxDimension: CGFloat = 1280) -> Data? {
+    private func compressedJPEG(from image: UIImage, maxDimension: CGFloat = 1400) -> Data? {
         let size = image.size
         let longest = max(size.width, size.height)
         let scaled: UIImage
@@ -106,8 +106,8 @@ struct RemoteScanAnalyzer: ScanAnalyzing {
         } else {
             scaled = image
         }
-        return scaled.jpegData(compressionQuality: 0.55)
-            ?? scaled.jpegData(compressionQuality: 0.4)
+        return scaled.jpegData(compressionQuality: 0.72)
+            ?? scaled.jpegData(compressionQuality: 0.55)
     }
 }
 

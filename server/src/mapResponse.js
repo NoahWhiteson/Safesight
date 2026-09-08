@@ -10,17 +10,97 @@ function trimTo(text, max) {
   return t.slice(0, max - 1).trimEnd() + "…";
 }
 
+function num(v) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+
+/**
+ * Gemini sometimes returns xyxy, center boxes, 0–100, or 0–1000.
+ * Normalize everything to top-left + size in 0…1.
+ */
+function coerceRawBox(box) {
+  if (box == null) return null;
+
+  if (Array.isArray(box) && box.length >= 4) {
+    const a = num(box[0]);
+    const b = num(box[1]);
+    const c = num(box[2]);
+    const d = num(box[3]);
+    if (a == null || b == null || c == null || d == null) return null;
+
+    // [xmin, ymin, xmax, ymax] — third/fourth look like corners, not sizes
+    const looksXyxy =
+      c > a &&
+      d > b &&
+      (c - a) >= 0.01 &&
+      (d - b) >= 0.01 &&
+      (a + c > 1.02 || b + d > 1.02 || c > 0.7 || d > 0.7 || c > 1 || d > 1);
+    if (looksXyxy) {
+      return { x: a, y: b, width: c - a, height: d - b };
+    }
+    return { x: a, y: b, width: c, height: d };
+  }
+
+  if (typeof box !== "object") return null;
+
+  const cx = num(box.centerX ?? box.cx ?? box.center_x);
+  const cy = num(box.centerY ?? box.cy ?? box.center_y);
+  let width = num(box.width ?? box.w);
+  let height = num(box.height ?? box.h);
+
+  if (cx != null && cy != null && width != null && height != null) {
+    return { x: cx - width / 2, y: cy - height / 2, width, height };
+  }
+
+  let x = num(box.x ?? box.left ?? box.x_min ?? box.xmin);
+  let y = num(box.y ?? box.top ?? box.y_min ?? box.ymin);
+  const x2 = num(box.x2 ?? box.right ?? box.x_max ?? box.xmax);
+  const y2 = num(box.y2 ?? box.bottom ?? box.y_max ?? box.ymax);
+
+  if (width == null && x != null && x2 != null) width = x2 - x;
+  if (height == null && y != null && y2 != null) height = y2 - y;
+
+  if (x == null || y == null || width == null || height == null) return null;
+  return { x, y, width, height };
+}
+
 function normalizeBoxUnits(sx, sy, sw, sh) {
-  const maxV = Math.max(sx, sy, sw, sh);
-  // 0…1000 (or pixel-ish on ~1k images)
+  const maxV = Math.max(Math.abs(sx), Math.abs(sy), Math.abs(sw), Math.abs(sh));
   if (maxV > 100) {
     return { sx: sx / 1000, sy: sy / 1000, sw: sw / 1000, sh: sh / 1000 };
   }
-  // 0…100 percentages — only when clearly not already normalized
   if (maxV > 1.5) {
     return { sx: sx / 100, sy: sy / 100, sw: sw / 100, sh: sh / 100 };
   }
   return { sx, sy, sw, sh };
+}
+
+/** Prefer a tightened real box over a fake center fallback. */
+function tightenBox(sx, sy, sw, sh) {
+  const maxW = 0.52;
+  const maxH = 0.52;
+  let x = sx;
+  let y = sy;
+  let w = sw;
+  let h = sh;
+
+  if (w > maxW) {
+    const cx = x + w / 2;
+    w = maxW;
+    x = cx - w / 2;
+  }
+  if (h > maxH) {
+    const cy = y + h / 2;
+    h = maxH;
+    y = cy - h / 2;
+  }
+
+  x = clamp01(x);
+  y = clamp01(y);
+  w = Math.min(Math.max(w, 0.04), 1 - x);
+  h = Math.min(Math.max(h, 0.04), 1 - y);
+  return { x, y, width: w, height: h };
 }
 
 function fallbackBox(index, total) {
@@ -30,58 +110,74 @@ function fallbackBox(index, total) {
   return {
     x: clamp01(0.34 + offset),
     y: clamp01(0.36 + offset * 0.4),
-    width: 0.28,
-    height: 0.22,
+    width: 0.22,
+    height: 0.18,
   };
 }
 
-function sanitizeBox(box, index, total) {
-  let raw = box;
-  if (Array.isArray(box) && box.length >= 4) {
-    raw = { x: box[0], y: box[1], width: box[2], height: box[3] };
-  }
+export function sanitizeBox(box, index, total) {
+  const coerced = coerceRawBox(box);
+  if (!coerced) return fallbackBox(index, total);
 
-  let x = raw?.x;
-  let y = raw?.y;
-  let width = raw?.width ?? raw?.w;
-  let height = raw?.height ?? raw?.h;
-
-  if (x == null && raw?.xmin != null) x = raw.xmin;
-  if (y == null && raw?.ymin != null) y = raw.ymin;
-  if (width == null && raw?.xmin != null && raw?.xmax != null) width = raw.xmax - raw.xmin;
-  if (height == null && raw?.ymin != null && raw?.ymax != null) height = raw.ymax - raw.ymin;
-
-  const missing = x == null || y == null || width == null || height == null;
-  let sx = Number(x) || 0;
-  let sy = Number(y) || 0;
-  let sw = Number(width) || 0;
-  let sh = Number(height) || 0;
+  let sx = coerced.x;
+  let sy = coerced.y;
+  let sw = coerced.width;
+  let sh = coerced.height;
 
   ({ sx, sy, sw, sh } = normalizeBoxUnits(sx, sy, sw, sh));
+
+  // Absolute junk only → fallback
+  if (!Number.isFinite(sx) || !Number.isFinite(sy) || !Number.isFinite(sw) || !Number.isFinite(sh)) {
+    return fallbackBox(index, total);
+  }
+  if (sw <= 0 || sh <= 0) return fallbackBox(index, total);
+
+  // Negative origin sometimes means center-ish mistakes — snap into view first
+  if (sx < 0) {
+    sw += sx;
+    sx = 0;
+  }
+  if (sy < 0) {
+    sh += sy;
+    sy = 0;
+  }
 
   sx = clamp01(sx);
   sy = clamp01(sy);
   sw = Math.max(0, sw);
   sh = Math.max(0, sh);
 
-  const zeroed = sw < 0.01 || sh < 0.01;
-  const nearlyFull = sw > 0.95 && sh > 0.95;
-  if (missing || zeroed || nearlyFull) {
-    return fallbackBox(index, total);
+  if (sw < 0.012 || sh < 0.012) return fallbackBox(index, total);
+
+  // Huge / full-frame → tighten around center instead of inventing a new box
+  if (sw > 0.72 || sh > 0.72 || (sw > 0.55 && sh > 0.55)) {
+    return tightenBox(sx, sy, sw, sh);
   }
 
   sw = Math.min(sw, 1 - sx);
   sh = Math.min(sh, 1 - sy);
-  if (sw < 0.01 || sh < 0.01) {
-    return fallbackBox(index, total);
+  if (sw < 0.012 || sh < 0.012) return fallbackBox(index, total);
+
+  // Floor tiny but real boxes so overlays stay tappable
+  if (sw < 0.04) {
+    const cx = sx + sw / 2;
+    sw = 0.04;
+    sx = clamp01(cx - sw / 2);
+    sw = Math.min(sw, 1 - sx);
   }
+  if (sh < 0.04) {
+    const cy = sy + sh / 2;
+    sh = 0.04;
+    sy = clamp01(cy - sh / 2);
+    sh = Math.min(sh, 1 - sy);
+  }
+
   return { x: sx, y: sy, width: sw, height: sh };
 }
 
 function sanitizeConfidence(raw) {
   let n = Number(raw);
   if (!Number.isFinite(n)) return 72;
-  // Model sometimes returns 0…1
   if (n > 0 && n <= 1) n *= 100;
   return Math.min(99, Math.max(40, Math.round(n)));
 }
@@ -123,7 +219,7 @@ export function toScanAnalysisResponse(payload, { allowedFocusAreas, maxHazards 
         ? severityRaw
         : "Medium";
 
-    const box = h?.boundingBox || h?.bounding_box || h?.bbox || {};
+    const box = h?.boundingBox || h?.bounding_box || h?.bbox || h?.box || {};
     const steps = (Array.isArray(h?.fixSteps) ? h.fixSteps : [])
       .map((s) => trimTo(s, 70))
       .filter(Boolean);

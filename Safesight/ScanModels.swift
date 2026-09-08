@@ -52,37 +52,81 @@ struct NormalizedRect: Codable, Hashable {
         index: Int,
         total: Int
     ) -> NormalizedRect {
-        let missing = x == nil || y == nil || width == nil || height == nil
-        var sx = x ?? 0
-        var sy = y ?? 0
-        var sw = width ?? 0
-        var sh = height ?? 0
+        guard var sx = x, var sy = y, var sw = width, var sh = height,
+              sw.isFinite, sh.isFinite, sx.isFinite, sy.isFinite else {
+            return fallback(index: index, total: max(total, 1))
+        }
 
         // Normalize units without crushing already-correct 0…1 boxes.
-        let maxV = max(sx, sy, sw, sh)
+        let maxV = max(abs(sx), abs(sy), abs(sw), abs(sh))
         if maxV > 100 {
             sx /= 1000; sy /= 1000; sw /= 1000; sh /= 1000
         } else if maxV > 1.5 {
             sx /= 100; sy /= 100; sw /= 100; sh /= 100
         }
 
+        // xyxy mistake: width/height arrived as xmax/ymax
+        if sw > sx, sh > sy, (sx + sw > 1.02 || sy + sh > 1.02 || sw > 0.7 || sh > 0.7) {
+            sw -= sx
+            sh -= sy
+        }
+
+        if sx < 0 { sw += sx; sx = 0 }
+        if sy < 0 { sh += sy; sy = 0 }
+
         sx = clamp01(sx)
         sy = clamp01(sy)
         sw = max(0, sw)
         sh = max(0, sh)
 
-        let zeroed = sw < 0.01 || sh < 0.01
-        let nearlyFull = sw > 0.95 && sh > 0.95
-        if missing || zeroed || nearlyFull {
+        if sw < 0.012 || sh < 0.012 {
             return fallback(index: index, total: max(total, 1))
         }
 
-        // Preserve tight boxes; only clamp so the rect stays on-canvas.
+        // Oversized / near-full → tighten around center (don't invent a center stub).
+        if sw > 0.72 || sh > 0.72 || (sw > 0.55 && sh > 0.55) {
+            return tightened(x: sx, y: sy, width: sw, height: sh)
+        }
+
         sw = min(sw, 1 - sx)
         sh = min(sh, 1 - sy)
-        if sw < 0.01 || sh < 0.01 {
+        if sw < 0.012 || sh < 0.012 {
             return fallback(index: index, total: max(total, 1))
         }
+
+        if sw < 0.04 {
+            let cx = sx + sw / 2
+            sw = 0.04
+            sx = clamp01(cx - sw / 2)
+            sw = min(sw, 1 - sx)
+        }
+        if sh < 0.04 {
+            let cy = sy + sh / 2
+            sh = 0.04
+            sy = clamp01(cy - sh / 2)
+            sh = min(sh, 1 - sy)
+        }
+
+        return NormalizedRect(x: sx, y: sy, width: sw, height: sh)
+    }
+
+    private static func tightened(x: Double, y: Double, width: Double, height: Double) -> NormalizedRect {
+        var sx = x, sy = y, sw = width, sh = height
+        let maxW = 0.52, maxH = 0.52
+        if sw > maxW {
+            let cx = sx + sw / 2
+            sw = maxW
+            sx = cx - sw / 2
+        }
+        if sh > maxH {
+            let cy = sy + sh / 2
+            sh = maxH
+            sy = cy - sh / 2
+        }
+        sx = clamp01(sx)
+        sy = clamp01(sy)
+        sw = min(max(sw, 0.04), 1 - sx)
+        sh = min(max(sh, 0.04), 1 - sy)
         return NormalizedRect(x: sx, y: sy, width: sw, height: sh)
     }
 
@@ -139,6 +183,24 @@ struct ScanAnalysisResponse: Codable {
     var hazards: [ScanHazardDTO]
     var products: [ScanProductDTO]
     var nextSteps: [String]
+
+    /// Re-run geometry sanitize after network decode (defends against odd model units).
+    func withSanitizedBoxes() -> ScanAnalysisResponse {
+        var copy = self
+        let total = max(hazards.count, 1)
+        for i in copy.hazards.indices {
+            let box = copy.hazards[i].boundingBox
+            copy.hazards[i].boundingBox = NormalizedRect.sanitized(
+                x: box.x,
+                y: box.y,
+                width: box.width,
+                height: box.height,
+                index: i,
+                total: total
+            )
+        }
+        return copy
+    }
 }
 
 enum HazardLifecycleStatus: String, Codable, CaseIterable, Hashable {
@@ -207,7 +269,15 @@ struct ScanHazardDTO: Codable, Identifiable, Hashable {
         detail = try c.decode(String.self, forKey: .detail)
         severity = try c.decode(HazardSeverity.self, forKey: .severity)
         icon = try c.decode(String.self, forKey: .icon)
-        boundingBox = try c.decode(NormalizedRect.self, forKey: .boundingBox).unitNormalized()
+        let rawBox = try c.decode(NormalizedRect.self, forKey: .boundingBox)
+        boundingBox = NormalizedRect.sanitized(
+            x: rawBox.x,
+            y: rawBox.y,
+            width: rawBox.width,
+            height: rawBox.height,
+            index: 0,
+            total: 1
+        )
         fixSteps = try c.decode([String].self, forKey: .fixSteps)
         focusArea = try c.decodeIfPresent(String.self, forKey: .focusArea)
         confidence = Self.decodeConfidence(from: c)

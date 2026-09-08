@@ -24,11 +24,16 @@ HARD RULES
 2. Do not invent totally unseen hazards. At ${level}% aggressiveness you may include borderline visible risks.
 3. Camera-visible issues only (no gas/CO/radon/invisible risks).
 4. EVERY hazard MUST include boundingBox. Required. Never omit. Never null.
-   - Normalized 0…1 fractions of the IMAGE ONLY (never pixels, never 0–100, never 0–1000).
-   - Origin = top-left of the photo.
-   - Box must tightly hug the visible hazard object — not the whole room, wall, or frame.
-   - Typical width/height ≈ 0.05–0.40. Keep fully inside 0…1. Never return a near-full-image box.
-   - If unsure of exact edges, still output your best tight visible box — never skip it.
+   BOX FORMAT (critical — wrong boxes break the product):
+   - Object form ONLY: { "x": number, "y": number, "width": number, "height": number }
+   - x,y = TOP-LEFT corner of the hazard in the IMAGE (not center, not bottom-left).
+   - width/height = size of the box (NOT xmax/ymax).
+   - All four values are fractions of image width/height in 0…1 (example: 0.12, never 12, never 120).
+   - NEVER use pixels, 0–100 percentages, 0–1000 coords, arrays, or xmax/ymax pairs.
+   - Box must tightly hug the visible hazard object — not the whole room, wall, furniture group, or frame.
+   - Typical width/height ≈ 0.05–0.35. Rarely above 0.45. Never near-full-image.
+   - Example candle on a desk: { "x": 0.62, "y": 0.48, "width": 0.11, "height": 0.14 }
+   - If edges are fuzzy, still output your best TIGHT box — never skip, never invent a room-sized box.
 5. Severity: High = immediate injury/fire/egress; Medium = fix soon; Low = minor.
 6. score: 0–100 for THIS frame vs selected focus areas only.
 7. icon: short SF Symbol name (bolt.fill, figure.stairs, lightbulb.fill, etc.).
@@ -83,10 +88,69 @@ export function userPrompt({ focusAreas, dwelling, maxHazards, aggressiveness })
   const level = Math.round(aggressiveness * 100);
   return `Analyze this photo for Safesight at ${level}% look-hardness.
 Return up to ${maxHazards} distinct hazards if visible — do not stop at the first 1–2.
-Every hazard MUST include a tight boundingBox (0…1) around the visible problem.
+
+BOUNDING BOXES: for every hazard, set boundingBox to tight top-left + width/height in 0…1 on THIS image.
+Wrong example (do not do): xmax/ymax, center coords, percentages, or a box around the whole room.
+Right example: { "x": 0.41, "y": 0.27, "width": 0.16, "height": 0.21 }
 
 Dwelling: ${home}
 
 Focus Areas ONLY:
 ${areas}`;
 }
+
+/** Gemini structured-output schema — keeps boxes as objects with x/y/width/height. */
+export const analyzeResponseSchema = {
+  type: "OBJECT",
+  properties: {
+    score: { type: "NUMBER" },
+    summary: { type: "STRING" },
+    hazards: {
+      type: "ARRAY",
+      items: {
+        type: "OBJECT",
+        properties: {
+          title: { type: "STRING" },
+          detail: { type: "STRING" },
+          severity: { type: "STRING" },
+          icon: { type: "STRING" },
+          focusArea: { type: "STRING" },
+          confidence: { type: "NUMBER" },
+          boundingBox: {
+            type: "OBJECT",
+            properties: {
+              x: { type: "NUMBER" },
+              y: { type: "NUMBER" },
+              width: { type: "NUMBER" },
+              height: { type: "NUMBER" },
+            },
+            required: ["x", "y", "width", "height"],
+          },
+          fixSteps: {
+            type: "ARRAY",
+            items: { type: "STRING" },
+          },
+        },
+        required: ["title", "detail", "severity", "focusArea", "confidence", "boundingBox", "fixSteps"],
+      },
+    },
+    products: {
+      type: "ARRAY",
+      items: {
+        type: "OBJECT",
+        properties: {
+          name: { type: "STRING" },
+          searchQuery: { type: "STRING" },
+          reason: { type: "STRING" },
+          icon: { type: "STRING" },
+        },
+        required: ["name", "searchQuery", "reason"],
+      },
+    },
+    nextSteps: {
+      type: "ARRAY",
+      items: { type: "STRING" },
+    },
+  },
+  required: ["score", "summary", "hazards"],
+};

@@ -35,11 +35,16 @@ enum GeminiScanPrompt {
         2. Do not invent totally unseen hazards. At \(level)% aggressiveness you may include borderline visible risks.
         3. Camera-visible issues only (no gas/CO/radon/invisible risks).
         4. EVERY hazard MUST include boundingBox. Required. Never omit. Never null.
-           - Normalized 0…1 fractions of the IMAGE ONLY (never pixels, never 0–100, never 0–1000).
-           - Origin = top-left of the photo.
-           - Box must tightly hug the visible hazard object — not the whole room, wall, or frame.
-           - Typical width/height ≈ 0.05–0.40. Keep fully inside 0…1. Never return a near-full-image box.
-           - If unsure of exact edges, still output your best tight visible box — never skip it.
+           BOX FORMAT (critical — wrong boxes break the product):
+           - Object form ONLY: { "x": number, "y": number, "width": number, "height": number }
+           - x,y = TOP-LEFT corner of the hazard in the IMAGE (not center, not bottom-left).
+           - width/height = size of the box (NOT xmax/ymax).
+           - All four values are fractions of image width/height in 0…1 (example: 0.12, never 12, never 120).
+           - NEVER use pixels, 0–100 percentages, 0–1000 coords, arrays, or xmax/ymax pairs.
+           - Box must tightly hug the visible hazard object — not the whole room, wall, furniture group, or frame.
+           - Typical width/height ≈ 0.05–0.35. Rarely above 0.45. Never near-full-image.
+           - Example candle on a desk: { "x": 0.62, "y": 0.48, "width": 0.11, "height": 0.14 }
+           - If edges are fuzzy, still output your best TIGHT box — never skip, never invent a room-sized box.
         5. Severity: High = immediate injury/fire/egress; Medium = fix soon; Low = minor.
         6. score: 0–100 for THIS frame vs selected focus areas only.
         7. icon: short SF Symbol name (bolt.fill, figure.stairs, lightbulb.fill, etc.).

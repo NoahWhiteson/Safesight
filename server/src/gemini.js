@@ -1,4 +1,4 @@
-import { systemPrompt, userPrompt } from "./prompts.js";
+import { systemPrompt, userPrompt, analyzeResponseSchema } from "./prompts.js";
 import { stripCodeFences, toScanAnalysisResponse } from "./mapResponse.js";
 
 export async function analyzeWithGemini({
@@ -13,6 +13,9 @@ export async function analyzeWithGemini({
   const cap = Math.max(2, Math.min(8, maxHazards || 4));
   const agg = Math.min(1, Math.max(0.1, aggressiveness ?? 0.55));
   const jpegBase64 = imageBuffer.toString("base64");
+
+  // Keep temperature low — box geometry is sensitive to sampling noise.
+  const temperature = agg >= 0.7 ? 0.22 : 0.12;
 
   const body = {
     system_instruction: {
@@ -40,8 +43,9 @@ export async function analyzeWithGemini({
       },
     ],
     generation_config: {
-      temperature: agg >= 0.7 ? 0.35 : 0.2,
+      temperature,
       response_mime_type: "application/json",
+      response_schema: analyzeResponseSchema,
       thinking_config: { thinking_level: "LOW" },
     },
   };
