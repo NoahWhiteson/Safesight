@@ -29,7 +29,9 @@
 9. [FAQ](./docs/faq.md)
 10. [Shipaton Next Gen](./docs/shipaton-next-gen.md)
 11. [Safesight in real rooms](./docs/real-scans.md)
-12. [Disclaimer & license](./docs/disclaimer-and-license.md)
+12. [Terms of Service](./docs/terms-of-service.md)
+13. [Privacy Policy](./docs/privacy-policy.md)
+14. [Disclaimer & license](./docs/disclaimer-and-license.md)
 
 ---
 

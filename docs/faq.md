@@ -16,7 +16,7 @@ No. Safesight is an AI assistant for risks you can **see in a photo**. It is not
 
 ### Do I need Premium to try it?
 
-No. Free use covers the core scan loop with limits. **Premium** (RevenueCat) unlocks unlimited scanning and premium focus areas.
+No. Free includes **2 scans** and core on-scan results (score, hazards, boxes). **Premium** (RevenueCat) unlocks unlimited scanning, premium focus areas, and the full Home dashboard (AI summary & product picks).
 
 ### Does a failed scan use a credit?
 

@@ -28,7 +28,7 @@ final class SubscriptionStore: NSObject, ObservableObject {
     private let hazardsKey = "safesight.openHazards"
     private let summaryKey = "safesight.aiSummary"
 
-    static let freeScanLimit = 1
+    static let freeScanLimit = 2
     static let freeFocusLimit = 6
 
     var remainingFreeScans: Int {

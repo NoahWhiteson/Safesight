@@ -3,7 +3,7 @@
 //  Safesight
 //
 //  Codable request/response shapes for the scan pipeline.
-//  Swap PlaceholderScanAnalyzer for a real HTTP client later — same types.
+//  Shared request/response types for RemoteScanAnalyzer + on-device history.
 //
 
 import Foundation

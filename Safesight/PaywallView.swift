@@ -56,12 +56,12 @@ struct PaywallView: View {
     @State private var isPurchasing = false
 
     private let features = [
-        ("gauge.with.needle", "House Score"),
-        ("bag", "Product recommendations"),
-        ("sparkles", "AI summary"),
         ("viewfinder", "Unlimited scans"),
         ("square.grid.3x3", "All camera focus areas"),
-        ("exclamationmark.triangle", "Unlimited hazard detection")
+        ("exclamationmark.triangle", "Unlimited hazard detection"),
+        ("sparkles", "Home AI summary"),
+        ("bag", "Home product recommendations"),
+        ("gauge.with.needle", "Full Home dashboard insights")
     ]
 
     private let blue = Color(red: 0.0, green: 0.48, blue: 1.0)
@@ -134,7 +134,7 @@ struct PaywallView: View {
                     .frame(maxWidth: .infinity)
                     .multilineTextAlignment(.center)
 
-                Text("Unlock House Score, AI summary, product picks, unlimited scans, and full hazard detection.")
+                Text("Free includes \(SubscriptionStore.freeScanLimit) scans and core results. Premium unlocks unlimited scanning, every focus area, and the full Home dashboard (AI summary & product picks).")
                     .font(.system(size: 15))
                     .foregroundStyle(Color(white: 0.45))
                     .multilineTextAlignment(.center)

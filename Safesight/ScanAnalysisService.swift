@@ -17,20 +17,6 @@ enum ScanAnalysisError: Error {
     case network(Error)
 }
 
-/// Local mock — returns structured placeholder data with bounding boxes.
-struct PlaceholderScanAnalyzer: ScanAnalyzing {
-    var delayNanoseconds: UInt64 = 0
-
-    func analyze(request: ScanAnalysisRequest, image: UIImage) async throws -> ScanAnalysisResponse {
-        if delayNanoseconds > 0 {
-            try await Task.sleep(nanoseconds: delayNanoseconds)
-        }
-        _ = request
-        _ = image
-        return ScanPlaceholderPayload.response()
-    }
-}
-
 /// Calls Safesight server `POST /v1/analyze` (Gemini key stays on the server).
 struct RemoteScanAnalyzer: ScanAnalyzing {
     var endpoint: URL = SafesightAPIConfig.analyzeURL

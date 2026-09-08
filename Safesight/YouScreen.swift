@@ -17,6 +17,7 @@ struct YouScreen: View {
     @State private var showEditFocus = false
     @State private var showEditDwelling = false
     @State private var showLogoutConfirm = false
+    @State private var legalDocument: LegalDocument?
 
     private var current: UserProfile {
         profiles.profile ?? profile
@@ -30,7 +31,7 @@ struct YouScreen: View {
         if subs.isPremium {
             return "Full access · all focus areas"
         }
-        return "1 scan · 6 focus areas"
+        return "\(SubscriptionStore.freeScanLimit) scans · 6 focus areas"
     }
 
     private var scansLabel: String {
@@ -134,11 +135,9 @@ struct YouScreen: View {
                             .padding(.horizontal, 22)
                     }
 
-                    Text("Safesight")
-                        .font(.system(size: 13, weight: .medium))
-                        .foregroundStyle(Theme.mute)
-                        .frame(maxWidth: .infinity)
-                        .padding(.top, 8)
+                    legalFooter
+                        .padding(.horizontal, 22)
+                        .padding(.top, 12)
                 }
                 .padding(.bottom, 28)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -170,6 +169,12 @@ struct YouScreen: View {
             .sheet(isPresented: $showEditDwelling) {
                 EditDwellingSheet(initial: current.dwelling)
             }
+            .sheet(item: $legalDocument) { doc in
+                LegalDocumentSheet(document: doc)
+                    .presentationDetents([.large])
+                    .presentationDragIndicator(.visible)
+                    .presentationCornerRadius(28)
+            }
             .confirmationDialog(
                 "Log out?",
                 isPresented: $showLogoutConfirm,
@@ -195,6 +200,37 @@ struct YouScreen: View {
         AppNavigation.shared.selectedTab = 0
         AppNavigation.shared.pendingScanID = nil
         profiles.logout()
+    }
+
+    private var legalFooter: some View {
+        VStack(spacing: 14) {
+            Text("Safesight can miss hazards. This app is an assistant for visible risks, not a professional inspection, insurance assessment, or emergency service. Always use your own judgment.")
+                .font(.system(size: 12))
+                .foregroundStyle(Theme.mute)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+
+            HStack(spacing: 20) {
+                Button("Terms of Service") {
+                    Haptics.light()
+                    legalDocument = .terms
+                }
+                .buttonStyle(.plain)
+
+                Button("Privacy Policy") {
+                    Haptics.light()
+                    legalDocument = .privacy
+                }
+                .buttonStyle(.plain)
+            }
+            .font(.system(size: 13, weight: .semibold))
+            .foregroundStyle(Theme.blue)
+
+            Text("Safesight")
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(Theme.mute)
+        }
+        .frame(maxWidth: .infinity)
     }
 
     private var profileHeader: some View {
