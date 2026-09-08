@@ -11,6 +11,13 @@ struct HazardsTabView: View {
     @ObservedObject private var history = ScanHistoryStore.shared
     @ObservedObject private var nav = AppNavigation.shared
 
+    @State private var selectedFocus: SafetyInterest? = nil
+    @State private var pageIndex = 0
+    @State private var listBlur: CGFloat = 0
+    @State private var listOpacity: Double = 1
+    @State private var isPaging = false
+
+    private let pageSize = 10
     private let ink = Color(white: 0.08)
     private let mute = Color(white: 0.45)
     private let bg = Color(red: 0.96, green: 0.96, blue: 0.97)
@@ -23,34 +30,90 @@ struct HazardsTabView: View {
         }
     }
 
+    /// Focus areas that appear on at least one open hazard (stable SafetyInterest order).
+    private var availableFocusFilters: [SafetyInterest] {
+        let present = Set(openItems.compactMap(\.hazard.focusInterest))
+        return SafetyInterest.allCases.filter { present.contains($0) }
+    }
+
+    private var filteredItems: [(scan: ScanResult, hazard: ScanHazardDTO)] {
+        guard let selectedFocus else { return openItems }
+        return openItems.filter { $0.hazard.focusInterest == selectedFocus }
+    }
+
+    private var pageCount: Int {
+        max(1, Int(ceil(Double(filteredItems.count) / Double(pageSize))))
+    }
+
+    private var pageItems: [(scan: ScanResult, hazard: ScanHazardDTO)] {
+        let start = pageIndex * pageSize
+        guard start < filteredItems.count else { return [] }
+        let end = min(start + pageSize, filteredItems.count)
+        return Array(filteredItems[start..<end])
+    }
+
     var body: some View {
         NavigationStack {
             Group {
                 if openItems.isEmpty {
                     emptyState
                 } else {
-                    ScrollView {
-                        VStack(alignment: .leading, spacing: 14) {
-                            Text("\(openItems.count) open")
-                                .font(.system(size: 15, weight: .semibold))
-                                .foregroundStyle(mute)
-                                .padding(.horizontal, 4)
+                    VStack(spacing: 0) {
+                        focusFilterBar
+                            .padding(.top, 4)
+                            .padding(.bottom, 10)
 
-                            VStack(spacing: 0) {
-                                ForEach(Array(openItems.enumerated()), id: \.element.hazard.id) { index, item in
-                                    hazardRow(item.scan, item.hazard)
-                                    if index < openItems.count - 1 {
-                                        Divider().padding(.leading, 56)
+                        if filteredItems.isEmpty {
+                            filteredEmptyState
+                        } else {
+                            ZStack(alignment: .bottom) {
+                                ScrollView {
+                                    VStack(alignment: .leading, spacing: 14) {
+                                        Text(countLabel)
+                                            .font(.system(size: 15, weight: .semibold))
+                                            .foregroundStyle(mute)
+                                            .padding(.horizontal, 4)
+
+                                        VStack(spacing: 0) {
+                                            ForEach(Array(pageItems.enumerated()), id: \.element.hazard.id) { index, item in
+                                                hazardRow(item.scan, item.hazard)
+                                                if index < pageItems.count - 1 {
+                                                    Divider().padding(.leading, 56)
+                                                }
+                                            }
+                                        }
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 22, style: .continuous)
+                                                .fill(Color.white)
+                                        )
+                                        .id(pageIndex)
+                                    }
+                                    .padding(.horizontal, 22)
+                                    .padding(.bottom, pageCount > 1 ? 72 : 16)
+                                }
+                                .blur(radius: listBlur)
+                                .opacity(listOpacity)
+                                .animation(.easeInOut(duration: 0.2), value: listBlur)
+                                .animation(.easeInOut(duration: 0.2), value: listOpacity)
+
+                                if pageCount > 1 {
+                                    VStack(spacing: 0) {
+                                        LinearGradient(
+                                            colors: [bg.opacity(0), bg],
+                                            startPoint: .top,
+                                            endPoint: .bottom
+                                        )
+                                        .frame(height: 36)
+                                        .allowsHitTesting(false)
+
+                                        pageNavigator
+                                            .padding(.horizontal, 22)
+                                            .padding(.bottom, 16)
+                                            .background(bg)
                                     }
                                 }
                             }
-                            .background(
-                                RoundedRectangle(cornerRadius: 22, style: .continuous)
-                                    .fill(Color.white)
-                            )
                         }
-                        .padding(22)
-                        .padding(.bottom, 28)
                     }
                 }
             }
@@ -59,6 +122,137 @@ struct HazardsTabView: View {
             .navigationBarTitleDisplayMode(.large)
             .toolbarBackground(.automatic, for: .navigationBar)
             .containerBackground(bg, for: .navigation)
+            .onChange(of: selectedFocus) { _, _ in
+                goToPage(0, animated: false)
+            }
+            .onChange(of: filteredItems.count) { _, _ in
+                clampPage()
+            }
+            .onChange(of: openItems.count) { _, _ in
+                if let selectedFocus,
+                   !availableFocusFilters.contains(selectedFocus) {
+                    self.selectedFocus = nil
+                }
+                clampPage()
+            }
+        }
+    }
+
+    private var countLabel: String {
+        if let selectedFocus {
+            return "\(filteredItems.count) open · \(selectedFocus.rawValue)"
+        }
+        return "\(filteredItems.count) open"
+    }
+
+    private var focusFilterBar: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                filterChip(title: "All", selected: selectedFocus == nil) {
+                    selectedFocus = nil
+                }
+                ForEach(availableFocusFilters) { focus in
+                    filterChip(title: focus.rawValue, selected: selectedFocus == focus) {
+                        selectedFocus = focus
+                    }
+                }
+            }
+            .padding(.horizontal, 22)
+        }
+    }
+
+    private func filterChip(title: String, selected: Bool, action: @escaping () -> Void) -> some View {
+        Button {
+            Haptics.select()
+            action()
+        } label: {
+            Text(title)
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(selected ? Color.white : ink)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 8)
+                .background(
+                    Capsule()
+                        .fill(selected ? ink : Color.white)
+                )
+                .overlay(
+                    Capsule()
+                        .strokeBorder(selected ? Color.clear : Color.black.opacity(0.06), lineWidth: 1)
+                )
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var pageNavigator: some View {
+        HStack(spacing: 16) {
+            Button {
+                goToPage(pageIndex - 1)
+            } label: {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(pageIndex > 0 ? ink : mute.opacity(0.35))
+                    .frame(width: 44, height: 44)
+                    .background(Circle().fill(Color.white))
+            }
+            .buttonStyle(.plain)
+            .disabled(pageIndex <= 0 || isPaging)
+
+            Text("Page \(pageIndex + 1) of \(pageCount)")
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(ink)
+                .monospacedDigit()
+
+            Button {
+                goToPage(pageIndex + 1)
+            } label: {
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(pageIndex < pageCount - 1 ? ink : mute.opacity(0.35))
+                    .frame(width: 44, height: 44)
+                    .background(Circle().fill(Color.white))
+            }
+            .buttonStyle(.plain)
+            .disabled(pageIndex >= pageCount - 1 || isPaging)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    private func goToPage(_ next: Int, animated: Bool = true) {
+        let clamped = min(max(0, next), max(0, pageCount - 1))
+        guard clamped != pageIndex else { return }
+        guard !isPaging else { return }
+
+        Haptics.light()
+
+        guard animated else {
+            pageIndex = clamped
+            listBlur = 0
+            listOpacity = 1
+            return
+        }
+
+        isPaging = true
+        withAnimation(.easeInOut(duration: 0.16)) {
+            listBlur = 10
+            listOpacity = 0.25
+        }
+
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 160_000_000)
+            pageIndex = clamped
+            withAnimation(.easeInOut(duration: 0.22)) {
+                listBlur = 0
+                listOpacity = 1
+            }
+            try? await Task.sleep(nanoseconds: 220_000_000)
+            isPaging = false
+        }
+    }
+
+    private func clampPage() {
+        let maxIndex = max(0, pageCount - 1)
+        if pageIndex > maxIndex {
+            goToPage(maxIndex, animated: false)
         }
     }
 
@@ -77,6 +271,24 @@ struct HazardsTabView: View {
                 .padding(.horizontal, 36)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private var filteredEmptyState: some View {
+        VStack(spacing: 12) {
+            Spacer()
+            Image(systemName: "line.3.horizontal.decrease.circle")
+                .font(.system(size: 32, weight: .semibold))
+                .foregroundStyle(mute)
+            Text("Nothing in this focus area")
+                .font(.system(size: 18, weight: .bold))
+                .foregroundStyle(ink)
+            Text("Try All, or pick another focus filter.")
+                .font(.system(size: 14))
+                .foregroundStyle(mute)
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(.horizontal, 36)
     }
 
     private func hazardRow(_ scan: ScanResult, _ hazard: ScanHazardDTO) -> some View {
@@ -107,6 +319,12 @@ struct HazardsTabView: View {
                             Image(systemName: "chevron.right")
                                 .font(.system(size: 11, weight: .semibold))
                                 .foregroundStyle(mute.opacity(0.7))
+                        }
+
+                        if let focus = hazard.focusInterest {
+                            Text(focus.rawValue)
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundStyle(blue)
                         }
 
                         Text(hazard.detail)

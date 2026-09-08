@@ -151,18 +151,29 @@ struct ScanScreen: View {
             }
         }
         .sheet(item: $scanResult, onDismiss: {
-            highlightedHazardID = nil
-            resultImage = nil
-            resultsDetent = .medium
-            if let tab = nav.returnTabAfterScan {
-                nav.returnTabAfterScan = nil
-                nav.selectedTab = tab
-            }
+            // Swipe-dismiss fallback: jump back if we still owe a return tab.
+            finishDismissingResults()
         }) { result in
             ScanResultsDrawer(
                 scanID: result.id,
                 highlightedHazardID: $highlightedHazardID,
-                onDone: { scanResult = nil },
+                onDone: {
+                    // Switch to Hazards *before* the sheet closes so Scan never flashes.
+                    if let tab = nav.returnTabAfterScan {
+                        nav.returnTabAfterScan = nil
+                        nav.selectedTab = tab
+                        var jump = Transaction()
+                        jump.disablesAnimations = true
+                        withTransaction(jump) {
+                            scanResult = nil
+                            highlightedHazardID = nil
+                            resultImage = nil
+                            resultsDetent = .medium
+                        }
+                    } else {
+                        scanResult = nil
+                    }
+                },
                 onScanUpdated: { updated in
                     scanResult = updated
                 }
@@ -289,6 +300,16 @@ struct ScanScreen: View {
         showScanFailed = false
         retryImage = nil
         scanResult = scan
+    }
+
+    private func finishDismissingResults() {
+        highlightedHazardID = nil
+        resultImage = nil
+        resultsDetent = .medium
+        if let tab = nav.returnTabAfterScan {
+            nav.returnTabAfterScan = nil
+            nav.selectedTab = tab
+        }
     }
 
     private func dismissFailedScan() {
