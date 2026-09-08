@@ -56,6 +56,15 @@ struct RemoteScanAnalyzer: ScanAnalyzing {
         let boundary = "Boundary-\(UUID().uuidString)"
         req.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
 
+        let secret = SafesightAPIConfig.apiSecret
+        guard !secret.isEmpty else {
+            #if DEBUG
+            print("Safesight API secret missing — copy SafesightAPISecrets.example.plist → SafesightAPISecrets.plist")
+            #endif
+            throw ScanAnalysisError.invalidResponse
+        }
+        req.setValue("Bearer \(secret)", forHTTPHeaderField: "Authorization")
+
         var body = Data()
         if let metaData = try? JSONEncoder().encode(meta) {
             body.append("--\(boundary)\r\n")

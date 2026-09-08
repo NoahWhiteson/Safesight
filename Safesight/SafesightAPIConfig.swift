@@ -17,6 +17,22 @@ enum SafesightAPIConfig {
         return URL(string: "https://safesight.noahwhiteson.com")!
     }
 
+    /// Shared with server `SAFESIGHT_API_SECRET`. Load from local plist (gitignored).
+    static var apiSecret: String {
+        if let raw = Bundle.main.object(forInfoDictionaryKey: "SAFESIGHT_API_SECRET") as? String,
+           !raw.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+        guard
+            let url = Bundle.main.url(forResource: "SafesightAPISecrets", withExtension: "plist"),
+            let dict = NSDictionary(contentsOf: url),
+            let key = dict["API_SECRET"] as? String
+        else {
+            return ""
+        }
+        return key.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
     static var analyzeURL: URL {
         baseURL.appendingPathComponent("v1/analyze")
     }

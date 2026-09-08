@@ -16,4 +16,5 @@ DerivedData/
 
 # Local secrets (never commit)
 Safesight/GeminiSecrets.plist
+Safesight/SafesightAPISecrets.plist
 server/.env
