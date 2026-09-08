@@ -10,6 +10,6 @@
 | Commerce hints | Amazon-style search picks tied to hazards |
 | Persistence | On-device scan images + history index |
 
-Server docs: [`server/README.md`](../server/README.md)
+Server docs: [`server/README.md`](../server/README.md) · App setup: [`setup.md`](./setup.md)
 
 [← Back to README](../README.md)
