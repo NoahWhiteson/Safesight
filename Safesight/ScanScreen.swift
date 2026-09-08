@@ -154,6 +154,10 @@ struct ScanScreen: View {
             highlightedHazardID = nil
             resultImage = nil
             resultsDetent = .medium
+            if let tab = nav.returnTabAfterScan {
+                nav.returnTabAfterScan = nil
+                nav.selectedTab = tab
+            }
         }) { result in
             ScanResultsDrawer(
                 scanID: result.id,
@@ -194,6 +198,7 @@ struct ScanScreen: View {
         }
         .sheet(isPresented: $showGallery) {
             ScanGalleryView(store: history) { scan in
+                nav.returnTabAfterScan = nil
                 openScan(scan)
             }
             .presentationDetents([.large])
@@ -223,15 +228,17 @@ struct ScanScreen: View {
         .onChange(of: nav.pendingScanID) { _, id in
             guard let id else { return }
             if let scan = history.scans.first(where: { $0.id == id }) {
-                openScan(scan)
+                openScan(scan, highlightHazardID: nav.pendingHazardID)
             }
             nav.pendingScanID = nil
+            nav.pendingHazardID = nil
         }
         .onAppear {
             if let id = nav.pendingScanID,
                let scan = history.scans.first(where: { $0.id == id }) {
-                openScan(scan)
+                openScan(scan, highlightHazardID: nav.pendingHazardID)
                 nav.pendingScanID = nil
+                nav.pendingHazardID = nil
             }
         }
         .onDisappear {
@@ -275,9 +282,9 @@ struct ScanScreen: View {
         }
     }
 
-    private func openScan(_ scan: ScanResult) {
+    private func openScan(_ scan: ScanResult, highlightHazardID: UUID? = nil) {
         resultImage = history.image(for: scan)
-        highlightedHazardID = nil
+        highlightedHazardID = highlightHazardID
         resultsDetent = .medium
         showScanFailed = false
         retryImage = nil
@@ -334,6 +341,7 @@ struct ScanScreen: View {
 
     /// Charges a free scan only after a successful analysis.
     private func runAnalysis(on image: UIImage) async {
+        nav.returnTabAfterScan = nil
         thinkingImage = image
         chrome.hidesTabBar = true
         var present = Transaction()

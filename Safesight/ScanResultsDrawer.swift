@@ -84,6 +84,16 @@ struct ScanResultsDrawer: View {
                         .presentationDetents([.medium, .large])
                 }
             }
+            .onAppear {
+                if let id = highlightedHazardID {
+                    expandedHazardID = id
+                }
+            }
+            .onChange(of: highlightedHazardID) { _, id in
+                if let id {
+                    expandedHazardID = id
+                }
+            }
         }
     }
 

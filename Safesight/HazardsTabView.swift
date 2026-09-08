@@ -9,6 +9,7 @@ import SwiftUI
 
 struct HazardsTabView: View {
     @ObservedObject private var history = ScanHistoryStore.shared
+    @ObservedObject private var nav = AppNavigation.shared
 
     private let ink = Color(white: 0.08)
     private let mute = Color(white: 0.45)
@@ -87,27 +88,41 @@ struct HazardsTabView: View {
                 .background(Circle().fill(hazard.severity.color.opacity(0.12)))
 
             VStack(alignment: .leading, spacing: 4) {
-                HStack(spacing: 8) {
-                    Text(hazard.title)
-                        .font(.system(size: 15, weight: .semibold))
-                        .foregroundStyle(ink)
-                    Spacer(minLength: 0)
-                    Text(hazard.severity.rawValue)
-                        .font(.system(size: 11, weight: .bold))
-                        .foregroundStyle(hazard.severity.color)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(Capsule().fill(hazard.severity.color.opacity(0.12)))
+                Button {
+                    Haptics.light()
+                    nav.openScan(scan.id, highlightHazardID: hazard.id, returnToTab: 2)
+                } label: {
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack(spacing: 8) {
+                            Text(hazard.title)
+                                .font(.system(size: 15, weight: .semibold))
+                                .foregroundStyle(ink)
+                            Spacer(minLength: 0)
+                            Text(hazard.severity.rawValue)
+                                .font(.system(size: 11, weight: .bold))
+                                .foregroundStyle(hazard.severity.color)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(Capsule().fill(hazard.severity.color.opacity(0.12)))
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundStyle(mute.opacity(0.7))
+                        }
+
+                        Text(hazard.detail)
+                            .font(.system(size: 13))
+                            .foregroundStyle(mute)
+                            .multilineTextAlignment(.leading)
+                            .fixedSize(horizontal: false, vertical: true)
+
+                        Text(scan.createdAt.formatted(date: .abbreviated, time: .shortened))
+                            .font(.system(size: 11, weight: .medium))
+                            .foregroundStyle(mute)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .contentShape(Rectangle())
                 }
-
-                Text(hazard.detail)
-                    .font(.system(size: 13))
-                    .foregroundStyle(mute)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                Text(scan.createdAt.formatted(date: .abbreviated, time: .shortened))
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundStyle(mute)
+                .buttonStyle(.plain)
 
                 HStack(spacing: 8) {
                     Button {

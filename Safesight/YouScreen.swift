@@ -199,6 +199,8 @@ struct YouScreen: View {
         SubscriptionStore.shared.resetLocalProgress()
         AppNavigation.shared.selectedTab = 0
         AppNavigation.shared.pendingScanID = nil
+        AppNavigation.shared.pendingHazardID = nil
+        AppNavigation.shared.returnTabAfterScan = nil
         profiles.logout()
     }
 
