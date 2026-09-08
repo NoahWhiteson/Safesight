@@ -46,12 +46,12 @@ struct ScanScreen: View {
                     }
                 )
                 .ignoresSafeArea()
-            } else if let retryImage, showScanFailed {
+            } else if let retryImage, showScanFailed || isRetrying {
                 Image(uiImage: retryImage)
                     .resizable()
                     .scaledToFill()
                     .ignoresSafeArea()
-                    .overlay(Color.black.opacity(0.45).ignoresSafeArea())
+                    .overlay(Color.black.opacity(0.28).ignoresSafeArea())
             } else if camera.isAuthorized {
                 CameraPreviewView(session: camera.session)
                     .ignoresSafeArea()
@@ -63,7 +63,7 @@ struct ScanScreen: View {
             }
 
             // Top chrome (hidden while reviewing / analyzing / failure)
-            if scanResult == nil && !showThinking && !showScanFailed {
+            if scanResult == nil && !showThinking && !showScanFailed && !isRetrying {
                 VStack {
                     HStack {
                         Image("AppLogo")
@@ -143,12 +143,6 @@ struct ScanScreen: View {
                 }
             }
 
-            if showScanFailed {
-                scanFailedOverlay
-                    .zIndex(15)
-            }
-
-            // Covers the whole Scan tab; tab bar is hidden via ScanChromeState.
             if showThinking, let thinkingImage {
                 ScanThinkingOverlay(image: thinkingImage)
                     .ignoresSafeArea()
@@ -178,6 +172,25 @@ struct ScanScreen: View {
             .presentationBackgroundInteraction(.enabled(upThrough: .medium))
             .presentationContentInteraction(.resizes)
             .interactiveDismissDisabled(false)
+        }
+        .sheet(isPresented: $showScanFailed, onDismiss: {
+            guard !isRetrying, !showThinking else { return }
+            dismissFailedScan()
+        }) {
+            ScanFailedDrawer(
+                isRetrying: isRetrying,
+                onRetry: {
+                    Task { await retryFailedScan() }
+                },
+                onDismiss: {
+                    dismissFailedScan()
+                }
+            )
+            .presentationDetents([.height(420), .medium])
+            .presentationDragIndicator(.visible)
+            .presentationCornerRadius(28)
+            .presentationBackgroundInteraction(.enabled(upThrough: .medium))
+            .interactiveDismissDisabled(isRetrying)
         }
         .sheet(isPresented: $showGallery) {
             ScanGalleryView(store: history) { scan in
@@ -230,63 +243,6 @@ struct ScanScreen: View {
     private var liveScanResult: ScanResult? {
         guard let id = scanResult?.id else { return nil }
         return history.scans.first(where: { $0.id == id }) ?? scanResult
-    }
-
-    private var scanFailedOverlay: some View {
-        VStack(spacing: 16) {
-            Spacer()
-            VStack(spacing: 14) {
-                Image(systemName: "wifi.exclamationmark")
-                    .font(.system(size: 28, weight: .semibold))
-                    .foregroundStyle(.white)
-                Text("Scan failed")
-                    .font(.system(size: 22, weight: .bold))
-                    .foregroundStyle(.white)
-                Text("No scan credit used. Check your connection and retry.")
-                    .font(.system(size: 15))
-                    .foregroundStyle(.white.opacity(0.75))
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 8)
-
-                Button {
-                    Haptics.medium()
-                    Task { await retryFailedScan() }
-                } label: {
-                    HStack(spacing: 8) {
-                        if isRetrying {
-                            ProgressView().tint(.black)
-                        }
-                        Text(isRetrying ? "Retrying…" : "Retry")
-                            .font(.system(size: 16, weight: .semibold))
-                    }
-                    .foregroundStyle(Theme.ink)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
-                    .background(Capsule().fill(.white))
-                }
-                .buttonStyle(.plain)
-                .disabled(isRetrying)
-
-                Button {
-                    Haptics.light()
-                    dismissFailedScan()
-                } label: {
-                    Text("Dismiss")
-                        .font(.system(size: 15, weight: .semibold))
-                        .foregroundStyle(.white.opacity(0.85))
-                }
-                .buttonStyle(.plain)
-                .disabled(isRetrying)
-            }
-            .padding(22)
-            .background(
-                RoundedRectangle(cornerRadius: 24, style: .continuous)
-                    .fill(Color.white.opacity(0.12))
-                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
-            )
-            .padding(.horizontal, 28)
-            .padding(.bottom, 48)
-        }
     }
 
     private var permissionDenied: some View {
@@ -370,8 +326,9 @@ struct ScanScreen: View {
     private func retryFailedScan() async {
         guard let image = retryImage, !isRetrying else { return }
         isRetrying = true
-        showScanFailed = false
         defer { isRetrying = false }
+        // Close the failed drawer first; thinking overlay takes over in runAnalysis.
+        showScanFailed = false
         await runAnalysis(on: image)
     }
 
