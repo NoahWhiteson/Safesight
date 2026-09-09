@@ -20,4 +20,3 @@ server/.env
 
 # Node
 node_modules/
-demo-site/dist/
