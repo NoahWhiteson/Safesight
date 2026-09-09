@@ -17,3 +17,7 @@ DerivedData/
 # Local secrets (never commit)
 Safesight/SafesightAPISecrets.plist
 server/.env
+
+# Node
+node_modules/
+demo-site/dist/
