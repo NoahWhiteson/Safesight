@@ -1,0 +1,65 @@
+{
+  "score": 88,
+  "summary": "Chemical detergent handling presents spill, contact, and ingestion risks if left unsecured.",
+  "hazards": [
+    {
+      "id": "5b2dc620-7245-4a47-9f8a-f66d7a410abb",
+      "title": "Open Detergent Container",
+      "detail": "Uncapped liquid detergent bottle can spill, creating chemical contact and slip risks.",
+      "severity": "Medium",
+      "icon": "exclamationmark.triangle.fill",
+      "boundingBox": {
+        "x": 0.2,
+        "y": 0.55,
+        "width": 0.32,
+        "height": 0.44
+      },
+      "fixSteps": [
+        "Replace cap firmly immediately after dispensing detergent.",
+        "Store bottle high up or in a locked child-proof cabinet."
+      ],
+      "focusArea": "Chemical storage",
+      "confidence": 92,
+      "status": "open"
+    },
+    {
+      "id": "05e4f9cb-734a-4e97-95f2-00cc990eb4f6",
+      "title": "Dispenser Spill Risk",
+      "detail": "Overfilling or dripping detergent outside drawer causes floor slip or machine damage.",
+      "severity": "Low",
+      "icon": "drop.triangle.fill",
+      "boundingBox": {
+        "x": 0.44,
+        "y": 0.43,
+        "width": 0.35,
+        "height": 0.26
+      },
+      "fixSteps": [
+        "Measure liquid accurately up to max fill lines only.",
+        "Wipe tray rim and surrounding surfaces immediately."
+      ],
+      "focusArea": "Chemical storage",
+      "confidence": 75,
+      "status": "open"
+    }
+  ],
+  "products": [
+    {
+      "id": "58aa0a47-2b5b-4bf1-b6fd-1097fb700ab6",
+      "name": "Cabinet Child Safety Lock",
+      "reason": "Secures toxic laundry detergents away from children and pets.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "lock.fill",
+      "searchQuery": "magnetic laundry cabinet locks child safety"
+    },
+    {
+      "id": "06add204-36c4-467d-b39a-54abdc9fca74",
+      "name": "Drip Catcher Tray",
+      "reason": "Prevents messy liquid leaks onto washing machines and floors.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "tray.fill",
+      "searchQuery": "laundry detergent cup holder drip catcher"
+    }
+  ],
+  "nextSteps": []
+}

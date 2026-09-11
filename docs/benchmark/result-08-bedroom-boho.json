@@ -1,0 +1,65 @@
+{
+  "score": 82,
+  "summary": "Bedroom shows potential candle fire risk near foliage and an exposed bedside cord.",
+  "hazards": [
+    {
+      "id": "334b494a-b3ed-4005-8033-c7add299b0e0",
+      "title": "Candle Near Hanging Plants",
+      "detail": "Candle sits on a wall shelf directly beneath and adjacent to dry hanging vines.",
+      "severity": "Medium",
+      "icon": "flame.fill",
+      "boundingBox": {
+        "x": 0.58,
+        "y": 0.548,
+        "width": 0.05,
+        "height": 0.04
+      },
+      "fixSteps": [
+        "Replace open-flame candles on decorative shelves with LED flameless c\u2026",
+        "Maintain at least 12 inches clearance around any burning candle."
+      ],
+      "focusArea": "Fire",
+      "confidence": 85,
+      "status": "open"
+    },
+    {
+      "id": "9ebce9c3-bff6-465a-8563-195eff2b93f8",
+      "title": "Unsecured Sconce Lamp Cord",
+      "detail": "Wall-mounted light cord hangs freely behind the bed and plants, posing a snag risk.",
+      "severity": "Low",
+      "icon": "bolt.fill",
+      "boundingBox": {
+        "x": 0.45,
+        "y": 0.4,
+        "width": 0.04,
+        "height": 0.16
+      },
+      "fixSteps": [
+        "Fasten the cord flat against the wall using adhesive cord clips.",
+        "Ensure cord is not pinched or pulled taut behind the headboard."
+      ],
+      "focusArea": "Electric",
+      "confidence": 78,
+      "status": "open"
+    }
+  ],
+  "products": [
+    {
+      "id": "5e30033b-0156-4601-96f1-bf06c7952c29",
+      "name": "LED Flameless Votive Candles",
+      "reason": "Eliminates open flame hazard near trailing plants and bedding.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "flame",
+      "searchQuery": "battery operated led tea light candles flickering"
+    },
+    {
+      "id": "e2eee3a5-b37f-47b7-b612-dd2e9db678b7",
+      "name": "Self-Adhesive Cord Channels",
+      "reason": "Secures dangling lamp cords tightly to the wall.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "cable.connector",
+      "searchQuery": "paintable wall cord cover raceway kit"
+    }
+  ],
+  "nextSteps": []
+}

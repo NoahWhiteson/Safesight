@@ -1,13 +1,13 @@
 {
   "score": 88,
-  "summary": "Clean kitchen space with minimal hazards, primarily pots resting near island edge.",
+  "summary": "Clean kitchen space with minor risks from heavy cookware placed near the island edge.",
   "hazards": [
     {
-      "id": "b38c308a-5791-4bc7-a3cc-562b79ee73ff",
-      "title": "Heavy pot near island edge",
-      "detail": "Heavy cast iron Dutch oven near counter edge could tip or be pulled off.",
+      "id": "6daf36dc-eb5e-417f-930e-654653af6911",
+      "title": "Heavy pot lid near edge",
+      "detail": "Cast iron lid rests near the counter perimeter and could fall, risking foot injury.",
       "severity": "Low",
-      "icon": "cooktop",
+      "icon": "exclamationmark.triangle",
       "boundingBox": {
         "x": 0.31000000000000005,
         "y": 0.348,
@@ -15,42 +15,42 @@
         "height": 0.18
       },
       "fixSteps": [
-        "Push pots and cookware closer to the center of the kitchen island.",
-        "Store heavy cookware in lower cabinets when not actively cooling."
+        "Move the lid farther inward away from the island edge.",
+        "Store the lid directly on the pot when not in use."
       ],
       "focusArea": "Kitchen hazards",
-      "confidence": 75,
+      "confidence": 85,
       "status": "open"
     },
     {
-      "id": "3c43e191-1a5d-4e3b-8606-1735f63ad8b8",
-      "title": "Loose cookware lid on counter",
-      "detail": "Heavy lid placed separately on counter creates an awkward spill or slide hazard.",
+      "id": "716b9167-c0b3-4dc4-a127-31df08bdcbfd",
+      "title": "Unsecured Dutch oven placement",
+      "detail": "Large heavy pot sitting on a cloth near edge poses spill or pull-down risk.",
       "severity": "Low",
-      "icon": "exclamationmark.circle",
+      "icon": "flame",
       "boundingBox": {
-        "x": 0,
-        "y": 0.61,
-        "width": 0.26,
-        "height": 0.08
+        "x": 0.18,
+        "y": 0.55,
+        "width": 0.32,
+        "height": 0.12
       },
       "fixSteps": [
-        "Place lid securely back on the Dutch oven or store flat on a trivet.",
-        "Move lid away from the front working edge of the counter."
+        "Push cookware toward the center of the kitchen island.",
+        "Remove loose cloth mats that can be accidentally pulled."
       ],
       "focusArea": "Kitchen hazards",
-      "confidence": 70,
+      "confidence": 80,
       "status": "open"
     }
   ],
   "products": [
     {
-      "id": "f199d356-e531-4c6d-b7e9-6c652f232eef",
-      "name": "Silicone Trivet Mats",
-      "reason": "Provides secure, non-slip placement for heavy hot cookware on counter\u2026",
+      "id": "b6589988-64f6-4008-9719-45d56e95748a",
+      "name": "Non-Slip Silicone Trivet",
+      "reason": "Prevents hot heavy pots from sliding around polished stone countertop\u2026",
       "priceLabel": "Shop on Amazon",
-      "icon": "shield",
-      "searchQuery": "heat resistant non-slip silicone trivet mats"
+      "icon": "shield.lefthalf.filled",
+      "searchQuery": "silicone hot pads trivets heat resistant non slip"
     }
   ],
   "nextSteps": []
