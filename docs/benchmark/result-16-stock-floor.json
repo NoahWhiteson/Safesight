@@ -1,0 +1,85 @@
+{
+  "score": 78,
+  "summary": "Heavy cookware sits near counter edges accessible to children or pets.",
+  "hazards": [
+    {
+      "id": "bbff70b1-e1e5-453b-a86d-69506e06c101",
+      "title": "Unsecured Heavy Pot Near Edge",
+      "detail": "Heavy cast iron pot near island edge could be pulled down by small children.",
+      "severity": "Medium",
+      "icon": "exclamationmark.triangle.fill",
+      "boundingBox": {
+        "x": 0.14,
+        "y": 0.195,
+        "width": 0.36,
+        "height": 0.23
+      },
+      "fixSteps": [
+        "Push cookware toward the center of the kitchen island.",
+        "Store heavy cast-iron pots in lower secured cabinets."
+      ],
+      "focusArea": "Child proofing",
+      "confidence": 88,
+      "status": "open"
+    },
+    {
+      "id": "29559971-72b1-48d0-a7e2-1fb72b028ba0",
+      "title": "Loose Cookware Lid Near Edge",
+      "detail": "Heavy lid placed loosely at the counter edge is easily knocked or pulled down.",
+      "severity": "Medium",
+      "icon": "hand.raised.fill",
+      "boundingBox": {
+        "x": 0,
+        "y": 0.303,
+        "width": 0.23,
+        "height": 0.15
+      },
+      "fixSteps": [
+        "Place lid securely onto its pot or in designated storage.",
+        "Keep heavy loose items away from outer countertop perimeter."
+      ],
+      "focusArea": "Child proofing",
+      "confidence": 85,
+      "status": "open"
+    },
+    {
+      "id": "3bf1ef70-e171-41f7-8676-1df424933611",
+      "title": "Accessible Hot Pot Hazard",
+      "detail": "Large pot sitting on towel may contain hot food within reaching distance.",
+      "severity": "Medium",
+      "icon": "pawprint.fill",
+      "boundingBox": {
+        "x": 0.44,
+        "y": 0.113,
+        "width": 0.38,
+        "height": 0.25
+      },
+      "fixSteps": [
+        "Keep cooling or hot foods pushed far back from counter edges.",
+        "Do not leave attractive food unattended around climbing pets."
+      ],
+      "focusArea": "Pet hazards",
+      "confidence": 80,
+      "status": "open"
+    }
+  ],
+  "products": [
+    {
+      "id": "527ecb3b-4625-40c6-a3bc-1c61f531b4f8",
+      "name": "Cabinet Safety Locks",
+      "reason": "Secure heavy Dutch ovens inside lower cabinets away from reaching chi\u2026",
+      "priceLabel": "Shop on Amazon",
+      "icon": "lock.shield.fill",
+      "searchQuery": "child safety cabinet locks adhesive"
+    },
+    {
+      "id": "8c643d25-45a9-45df-834e-e7fad8ea5092",
+      "name": "Silicone Counter Edge Guard",
+      "reason": "Provides grip and cushions impacts around hard countertop corners.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "shield.fill",
+      "searchQuery": "clear silicone kitchen counter edge protector"
+    }
+  ],
+  "nextSteps": []
+}

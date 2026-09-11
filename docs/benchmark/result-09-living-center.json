@@ -1,0 +1,85 @@
+{
+  "score": 82,
+  "summary": "Living room is well kept with a few tip-over and tripping risks.",
+  "hazards": [
+    {
+      "id": "a18d9ab1-8826-4658-b22a-927b87b0208f",
+      "title": "Unsecured Tall Plant",
+      "detail": "Top-heavy potted tree can easily be pulled down or knocked over.",
+      "severity": "Medium",
+      "icon": "exclamationmark.triangle.fill",
+      "boundingBox": {
+        "x": 0.61,
+        "y": 0.31,
+        "width": 0.38,
+        "height": 0.62
+      },
+      "fixSteps": [
+        "Place into a wider, weighted base planter.",
+        "Secure the upper stem to the wall using a discreet tether."
+      ],
+      "focusArea": "Tip-over risks",
+      "confidence": 88,
+      "status": "open"
+    },
+    {
+      "id": "b63dad3d-854f-4149-8c6c-e15680d101b6",
+      "title": "Slender Tabletop Vase",
+      "detail": "Tall slender vase with branches on coffee table is easily tipped over.",
+      "severity": "Low",
+      "icon": "vases",
+      "boundingBox": {
+        "x": 0.48,
+        "y": 0.53,
+        "width": 0.09,
+        "height": 0.14
+      },
+      "fixSteps": [
+        "Move fragile vase to a stable, low-traffic credenza.",
+        "Use museum putty under the base to prevent spills or falls."
+      ],
+      "focusArea": "Tip-over risks",
+      "confidence": 84,
+      "status": "open"
+    },
+    {
+      "id": "67317674-50f7-4e39-8bb0-60e8d67b7e79",
+      "title": "Low Table Leg Trip Risk",
+      "detail": "Low-profile coffee table edges sit close to chair pathways.",
+      "severity": "Low",
+      "icon": "figure.walk",
+      "boundingBox": {
+        "x": 0.21,
+        "y": 0.61,
+        "width": 0.58,
+        "height": 0.28
+      },
+      "fixSteps": [
+        "Shift table further from seating to open up walking clearance.",
+        "Ensure clear, unobstructed walkways around all sides."
+      ],
+      "focusArea": "Trip hazards",
+      "confidence": 72,
+      "status": "open"
+    }
+  ],
+  "products": [
+    {
+      "id": "b0038b38-0fd6-4eff-aec0-1792ac66c381",
+      "name": "Museum Putty",
+      "reason": "Secures tabletop vase and decor from knocking over.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "shield.fill",
+      "searchQuery": "clear museum putty earthquake gel"
+    },
+    {
+      "id": "f9a4b146-74d3-4990-9616-0525ab70ce3a",
+      "name": "Plant Wall Anchor Strap",
+      "reason": "Prevents the top-heavy fiddle-leaf fig from falling.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "link",
+      "searchQuery": "furniture and plant safety wall straps"
+    }
+  ],
+  "nextSteps": []
+}

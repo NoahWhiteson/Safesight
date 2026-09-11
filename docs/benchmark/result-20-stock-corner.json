@@ -1,0 +1,65 @@
+{
+  "score": 85,
+  "summary": "Kitchen is clean and orderly with minimal visible hazards, mainly potential burn or slip risks.",
+  "hazards": [
+    {
+      "id": "fb80af98-bed6-4dfa-970d-0050ed64ce93",
+      "title": "Heavy pot near island edge",
+      "detail": "Large Dutch oven sitting on a cloth near the island edge could slide or be knocked over.",
+      "severity": "Medium",
+      "icon": "flame.fill",
+      "boundingBox": {
+        "x": 0.02,
+        "y": 0.52,
+        "width": 0.59,
+        "height": 0.22
+      },
+      "fixSteps": [
+        "Push cookware toward the center of the kitchen island.",
+        "Ensure pot sits on a stable, non-skid trivet."
+      ],
+      "focusArea": "Kitchen hazards",
+      "confidence": 80,
+      "status": "open"
+    },
+    {
+      "id": "3fd00ed9-de6e-4c0b-a20b-b29cb4c60188",
+      "title": "Glassware on upper open shelf",
+      "detail": "Stemware stacked closely in glass cabinet could fall if jostled or cabinets open.",
+      "severity": "Low",
+      "icon": "wineglass",
+      "boundingBox": {
+        "x": 0.18,
+        "y": 0.21,
+        "width": 0.19,
+        "height": 0.08
+      },
+      "fixSteps": [
+        "Space out stemware to avoid tipping during access.",
+        "Add non-slip shelf liners inside upper cabinetry."
+      ],
+      "focusArea": "Kitchen hazards",
+      "confidence": 70,
+      "status": "open"
+    }
+  ],
+  "products": [
+    {
+      "id": "eaa7c4e3-a2df-41df-8b2b-ea3db0ec71f0",
+      "name": "Silicone Trivet Mat",
+      "reason": "Provides grip and prevents hot cookware from sliding on countertops.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "shield.lefthalf.filled",
+      "searchQuery": "heat resistant non-slip silicone trivet"
+    },
+    {
+      "id": "f2e98fbd-c7cc-468c-9c0b-06b1e1fe3735",
+      "name": "Non-Slip Shelf Liner",
+      "reason": "Keeps glassware securely upright inside cabinets.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "square.grid.2x2",
+      "searchQuery": "non adhesive kitchen shelf liner"
+    }
+  ],
+  "nextSteps": []
+}

@@ -1,0 +1,85 @@
+{
+  "score": 62,
+  "summary": "Exposed knife on the island edge and a towel near the range pose immediate injury and fire risks.",
+  "hazards": [
+    {
+      "id": "bbb20b21-6263-439a-a539-384625659135",
+      "title": "Unsecured Knife Near Island Edge",
+      "detail": "Carving knife left blade-exposed near counter edge risks severe cut or accidental drop.",
+      "severity": "High",
+      "icon": "knife",
+      "boundingBox": {
+        "x": 0.14,
+        "y": 0.63,
+        "width": 0.35,
+        "height": 0.11
+      },
+      "fixSteps": [
+        "Store knife in a wooden block, drawer sheath, or magnetic strip.",
+        "Keep sharp blades pushed back away from high-traffic counter edges."
+      ],
+      "focusArea": "Sharp objects",
+      "confidence": 98,
+      "status": "open"
+    },
+    {
+      "id": "f38022e7-1e16-4567-bddf-8f6570699d15",
+      "title": "Towel Hung on Oven Handle",
+      "detail": "Cloth hanging directly over the oven door can catch heat or pull hot items when opening.",
+      "severity": "Medium",
+      "icon": "flame.fill",
+      "boundingBox": {
+        "x": 0.77,
+        "y": 0.22,
+        "width": 0.08,
+        "height": 0.22
+      },
+      "fixSteps": [
+        "Relocate kitchen towels to a wall hook away from heating appliances.",
+        "Avoid draping combustible fabrics across active oven doors."
+      ],
+      "focusArea": "Kitchen hazards",
+      "confidence": 85,
+      "status": "open"
+    },
+    {
+      "id": "18ce106e-cbce-4d0a-abbb-bc5c5097c66b",
+      "title": "Loose Cloth Near Cooktop Area",
+      "detail": "Fabric towel resting on counter beside cooking zone poses a minor scorch or slip hazard.",
+      "severity": "Low",
+      "icon": "exclamationmark.triangle.fill",
+      "boundingBox": {
+        "x": 0.46,
+        "y": 0.17,
+        "width": 0.08,
+        "height": 0.13
+      },
+      "fixSteps": [
+        "Hang drying cloths on a designated rack away from food prep surfaces.",
+        "Keep counter zones clear of loose combustible fabrics."
+      ],
+      "focusArea": "Kitchen hazards",
+      "confidence": 78,
+      "status": "open"
+    }
+  ],
+  "products": [
+    {
+      "id": "d64c1679-0f40-49f9-ae7c-50bfc0cc39b2",
+      "name": "Magnetic Knife Strip",
+      "reason": "Provides safe elevated storage for sharp prep knives away from edges.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "knife",
+      "searchQuery": "wall mounted magnetic knife strip stainless steel"
+    },
+    {
+      "id": "dba5871b-913f-4c42-90e5-f8d724984a56",
+      "name": "Self-Adhesive Kitchen Towel Hooks",
+      "reason": "Moves towels away from oven handles and cooking surfaces.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "hanger",
+      "searchQuery": "kitchen towel hooks self adhesive stainless steel"
+    }
+  ],
+  "nextSteps": []
+}
