@@ -9,8 +9,8 @@ Repo: [NoahWhiteson/Safesight_API](https://github.com/NoahWhiteson/Safesight_API
 | Method | Path | Purpose |
 |--------|------|---------|
 | `GET` | `/health` | Liveness (no auth) |
-| `GET` | `/demovideo` | Product demo watch page |
-| `GET` | `/demovideo.mp4` | Product demo MP4 |
+| `GET` | `/demovideo` | Product demo MP4 |
+| `GET` | `/demovideo.mp4` | Same demo MP4 |
 | `POST` | `/v1/analyze` | Multipart: `meta` (JSON) + `image` (JPEG) → scan JSON |
 
 `/v1/analyze` requires a shared secret. Send either:

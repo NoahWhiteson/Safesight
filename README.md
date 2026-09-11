@@ -18,23 +18,10 @@
 
 ## Demo
 
-Watch the product walkthrough (hosted — GitHub doesn’t stream large MP4s well):
-
 <p align="center">
-  <a href="https://safesight.noahwhiteson.com/demovideo"><strong>▶ Watch the Safesight demo</strong></a>
-</p>
-
-<p align="center">
-  <a href="https://safesight.noahwhiteson.com/demovideo">
-    <img src="docs/assets/safesight-banner.png" alt="Watch the Safesight product demo" width="100%" />
-  </a>
-</p>
-
-<p align="center">
-  <sub>
-    Player: <a href="https://safesight.noahwhiteson.com/demovideo">safesight.noahwhiteson.com/demovideo</a>
-    · Direct file: <a href="https://safesight.noahwhiteson.com/demovideo.mp4">demovideo.mp4</a>
-  </sub>
+  <video src="https://safesight.noahwhiteson.com/demovideo" width="100%" controls playsinline preload="metadata">
+    <a href="https://safesight.noahwhiteson.com/demovideo">Safesight product demo</a>
+  </video>
 </p>
 
 ---
