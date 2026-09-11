@@ -19,7 +19,8 @@
 ## Demo
 
 <p align="center">
-  <video src="https://safesight.noahwhiteson.com/demovideo" width="100%" controls playsinline preload="metadata">
+  <video src="[https://safesight.noahwhiteson.com/demovideo](https://github.com/user-attachments/assets/f0131b1d-21c7-44b3-872c-98e45059a964
+)" width="100%" controls playsinline preload="metadata">
     <a href="https://safesight.noahwhiteson.com/demovideo">Safesight product demo</a>
   </video>
 </p>
