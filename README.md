@@ -28,7 +28,7 @@ https://github.com/user-attachments/assets/f64f8f53-fefa-4e8b-b71f-d148672f56f8
 
 ## AI proof
 
-Live hosted scans against `https://safesight.noahwhiteson.com` — **3/3 passed** on `gemini-3.8-flash` (~3s each). Share cards use the same export chrome as the iOS app (`ScanShareExporter`).
+Live hosted scans against `https://safesight.noahwhiteson.com` — **3/3 passed** on `gemini-3.8-flash` (~3s each). Share cards are the **exact** iOS export from `ScanShareExporter` (not a mock).
 
 | Scene | Latency | House Score | Hazards |
 |-------|---------|-------------|---------|

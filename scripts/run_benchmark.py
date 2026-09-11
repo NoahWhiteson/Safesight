@@ -12,7 +12,7 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
-from render_share_card import render_share_card
+from render_share_card_native import render_share_card_native as render_share_card
 
 ROOT = Path(__file__).resolve().parents[1]
 BENCH = ROOT / "docs" / "benchmark"
@@ -198,8 +198,8 @@ def main():
         "# AI benchmark",
         "",
         "Live proof that Safesight’s hosted vision pipeline returns real House Scores,",
-        "hazard labels, confidences, and bounding boxes — then renders the **same share card**",
-        "chrome the iOS app exports (`ScanShareExporter`).",
+        "hazard labels, confidences, and bounding boxes — then exports the **exact same PNG chrome**",
+        "as the iOS share sheet via `ScanShareExporter` (simulator CLI → JPEG for GitHub size).",
         "",
         f"- **Ran:** `{ran_at}`",
         f"- **API:** `{API}`",
@@ -217,7 +217,7 @@ def main():
             f"| {status} {r['label']} | {r['http']} | {r['seconds']}s | {r.get('score', '—')} | {r['hazardCount']} |"
         )
 
-    lines += ["", "## Share cards (app export UI)", ""]
+    lines += ["", "## Share cards (native `ScanShareExporter`)", ""]
     for r in rows:
         if not r.get("share"):
             continue
@@ -245,7 +245,15 @@ def main():
         "",
         "```bash",
         "# Requires Safesight/SafesightAPISecrets.plist (gitignored) with API_SECRET",
+        "# Share cards use the real ScanShareExporter (iOS Simulator CLI).",
         "python3 scripts/run_benchmark.py",
+        "```",
+        "",
+        "Re-export cards only:",
+        "",
+        "```bash",
+        "python3 scripts/render_share_card_native.py docs/benchmark/source-kitchen.jpg \\",
+        "  docs/benchmark/result-kitchen.json docs/benchmark/share-kitchen.jpg",
         "```",
         "",
         "Raw JSON for each case is committed beside the share cards for auditability.",
