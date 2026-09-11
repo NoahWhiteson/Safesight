@@ -1,104 +1,104 @@
 {
   "score": 68,
-  "summary": "Exposed knife on the island and runner rug edges present cut and trip risks.",
+  "summary": "Exposed knife on the island edge and a runner rug without non-slip backing create injury and trip risks.",
   "hazards": [
     {
-      "id": "aa109df0-57c4-4f0c-bdd2-ed85e60611af",
-      "title": "Unsecured Kitchen Knife",
-      "detail": "Large chef knife left loose on the island countertop edge risking cuts.",
+      "id": "15f47a04-8b36-4224-9a40-5b0424ddf957",
+      "title": "Unsecured Chef Knife on Counter",
+      "detail": "Large knife sits exposed near island edge, posing a severe cut risk if bumped.",
       "severity": "High",
-      "icon": "scissors",
+      "icon": "exclamationmark.triangle.fill",
       "boundingBox": {
-        "x": 0.15,
-        "y": 0.63,
-        "width": 0.35,
-        "height": 0.07
+        "x": 0.148,
+        "y": 0.638,
+        "width": 0.342,
+        "height": 0.052
       },
       "fixSteps": [
-        "Store knife in a wooden knife block or magnetic rack.",
-        "Keep sharp blades away from counter edges."
+        "Store the knife in a designated knife block or protective drawer tray.",
+        "Move sharp cutlery away from the perimeter of kitchen islands."
       ],
       "focusArea": "Sharp objects",
-      "confidence": 96,
+      "confidence": 98,
       "status": "open"
     },
     {
-      "id": "e7dddca2-9355-4401-8337-4d5cff731414",
-      "title": "Unsecured Kitchen Runner Rug",
-      "detail": "Runner rug lacks grip tape and edges could curl, causing a trip hazard.",
+      "id": "7b97a590-a4b9-4c96-bd9c-7503cb929ac1",
+      "title": "Curled Kitchen Runner Rug",
+      "detail": "Accent rug in main walkway has loose edges, creating an active tripping hazard.",
       "severity": "Medium",
       "icon": "figure.walk",
       "boundingBox": {
-        "x": 0.54,
-        "y": 0.62,
-        "width": 0.2,
-        "height": 0.17
+        "x": 0.561,
+        "y": 0.628,
+        "width": 0.188,
+        "height": 0.154
       },
       "fixSteps": [
-        "Apply non-skid rug tape along all edges.",
-        "Ensure runner lies completely flat against floor."
+        "Apply heavy-duty rug tape or install a rubber non-skid pad underneath.",
+        "Ensure all rug edges lie flat against the hardwood flooring."
       ],
       "focusArea": "Trip hazards",
+      "confidence": 88,
+      "status": "open"
+    },
+    {
+      "id": "e9d94ead-59a0-47f2-98cc-11a3467e7daa",
+      "title": "Towel Hanging on Oven Handle",
+      "detail": "Cloth hanging near the oven door could ignite if elements are turned on carelessly.",
+      "severity": "Low",
+      "icon": "flame.fill",
+      "boundingBox": {
+        "x": 0.776,
+        "y": 0.441,
+        "width": 0.081,
+        "height": 0.098
+      },
+      "fixSteps": [
+        "Relocate kitchen towels to a wall-mounted hook away from cook surface\u2026",
+        "Keep all fabric and paper goods away from oven vents and ranges."
+      ],
+      "focusArea": "Fire",
       "confidence": 82,
       "status": "open"
     },
     {
-      "id": "c4b77756-5bb2-499b-a9d6-b7f66f50bec3",
-      "title": "Towel Hanging on Oven Handle",
-      "detail": "Cloth towel hanging directly on the oven door handle poses a heat risk.",
+      "id": "8cfe234b-a5f1-4323-9a2a-c04df20f18de",
+      "title": "Combustible Paper Near Sink and Cook",
+      "detail": "Paper towel roll placed closely along cooking perimeter poses a slight fire risk.",
       "severity": "Low",
-      "icon": "flame.fill",
+      "icon": "cooktop.fill",
       "boundingBox": {
-        "x": 0.77,
-        "y": 0.44,
-        "width": 0.09,
-        "height": 0.11
+        "x": 0.378,
+        "y": 0.348,
+        "width": 0.055,
+        "height": 0.075
       },
       "fixSteps": [
-        "Relocate fabric towels away from oven and cooktop.",
-        "Use a wall hook away from heating elements."
-      ],
-      "focusArea": "Fire",
-      "confidence": 75,
-      "status": "open"
-    },
-    {
-      "id": "ab07bcc5-9842-4705-af33-d35cecca448a",
-      "title": "Appliance Cord Near Sink",
-      "detail": "Countertop appliance sits close to sink basin creating splash risk.",
-      "severity": "Medium",
-      "icon": "bolt.fill",
-      "boundingBox": {
-        "x": 0,
-        "y": 0.35,
-        "width": 0.16,
-        "height": 0.14
-      },
-      "fixSteps": [
-        "Move air fryer further away from the sink area.",
-        "Keep electrical cords tidy and dry."
+        "Mount paper towels under the upper cabinet away from cooktops.",
+        "Maintain clear work zones on counters around cooking surfaces."
       ],
       "focusArea": "Kitchen hazards",
-      "confidence": 78,
+      "confidence": 74,
       "status": "open"
     }
   ],
   "products": [
     {
-      "id": "5a49ac9a-66b2-4d21-87c7-0aca72ba4e14",
-      "name": "Universal Knife Block",
-      "reason": "Safely stores exposed knives off countertop surfaces.",
+      "id": "c0d7ac3b-869e-4c53-b70a-372f5b1ace1c",
+      "name": "In-Drawer Bamboo Knife Block",
+      "reason": "Safely stores sharp knives inside drawers to prevent accidental cuts.",
       "priceLabel": "Shop on Amazon",
-      "icon": "shield.fill",
-      "searchQuery": "countertop knife block without knives"
+      "icon": "tray.fill",
+      "searchQuery": "in drawer knife block organizer"
     },
     {
-      "id": "fe6f724f-9e9e-434c-be1b-3abd4f237cf7",
+      "id": "7e460cf3-695b-4395-a059-19c43ba635a8",
       "name": "Non-Slip Rug Grippers",
-      "reason": "Anchors runner rug edges to prevent tripping.",
+      "reason": "Anchors runner corners flat to eliminate curling and tripping hazards.",
       "priceLabel": "Shop on Amazon",
-      "icon": "square.fill",
-      "searchQuery": "rug corner grippers hardwood floors"
+      "icon": "square.fill.and.line.vertical.and.square",
+      "searchQuery": "corner rug grippers hardwood floors"
     }
   ],
   "nextSteps": []

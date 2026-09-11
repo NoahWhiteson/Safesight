@@ -1,0 +1,113 @@
+{
+  "score": 62,
+  "summary": "Tall unanchored furniture and exposed low-level wall sockets present tip-over and child safety risks.",
+  "hazards": [
+    {
+      "id": "bf6f2d9f-3016-4249-9537-20e28fed0b3c",
+      "title": "Unanchored Tall Wardrobe",
+      "detail": "Tall wardrobe lacks visible wall anchoring and can tip over if climbed or pulled.",
+      "severity": "High",
+      "icon": "exclamationmark.triangle.fill",
+      "boundingBox": {
+        "x": 0.235,
+        "y": 0.33499999999999996,
+        "width": 0.52,
+        "height": 0.52
+      },
+      "fixSteps": [
+        "Attach heavy-duty anti-tip safety straps to the top rear frame.",
+        "Secure the anchor brackets into solid wall studs behind the unit."
+      ],
+      "focusArea": "Tip-over risks",
+      "confidence": 92,
+      "status": "open"
+    },
+    {
+      "id": "cf8bdbc3-efee-41f7-93b2-db46c368c692",
+      "title": "Exposed Low Electrical Outlet",
+      "detail": "Baseboard electrical outlet is uncovered and accessible to young children.",
+      "severity": "Medium",
+      "icon": "bolt.fill",
+      "boundingBox": {
+        "x": 0.84,
+        "y": 0.9,
+        "width": 0.08,
+        "height": 0.09
+      },
+      "fixSteps": [
+        "Insert safety plug protectors into unused wall socket openings.",
+        "Install a tamper-resistant outlet cover box for active plugs."
+      ],
+      "focusArea": "Child proofing",
+      "confidence": 88,
+      "status": "open"
+    },
+    {
+      "id": "28e4f425-055a-4c3e-a877-e590222641bc",
+      "title": "Accessible Drawers Create Ladder",
+      "detail": "Lower drawers can be pulled out by a toddler to create a climbing hazard.",
+      "severity": "Medium",
+      "icon": "lock.fill",
+      "boundingBox": {
+        "x": 0.22,
+        "y": 0.79,
+        "width": 0.55,
+        "height": 0.15
+      },
+      "fixSteps": [
+        "Install internal child-safety drawer latches to stop opening.",
+        "Teach young children never to pull out or climb on lower drawers."
+      ],
+      "focusArea": "Child proofing",
+      "confidence": 80,
+      "status": "open"
+    },
+    {
+      "id": "37dd271a-6232-48b1-a0ae-82b38e4c51c2",
+      "title": "Low Plug Near High-Traffic Zone",
+      "detail": "Unshielded wall socket near the floor poses shock risks if tampered with.",
+      "severity": "Low",
+      "icon": "powerplug.fill",
+      "boundingBox": {
+        "x": 0.84,
+        "y": 0.9,
+        "width": 0.08,
+        "height": 0.09
+      },
+      "fixSteps": [
+        "Check faceplate screw tightness and ensure no loose wiring.",
+        "Ensure plug pins remain fully covered and guarded against contact."
+      ],
+      "focusArea": "Electric",
+      "confidence": 76,
+      "status": "open"
+    }
+  ],
+  "products": [
+    {
+      "id": "f76ab1db-5dc8-4367-961d-23434d68fcdb",
+      "name": "Heavy Duty Furniture Anti-Tip Straps",
+      "reason": "Secures the tall wooden wardrobe securely into wall studs.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "shield.fill",
+      "searchQuery": "furniture anti tip wall anchor straps"
+    },
+    {
+      "id": "f51cf742-99ba-4ad2-8bea-4459f5b024f5",
+      "name": "Child Safety Socket Plugs",
+      "reason": "Blocks foreign objects from being pushed into exposed wall sockets.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "bolt.shield.fill",
+      "searchQuery": "baby proof electrical outlet plug covers"
+    },
+    {
+      "id": "d8ed7594-75e9-46b4-8eeb-8feb334e0562",
+      "name": "Magnetic Drawer Latches",
+      "reason": "Prevents toddlers from opening bottom drawers to climb up.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "lock.shield.fill",
+      "searchQuery": "adhesive magnetic child safety cabinet drawer locks"
+    }
+  ],
+  "nextSteps": []
+}

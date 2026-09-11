@@ -1,0 +1,65 @@
+{
+  "score": 88,
+  "summary": "Dining space is clean with minimal hazards, though curtain drape length presents a slight trip risk.",
+  "hazards": [
+    {
+      "id": "3bc53a39-1e68-4741-a674-06767ade78cc",
+      "title": "Puddling Curtain Fabric",
+      "detail": "Long curtains gather along the floor, presenting a catching hazard for feet.",
+      "severity": "Low",
+      "icon": "figure.walk",
+      "boundingBox": {
+        "x": 0.31000000000000005,
+        "y": 0.348,
+        "width": 0.22,
+        "height": 0.18
+      },
+      "fixSteps": [
+        "Hem curtain panels so they hang 0.5 inches above floor level.",
+        "Use tie-backs to bundle excess fabric securely away from walkways."
+      ],
+      "focusArea": "Trip hazards",
+      "confidence": 76,
+      "status": "open"
+    },
+    {
+      "id": "82ad8cfb-8d0a-4cd0-be4e-408f97712849",
+      "title": "Floor-to-Ceiling Glass Impact",
+      "detail": "Large transparent glass doors lack visual markers, risking accidental collisions.",
+      "severity": "Low",
+      "icon": "window.vertical.closed",
+      "boundingBox": {
+        "x": 0.38,
+        "y": 0.26,
+        "width": 0.28,
+        "height": 0.39
+      },
+      "fixSteps": [
+        "Apply subtle safety decals at eye level to indicate closed glass.",
+        "Ensure window latches or locks are engaged when unattended."
+      ],
+      "focusArea": "Windows & falls",
+      "confidence": 70,
+      "status": "open"
+    }
+  ],
+  "products": [
+    {
+      "id": "1e435aef-2915-4448-bd74-5723df620a15",
+      "name": "Safety Glass Decals",
+      "reason": "Prevents walking into closed transparent glass patio doors.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "eye",
+      "searchQuery": "translucent window safety awareness stickers"
+    },
+    {
+      "id": "810093e8-7c19-4740-bb45-a5c30c6d9de6",
+      "name": "Curtain Tiebacks",
+      "reason": "Keeps draped fabric bundled clear of walking paths.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "curtains.closed",
+      "searchQuery": "magnetic curtain holdbacks drapery ties"
+    }
+  ],
+  "nextSteps": []
+}

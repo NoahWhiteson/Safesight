@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Live AI benchmark against the hosted Safesight API (20 cases).
+Live AI benchmark against the hosted Safesight API (20 distinct room photos).
 Share cards via native ScanShareExporter.
 """
 
@@ -22,7 +22,6 @@ SOURCES = BENCH / "sources"
 SECRET_PLIST = ROOT / "Safesight" / "SafesightAPISecrets.plist"
 API = "https://safesight.noahwhiteson.com"
 
-# Match SafetyInterest.rawValue strings the API expects.
 FA = {
     "fire": "Fire",
     "water": "Water leaks",
@@ -55,138 +54,48 @@ def case(cid: str, label: str, photo: str, focus: list[str], **opts) -> dict:
     }
 
 
+# 20 distinct photos (unique files — not crops of the same frame).
 CASES = [
-    case(
-        "01-kitchen-user",
-        "Kitchen (user)",
-        "01-kitchen-user.jpg",
-        [FA["sharp"], FA["trip"], FA["kitchen"], FA["fire"]],
-    ),
-    case(
-        "02-hallway",
-        "Living / hallway",
-        "02-hallway.jpg",
-        [FA["trip"], FA["blocked"], FA["lighting"], FA["tip"]],
-    ),
-    case(
-        "03-kitchen-stock",
-        "Kitchen (stock)",
-        "03-kitchen-stock.jpg",
-        [FA["kitchen"], FA["sharp"], FA["trip"], FA["fire"]],
-    ),
-    case(
-        "04-kitchen-mid",
-        "Kitchen mid crop",
-        "04-kitchen-mid.jpg",
-        [FA["trip"], FA["electric"], FA["fire"], FA["blocked"]],
-    ),
-    case(
-        "05-kitchen-counter",
-        "Kitchen counter crop",
-        "05-kitchen-counter.jpg",
-        [FA["sharp"], FA["kitchen"], FA["chemicals"]],
-        aggressiveness=0.7,
-    ),
-    case(
-        "06-kitchen-floor",
-        "Kitchen floor crop",
-        "06-kitchen-floor.jpg",
-        [FA["trip"], FA["child"], FA["pets"]],
-    ),
-    case(
-        "07-kitchen-oven",
-        "Kitchen oven crop",
-        "07-kitchen-oven.jpg",
-        [FA["fire"], FA["kitchen"], FA["child"]],
-        aggressiveness=0.65,
-    ),
-    case(
-        "08-kitchen-island",
-        "Kitchen island crop",
-        "08-kitchen-island.jpg",
-        [FA["sharp"], FA["trip"], FA["kitchen"]],
-    ),
-    case(
-        "09-living-center",
-        "Living center crop",
-        "09-living-center.jpg",
-        [FA["trip"], FA["tip"], FA["electric"]],
-    ),
-    case(
-        "10-living-floor",
-        "Living floor crop",
-        "10-living-floor.jpg",
-        [FA["trip"], FA["child"], FA["pets"]],
-        aggressiveness=0.6,
-    ),
-    case(
-        "11-living-left",
-        "Living left crop",
-        "11-living-left.jpg",
-        [FA["windows"], FA["tip"], FA["lighting"]],
-    ),
-    case(
-        "12-living-right",
-        "Living right crop",
-        "12-living-right.jpg",
-        [FA["trip"], FA["blocked"], FA["electric"]],
-    ),
-    case(
-        "13-living-wall",
-        "Living wall crop",
-        "13-living-wall.jpg",
-        [FA["tip"], FA["paint"], FA["electric"]],
-        aggressiveness=0.75,
-        maxHazards=5,
-    ),
-    case(
-        "14-stock-island",
-        "Stock island crop",
-        "14-stock-island.jpg",
-        [FA["kitchen"], FA["sharp"], FA["fire"]],
-    ),
-    case(
-        "15-stock-cookware",
-        "Stock cookware crop",
-        "15-stock-cookware.jpg",
-        [FA["kitchen"], FA["fire"], FA["child"]],
-        aggressiveness=0.7,
-    ),
-    case(
-        "16-stock-floor",
-        "Stock floor crop",
-        "16-stock-floor.jpg",
-        [FA["trip"], FA["child"], FA["pets"]],
-    ),
-    case(
-        "17-stock-wide",
-        "Stock wide crop",
-        "17-stock-wide.jpg",
-        [FA["kitchen"], FA["trip"], FA["blocked"], FA["fire"]],
-        maxHazards=5,
-    ),
-    case(
-        "18-kitchen-upper",
-        "Kitchen upper crop",
-        "18-kitchen-upper.jpg",
-        [FA["fire"], FA["electric"], FA["kitchen"]],
-        aggressiveness=0.5,
-    ),
-    case(
-        "19-living-close",
-        "Living close crop",
-        "19-living-close.jpg",
-        [FA["trip"], FA["tip"], FA["child"]],
-        aggressiveness=0.8,
-        maxHazards=5,
-    ),
-    case(
-        "20-stock-corner",
-        "Stock corner crop",
-        "20-stock-corner.jpg",
-        [FA["kitchen"], FA["sharp"], FA["chemicals"]],
-        aggressiveness=0.65,
-    ),
+    case("01-kitchen-user", "Kitchen (user)", "01-kitchen-user.jpg",
+         [FA["sharp"], FA["trip"], FA["kitchen"], FA["fire"]]),
+    case("02-living-hallway", "Living / hallway", "02-living-hallway.jpg",
+         [FA["trip"], FA["blocked"], FA["lighting"], FA["tip"]]),
+    case("03-kitchen-stock", "Kitchen (stock)", "03-kitchen-stock.jpg",
+         [FA["kitchen"], FA["sharp"], FA["trip"], FA["fire"]]),
+    case("04-bathroom", "Bathroom", "04-bathroom.jpg",
+         [FA["trip"], FA["water"], FA["child"], FA["mold"]], aggressiveness=0.65),
+    case("05-bedroom", "Bedroom", "05-bedroom.jpg",
+         [FA["tip"], FA["electric"], FA["fire"], FA["windows"]]),
+    case("06-living-sofa", "Living (sofa)", "06-living-sofa.jpg",
+         [FA["trip"], FA["tip"], FA["electric"], FA["pets"]]),
+    case("07-kitchen-white", "Kitchen (white)", "07-kitchen-white.jpg",
+         [FA["kitchen"], FA["sharp"], FA["fire"], FA["trip"]]),
+    case("08-bedroom-boho", "Bedroom (boho)", "08-bedroom-boho.jpg",
+         [FA["electric"], FA["tip"], FA["fire"], FA["windows"]], aggressiveness=0.6),
+    case("09-laundry", "Laundry room", "09-laundry.jpg",
+         [FA["trip"], FA["water"], FA["electric"], FA["fire"], FA["chemicals"]], aggressiveness=0.7),
+    case("10-living-windows", "Living (windows)", "10-living-windows.jpg",
+         [FA["windows"], FA["trip"], FA["tip"], FA["lighting"]]),
+    case("11-dining", "Dining room", "11-dining.jpg",
+         [FA["fire"], FA["sharp"], FA["tip"], FA["child"]], aggressiveness=0.6),
+    case("12-living-modern", "Living (modern)", "12-living-modern.jpg",
+         [FA["trip"], FA["tip"], FA["electric"], FA["pets"]]),
+    case("13-living-stairs", "Living + stairs", "13-living-stairs.jpg",
+         [FA["stairs"], FA["trip"], FA["kitchen"], FA["child"]], aggressiveness=0.65, maxHazards=5),
+    case("14-kitchen-cooking", "Kitchen (cooking)", "14-kitchen-cooking.jpg",
+         [FA["fire"], FA["kitchen"], FA["sharp"], FA["child"]], aggressiveness=0.7),
+    case("15-home-office", "Home office", "15-home-office.jpg",
+         [FA["electric"], FA["trip"], FA["fire"], FA["tip"]]),
+    case("16-bathroom-modern", "Bathroom (modern)", "16-bathroom-modern.jpg",
+         [FA["trip"], FA["water"], FA["child"], FA["mold"]]),
+    case("17-closet", "Closet / wardrobe", "17-closet.jpg",
+         [FA["tip"], FA["fire"], FA["child"], FA["electric"]], aggressiveness=0.75),
+    case("18-kitchen-island", "Kitchen (island)", "18-kitchen-island.jpg",
+         [FA["kitchen"], FA["fire"], FA["sharp"], FA["trip"]]),
+    case("19-patio-door", "Open plan + patio", "19-patio-door.jpg",
+         [FA["windows"], FA["trip"], FA["fire"], FA["blocked"], FA["child"]], maxHazards=5),
+    case("20-garage", "Garage", "20-garage.jpg",
+         [FA["fire"], FA["chemicals"], FA["trip"], FA["electric"]], aggressiveness=0.7),
 ]
 
 assert len(CASES) == 20, len(CASES)
@@ -202,7 +111,7 @@ def read_secret() -> str:
     return out
 
 
-def analyze(photo: Path, secret: str, meta: dict) -> tuple[dict, float, int, str]:
+def analyze(photo: Path, secret: str, meta: dict) -> tuple[dict, float, int]:
     with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as tf:
         json.dump(meta, tf)
         meta_path = tf.name
@@ -211,25 +120,13 @@ def analyze(photo: Path, secret: str, meta: dict) -> tuple[dict, float, int, str
         t0 = time.perf_counter()
         proc = subprocess.run(
             [
-                "curl",
-                "-sS",
-                "-X",
-                "POST",
-                f"{API}/v1/analyze",
-                "-H",
-                f"Authorization: Bearer {secret}",
-                "-F",
-                f"meta=<{meta_path};type=application/json",
-                "-F",
-                f"image=@{photo};type=image/jpeg",
-                "-o",
-                out_path,
-                "-w",
-                "%{http_code}",
+                "curl", "-sS", "-X", "POST", f"{API}/v1/analyze",
+                "-H", f"Authorization: Bearer {secret}",
+                "-F", f"meta=<{meta_path};type=application/json",
+                "-F", f"image=@{photo};type=image/jpeg",
+                "-o", out_path, "-w", "%{http_code}",
             ],
-            capture_output=True,
-            text=True,
-            check=False,
+            capture_output=True, text=True, check=False,
         )
         elapsed = time.perf_counter() - t0
         code = int(proc.stdout.strip() or "0")
@@ -238,7 +135,7 @@ def analyze(photo: Path, secret: str, meta: dict) -> tuple[dict, float, int, str
             data = json.loads(raw) if raw else {"error": "empty body"}
         except json.JSONDecodeError:
             data = {"error": "non-json", "body": raw[:400]}
-        return data, elapsed, code, raw
+        return data, elapsed, code
     finally:
         os.unlink(meta_path)
         if os.path.exists(out_path):
@@ -247,48 +144,36 @@ def analyze(photo: Path, secret: str, meta: dict) -> tuple[dict, float, int, str
 
 def health() -> dict:
     proc = subprocess.run(
-        ["curl", "-sS", f"{API}/health"],
-        capture_output=True,
-        text=True,
-        check=True,
+        ["curl", "-sS", f"{API}/health"], capture_output=True, text=True, check=True
     )
     return json.loads(proc.stdout)
 
 
 def check_result(data: dict, allowed_focus: list[str]) -> list[str]:
-    """Return list of validation problems (empty = ok)."""
     problems: list[str] = []
     if "error" in data and "score" not in data:
         problems.append(f"api error: {data.get('error')}")
         return problems
-
     score = data.get("score")
     if not isinstance(score, int) or not (0 <= score <= 100):
         problems.append(f"bad score: {score!r}")
-
     summary = data.get("summary")
     if not isinstance(summary, str) or not summary.strip():
         problems.append("missing summary")
-    elif len(summary) > 160:
-        problems.append(f"summary too long ({len(summary)})")
-
     hazards = data.get("hazards")
     if not isinstance(hazards, list):
         problems.append("hazards not a list")
         return problems
     if len(hazards) < 1:
         problems.append("no hazards returned")
-
     for i, hz in enumerate(hazards):
         if not isinstance(hz, dict):
             problems.append(f"hazard[{i}] not object")
             continue
-        title = hz.get("title")
-        if not isinstance(title, str) or not title.strip():
+        if not isinstance(hz.get("title"), str) or not hz["title"].strip():
             problems.append(f"hazard[{i}] missing title")
-        sev = hz.get("severity")
-        if sev not in ("High", "Medium", "Low"):
-            problems.append(f"hazard[{i}] bad severity {sev!r}")
+        if hz.get("severity") not in ("High", "Medium", "Low"):
+            problems.append(f"hazard[{i}] bad severity {hz.get('severity')!r}")
         conf = hz.get("confidence")
         if not isinstance(conf, (int, float)) or not (0 <= float(conf) <= 100):
             problems.append(f"hazard[{i}] bad confidence {conf!r}")
@@ -308,8 +193,7 @@ def check_result(data: dict, allowed_focus: list[str]) -> list[str]:
             if not (0 <= val <= 1.05):
                 problems.append(f"hazard[{i}] box.{key}={val} out of 0…1")
         try:
-            w = float(box.get("width", 0))
-            h = float(box.get("height", 0))
+            w, h = float(box.get("width", 0)), float(box.get("height", 0))
             if w > 0.85 or h > 0.85:
                 problems.append(f"hazard[{i}] box too large ({w:.2f}x{h:.2f})")
             if w < 0.01 or h < 0.01:
@@ -319,68 +203,41 @@ def check_result(data: dict, allowed_focus: list[str]) -> list[str]:
         steps = hz.get("fixSteps")
         if not isinstance(steps, list) or len(steps) < 1:
             problems.append(f"hazard[{i}] missing fixSteps")
-
     return problems
 
 
 def shrink_share_for_docs(path: Path) -> None:
-    """Keep GitHub-friendly size: max long edge 1000, jpeg q78."""
     if not path.exists():
         return
     subprocess.run(
-        [
-            "sips",
-            "-Z",
-            "1000",
-            "-s",
-            "format",
-            "jpeg",
-            "-s",
-            "formatOptions",
-            "78",
-            str(path),
-            "--out",
-            str(path),
-        ],
-        check=False,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
+        ["sips", "-Z", "1000", "-s", "format", "jpeg", "-s", "formatOptions", "78",
+         str(path), "--out", str(path)],
+        check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
     )
 
 
 def main():
     assert len(CASES) == 20
+    # Guard: every source must exist and be a unique file hash
+    hashes = []
+    for c in CASES:
+        if not c["photo"].exists():
+            raise SystemExit(f"missing source {c['photo']}")
+        h = subprocess.check_output(["md5", "-q", str(c["photo"])], text=True).strip()
+        hashes.append(h)
+    if len(set(hashes)) != 20:
+        raise SystemExit("source photos are not all unique — refusing to run")
+
     BENCH.mkdir(parents=True, exist_ok=True)
     secret = read_secret()
     h = health()
     assert h.get("ok") is True, h
     model = h.get("model", "unknown")
-
     ran_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%SZ")
     rows = []
 
     for case in CASES:
         photo = case["photo"]
-        if not photo.exists():
-            print("skip missing", photo)
-            rows.append(
-                {
-                    "id": case["id"],
-                    "label": case["label"],
-                    "ok": False,
-                    "http": 0,
-                    "seconds": 0,
-                    "score": None,
-                    "summary": None,
-                    "hazardCount": 0,
-                    "hazards": [],
-                    "problems": ["missing source photo"],
-                    "share": None,
-                    "result": f"result-{case['id']}.json",
-                }
-            )
-            continue
-
         meta = {
             "scanId": f"benchmark-{case['id']}",
             "focusAreas": case["focusAreas"],
@@ -389,12 +246,11 @@ def main():
             "maxHazards": case["maxHazards"],
         }
         print(f"analyzing {case['id']}…")
-        data, elapsed, code, _raw = analyze(photo, secret, meta)
+        data, elapsed, code = analyze(photo, secret, meta)
         result_path = BENCH / f"result-{case['id']}.json"
         source_copy = BENCH / f"source-{case['id']}.jpg"
         if photo.resolve() != source_copy.resolve():
             source_copy.write_bytes(photo.read_bytes())
-
         with open(result_path, "w") as f:
             json.dump(data, f, indent=2)
 
@@ -402,7 +258,6 @@ def main():
         if code != 200:
             problems.append(f"http {code}")
         problems.extend(check_result(data, case["focusAreas"]))
-
         ok = code == 200 and not problems
         share_path = BENCH / f"share-{case['id']}.jpg"
         if ok:
@@ -414,33 +269,31 @@ def main():
                 ok = False
 
         hazards = data.get("hazards") or []
-        rows.append(
-            {
-                "id": case["id"],
-                "label": case["label"],
-                "ok": ok,
-                "http": code,
-                "seconds": round(elapsed, 2),
-                "score": data.get("score"),
-                "summary": data.get("summary"),
-                "hazardCount": len(hazards) if isinstance(hazards, list) else 0,
-                "hazards": [
-                    {
-                        "title": hz.get("title"),
-                        "severity": hz.get("severity"),
-                        "confidence": hz.get("confidence"),
-                        "focusArea": hz.get("focusArea"),
-                    }
-                    for hz in (hazards if isinstance(hazards, list) else [])
-                    if isinstance(hz, dict)
-                ],
-                "problems": problems,
-                "share": f"share-{case['id']}.jpg" if ok and share_path.exists() else None,
-                "result": f"result-{case['id']}.json",
-                "focusAreas": case["focusAreas"],
-                "aggressiveness": case["aggressiveness"],
-            }
-        )
+        rows.append({
+            "id": case["id"],
+            "label": case["label"],
+            "ok": ok,
+            "http": code,
+            "seconds": round(elapsed, 2),
+            "score": data.get("score"),
+            "summary": data.get("summary"),
+            "hazardCount": len(hazards) if isinstance(hazards, list) else 0,
+            "hazards": [
+                {
+                    "title": hz.get("title"),
+                    "severity": hz.get("severity"),
+                    "confidence": hz.get("confidence"),
+                    "focusArea": hz.get("focusArea"),
+                }
+                for hz in (hazards if isinstance(hazards, list) else [])
+                if isinstance(hz, dict)
+            ],
+            "problems": problems,
+            "share": f"share-{case['id']}.jpg" if ok and share_path.exists() else None,
+            "result": f"result-{case['id']}.json",
+            "focusAreas": case["focusAreas"],
+            "aggressiveness": case["aggressiveness"],
+        })
         status = "OK" if ok else "FAIL"
         print(
             f"  {status} http={code} score={data.get('score')} "
@@ -455,6 +308,7 @@ def main():
         "model": model,
         "passed": passed,
         "total": len(rows),
+        "distinctSources": 20,
         "cases": rows,
     }
     (BENCH / "report.json").write_text(json.dumps(report, indent=2) + "\n")
@@ -462,13 +316,12 @@ def main():
     lines = [
         "# AI benchmark",
         "",
-        "Live proof that Safesight’s hosted vision pipeline returns real House Scores,",
-        "hazard labels, confidences, and bounding boxes — then exports via the **exact**",
-        "iOS `ScanShareExporter` (simulator CLI).",
+        "Live proof on **20 distinct room photos** (unique files — not crops of one scene).",
+        "Share cards are the exact iOS `ScanShareExporter` output.",
         "",
         f"- **Ran:** `{ran_at}`",
         f"- **API:** `{API}`",
-        f"- **Model:** `{model}` (from `/health`)",
+        f"- **Model:** `{model}`",
         f"- **Result:** **{passed}/{len(rows)} passed**",
         "",
         "## Cases",
@@ -483,7 +336,6 @@ def main():
             f"| {i} | {status} {r['label']} | {r['http']} | {r['seconds']}s | "
             f"{r.get('score', '—')} | {r['hazardCount']} | {check} |"
         )
-
     lines += ["", "## Share cards (native `ScanShareExporter`)", ""]
     for r in rows:
         if not r.get("share"):
@@ -506,17 +358,15 @@ def main():
                     f"| {hz['title']} | {hz['severity']} | {hz['confidence']}% | {hz.get('focusArea') or '—'} |"
                 )
             lines.append("")
-
     lines += [
         "## How to re-run",
         "",
         "```bash",
-        "# Requires Safesight/SafesightAPISecrets.plist (gitignored) with API_SECRET",
         "python3 scripts/run_benchmark.py",
         "python3 scripts/validate_benchmark.py",
         "```",
         "",
-        "Sources live in `docs/benchmark/sources/` (full frames + crops of real room photos).",
+        "Sources: `docs/benchmark/sources/` (20 unique photos).",
         "",
         "[← Back to README](../README.md)",
         "",

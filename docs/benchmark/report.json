@@ -1,42 +1,43 @@
 {
-  "ranAt": "2026-09-11 02:17:04Z",
+  "ranAt": "2026-09-11 02:36:29Z",
   "api": "https://safesight.noahwhiteson.com",
   "model": "gemini-3.8-flash",
   "passed": 20,
   "total": 20,
+  "distinctSources": 20,
   "cases": [
     {
       "id": "01-kitchen-user",
       "label": "Kitchen (user)",
       "ok": true,
       "http": 200,
-      "seconds": 3.68,
+      "seconds": 5.39,
       "score": 68,
-      "summary": "Exposed knife on the island and runner rug edges present cut and trip risks.",
+      "summary": "Exposed knife on the island edge and a runner rug without non-slip backing create injury and trip risks.",
       "hazardCount": 4,
       "hazards": [
         {
-          "title": "Unsecured Kitchen Knife",
+          "title": "Unsecured Chef Knife on Counter",
           "severity": "High",
-          "confidence": 96,
+          "confidence": 98,
           "focusArea": "Sharp objects"
         },
         {
-          "title": "Unsecured Kitchen Runner Rug",
+          "title": "Curled Kitchen Runner Rug",
           "severity": "Medium",
-          "confidence": 82,
+          "confidence": 88,
           "focusArea": "Trip hazards"
         },
         {
           "title": "Towel Hanging on Oven Handle",
           "severity": "Low",
-          "confidence": 75,
+          "confidence": 82,
           "focusArea": "Fire"
         },
         {
-          "title": "Appliance Cord Near Sink",
-          "severity": "Medium",
-          "confidence": 78,
+          "title": "Combustible Paper Near Sink and Cook",
+          "severity": "Low",
+          "confidence": 74,
           "focusArea": "Kitchen hazards"
         }
       ],
@@ -52,37 +53,37 @@
       "aggressiveness": 0.55
     },
     {
-      "id": "02-hallway",
+      "id": "02-living-hallway",
       "label": "Living / hallway",
       "ok": true,
       "http": 200,
-      "seconds": 3.01,
+      "seconds": 4.11,
       "score": 82,
-      "summary": "Living area is generally tidy but presents minor tip-over and rug trip concerns.",
+      "summary": "Living room is well kept, but unanchored tall items present tip-over and path hazards.",
       "hazardCount": 3,
       "hazards": [
         {
-          "title": "Tall Plant Tip-Over Hazard",
-          "severity": "Low",
-          "confidence": 75,
+          "title": "Tall Plant Tip-Over Risk",
+          "severity": "Medium",
+          "confidence": 84,
           "focusArea": "Tip-over risks"
-        },
-        {
-          "title": "Area Rug Edge Trip Risk",
-          "severity": "Low",
-          "confidence": 70,
-          "focusArea": "Trip hazards"
         },
         {
           "title": "Unanchored Credenza",
           "severity": "Medium",
-          "confidence": 68,
+          "confidence": 76,
           "focusArea": "Tip-over risks"
+        },
+        {
+          "title": "Area Rug Edge Trip Hazard",
+          "severity": "Low",
+          "confidence": 68,
+          "focusArea": "Trip hazards"
         }
       ],
       "problems": [],
-      "share": "share-02-hallway.jpg",
-      "result": "result-02-hallway.json",
+      "share": "share-02-living-hallway.jpg",
+      "result": "result-02-living-hallway.json",
       "focusAreas": [
         "Trip hazards",
         "Blocked exits",
@@ -96,21 +97,21 @@
       "label": "Kitchen (stock)",
       "ok": true,
       "http": 200,
-      "seconds": 2.73,
+      "seconds": 8.59,
       "score": 88,
-      "summary": "Clean kitchen space with minimal hazards, primarily pots resting near island edge.",
+      "summary": "Clean kitchen space with minor risks from heavy cookware placed near the island edge.",
       "hazardCount": 2,
       "hazards": [
         {
-          "title": "Heavy pot near island edge",
+          "title": "Heavy pot lid near edge",
           "severity": "Low",
-          "confidence": 75,
+          "confidence": 85,
           "focusArea": "Kitchen hazards"
         },
         {
-          "title": "Loose cookware lid on counter",
+          "title": "Unsecured Dutch oven placement",
           "severity": "Low",
-          "confidence": 70,
+          "confidence": 80,
           "focusArea": "Kitchen hazards"
         }
       ],
@@ -126,627 +127,662 @@
       "aggressiveness": 0.55
     },
     {
-      "id": "04-kitchen-mid",
-      "label": "Kitchen mid crop",
+      "id": "04-bathroom",
+      "label": "Bathroom",
       "ok": true,
       "http": 200,
-      "seconds": 3.25,
+      "seconds": 3.95,
       "score": 78,
-      "summary": "Kitchen has fabric near the range surface and an unsecured floor runner.",
-      "hazardCount": 2,
-      "hazards": [
-        {
-          "title": "Towel hanging on oven handle",
-          "severity": "Medium",
-          "confidence": 85,
-          "focusArea": "Fire"
-        },
-        {
-          "title": "Unsecured kitchen floor runner",
-          "severity": "Low",
-          "confidence": 75,
-          "focusArea": "Trip hazards"
-        }
-      ],
-      "problems": [],
-      "share": "share-04-kitchen-mid.jpg",
-      "result": "result-04-kitchen-mid.json",
-      "focusAreas": [
-        "Trip hazards",
-        "Electric",
-        "Fire",
-        "Blocked exits"
-      ],
-      "aggressiveness": 0.55
-    },
-    {
-      "id": "05-kitchen-counter",
-      "label": "Kitchen counter crop",
-      "ok": true,
-      "http": 200,
-      "seconds": 3.63,
-      "score": 62,
-      "summary": "Exposed knife on the island edge and a towel near the range pose immediate injury and fire risks.",
+      "summary": "Bathroom is generally tidy, but a stool and accessible cabinet pose minor safety risks.",
       "hazardCount": 3,
       "hazards": [
         {
-          "title": "Unsecured Knife Near Island Edge",
-          "severity": "High",
-          "confidence": 98,
-          "focusArea": "Sharp objects"
-        },
-        {
-          "title": "Towel Hung on Oven Handle",
+          "title": "Loose Step Stool",
           "severity": "Medium",
           "confidence": 85,
-          "focusArea": "Kitchen hazards"
-        },
-        {
-          "title": "Loose Cloth Near Cooktop Area",
-          "severity": "Low",
-          "confidence": 78,
-          "focusArea": "Kitchen hazards"
-        }
-      ],
-      "problems": [],
-      "share": "share-05-kitchen-counter.jpg",
-      "result": "result-05-kitchen-counter.json",
-      "focusAreas": [
-        "Sharp objects",
-        "Kitchen hazards",
-        "Chemical storage"
-      ],
-      "aggressiveness": 0.7
-    },
-    {
-      "id": "06-kitchen-floor",
-      "label": "Kitchen floor crop",
-      "ok": true,
-      "http": 200,
-      "seconds": 2.91,
-      "score": 62,
-      "summary": "Exposed knife on the island edge presents a severe safety risk for children and pets.",
-      "hazardCount": 2,
-      "hazards": [
-        {
-          "title": "Exposed Knife on Island Edge",
-          "severity": "High",
-          "confidence": 98,
           "focusArea": "Child proofing"
         },
         {
-          "title": "Kitchen Runner Rug Edge",
+          "title": "Floor Obstruction",
           "severity": "Low",
-          "confidence": 78,
+          "confidence": 80,
           "focusArea": "Trip hazards"
+        },
+        {
+          "title": "Accessible Wall Cabinet",
+          "severity": "Medium",
+          "confidence": 75,
+          "focusArea": "Child proofing"
         }
       ],
       "problems": [],
-      "share": "share-06-kitchen-floor.jpg",
-      "result": "result-06-kitchen-floor.json",
+      "share": "share-04-bathroom.jpg",
+      "result": "result-04-bathroom.json",
       "focusAreas": [
         "Trip hazards",
+        "Water leaks",
         "Child proofing",
-        "Pet hazards"
-      ],
-      "aggressiveness": 0.55
-    },
-    {
-      "id": "07-kitchen-oven",
-      "label": "Kitchen oven crop",
-      "ok": true,
-      "http": 200,
-      "seconds": 5.12,
-      "score": 68,
-      "summary": "Exposed knife and items near stove create cut and fire hazards.",
-      "hazardCount": 4,
-      "hazards": [
-        {
-          "title": "Unsecured Countertop Knife",
-          "severity": "High",
-          "confidence": 95,
-          "focusArea": "Child proofing"
-        },
-        {
-          "title": "Combustible on Stovetop",
-          "severity": "Medium",
-          "confidence": 85,
-          "focusArea": "Fire"
-        },
-        {
-          "title": "Towel Near Heat Source",
-          "severity": "Low",
-          "confidence": 75,
-          "focusArea": "Fire"
-        },
-        {
-          "title": "Unsecured Lower Cabinets",
-          "severity": "Medium",
-          "confidence": 78,
-          "focusArea": "Child proofing"
-        }
-      ],
-      "problems": [],
-      "share": "share-07-kitchen-oven.jpg",
-      "result": "result-07-kitchen-oven.json",
-      "focusAreas": [
-        "Fire",
-        "Kitchen hazards",
-        "Child proofing"
+        "Mold & stains"
       ],
       "aggressiveness": 0.65
     },
     {
-      "id": "08-kitchen-island",
-      "label": "Kitchen island crop",
+      "id": "05-bedroom",
+      "label": "Bedroom",
       "ok": true,
       "http": 200,
-      "seconds": 2.9,
-      "score": 62,
-      "summary": "An exposed knife near the counter edge creates an immediate laceration hazard.",
-      "hazardCount": 2,
+      "seconds": 3.51,
+      "score": 86,
+      "summary": "The bedroom is well kept, but exposed hot bulbs and top-heavy accents pose minor hazards.",
+      "hazardCount": 3,
       "hazards": [
         {
-          "title": "Exposed knife near counter edge",
-          "severity": "High",
-          "confidence": 98,
-          "focusArea": "Sharp objects"
+          "title": "Low Exposed Light Fixture Bulbs",
+          "severity": "Medium",
+          "confidence": 84,
+          "focusArea": "Fire"
         },
         {
-          "title": "Unsecured kitchen runner",
+          "title": "Unanchored Nightstand Table Lamp",
           "severity": "Low",
-          "confidence": 75,
-          "focusArea": "Trip hazards"
+          "confidence": 72,
+          "focusArea": "Tip-over risks"
+        },
+        {
+          "title": "Floor-Length Drapes Near Window",
+          "severity": "Low",
+          "confidence": 65,
+          "focusArea": "Windows & falls"
         }
       ],
       "problems": [],
-      "share": "share-08-kitchen-island.jpg",
-      "result": "result-08-kitchen-island.json",
+      "share": "share-05-bedroom.jpg",
+      "result": "result-05-bedroom.json",
       "focusAreas": [
-        "Sharp objects",
-        "Trip hazards",
-        "Kitchen hazards"
+        "Tip-over risks",
+        "Electric",
+        "Fire",
+        "Windows & falls"
       ],
       "aggressiveness": 0.55
     },
     {
-      "id": "09-living-center",
-      "label": "Living center crop",
+      "id": "06-living-sofa",
+      "label": "Living (sofa)",
       "ok": true,
       "http": 200,
-      "seconds": 3.62,
-      "score": 82,
-      "summary": "Living room is well kept with a few tip-over and tripping risks.",
+      "seconds": 3.34,
+      "score": 78,
+      "summary": "Tall floor lamp and slender accent table present minor tip-over risks in the living space.",
       "hazardCount": 3,
       "hazards": [
         {
-          "title": "Unsecured Tall Plant",
+          "title": "Slender Floor Lamp Tip Risk",
+          "severity": "Medium",
+          "confidence": 85,
+          "focusArea": "Tip-over risks"
+        },
+        {
+          "title": "Fragile Tall Glass Vase",
           "severity": "Medium",
           "confidence": 88,
-          "focusArea": "Tip-over risks"
+          "focusArea": "Pet hazards"
         },
         {
-          "title": "Slender Tabletop Vase",
-          "severity": "Low",
-          "confidence": 84,
-          "focusArea": "Tip-over risks"
-        },
-        {
-          "title": "Low Table Leg Trip Risk",
+          "title": "Loose Lamp Power Cord",
           "severity": "Low",
           "confidence": 72,
           "focusArea": "Trip hazards"
         }
       ],
       "problems": [],
-      "share": "share-09-living-center.jpg",
-      "result": "result-09-living-center.json",
+      "share": "share-06-living-sofa.jpg",
+      "result": "result-06-living-sofa.json",
       "focusAreas": [
         "Trip hazards",
         "Tip-over risks",
-        "Electric"
+        "Electric",
+        "Pet hazards"
       ],
       "aggressiveness": 0.55
     },
     {
-      "id": "10-living-floor",
-      "label": "Living floor crop",
+      "id": "07-kitchen-white",
+      "label": "Kitchen (white)",
       "ok": true,
       "http": 200,
-      "seconds": 5.46,
-      "score": 78,
-      "summary": "Living space is mostly tidy but features breakable decor and accessible potted plant hazards.",
-      "hazardCount": 4,
+      "seconds": 2.84,
+      "score": 82,
+      "summary": "Overall tidy kitchen with minor fire hazard and floor rug tripping risk.",
+      "hazardCount": 2,
       "hazards": [
         {
-          "title": "Fragile Tall Vase on Low Table",
+          "title": "Towel hung on oven door handle",
           "severity": "Medium",
           "confidence": 88,
-          "focusArea": "Child proofing"
+          "focusArea": "Fire"
         },
         {
-          "title": "Unprotected Indoor Ficus Tree",
-          "severity": "Low",
-          "confidence": 80,
-          "focusArea": "Pet hazards"
-        },
-        {
-          "title": "Loose Glass Cloche on Floor/Shelf",
+          "title": "Unsecured fringed floor rug",
           "severity": "Medium",
-          "confidence": 82,
-          "focusArea": "Child proofing"
-        },
-        {
-          "title": "Unsecured Table Candle",
-          "severity": "Low",
-          "confidence": 75,
-          "focusArea": "Child proofing"
+          "confidence": 92,
+          "focusArea": "Trip hazards"
         }
       ],
       "problems": [],
-      "share": "share-10-living-floor.jpg",
-      "result": "result-10-living-floor.json",
+      "share": "share-07-kitchen-white.jpg",
+      "result": "result-07-kitchen-white.json",
       "focusAreas": [
-        "Trip hazards",
-        "Child proofing",
-        "Pet hazards"
+        "Kitchen hazards",
+        "Sharp objects",
+        "Fire",
+        "Trip hazards"
+      ],
+      "aggressiveness": 0.55
+    },
+    {
+      "id": "08-bedroom-boho",
+      "label": "Bedroom (boho)",
+      "ok": true,
+      "http": 200,
+      "seconds": 2.98,
+      "score": 82,
+      "summary": "Bedroom shows potential candle fire risk near foliage and an exposed bedside cord.",
+      "hazardCount": 2,
+      "hazards": [
+        {
+          "title": "Candle Near Hanging Plants",
+          "severity": "Medium",
+          "confidence": 85,
+          "focusArea": "Fire"
+        },
+        {
+          "title": "Unsecured Sconce Lamp Cord",
+          "severity": "Low",
+          "confidence": 78,
+          "focusArea": "Electric"
+        }
+      ],
+      "problems": [],
+      "share": "share-08-bedroom-boho.jpg",
+      "result": "result-08-bedroom-boho.json",
+      "focusAreas": [
+        "Electric",
+        "Tip-over risks",
+        "Fire",
+        "Windows & falls"
       ],
       "aggressiveness": 0.6
     },
     {
-      "id": "11-living-left",
-      "label": "Living left crop",
+      "id": "09-laundry",
+      "label": "Laundry room",
       "ok": true,
       "http": 200,
-      "seconds": 4.31,
-      "score": 85,
-      "summary": "Living area is well-lit with potential tip hazards on the sideboard.",
-      "hazardCount": 3,
+      "seconds": 3.75,
+      "score": 88,
+      "summary": "Chemical detergent handling presents spill, contact, and ingestion risks if left unsecured.",
+      "hazardCount": 2,
       "hazards": [
         {
-          "title": "Unanchored Sideboard Console",
+          "title": "Open Detergent Container",
           "severity": "Medium",
-          "confidence": 80,
-          "focusArea": "Tip-over risks"
+          "confidence": 92,
+          "focusArea": "Chemical storage"
         },
         {
-          "title": "Unsecured Heavy Table Lamp",
+          "title": "Dispenser Spill Risk",
           "severity": "Low",
           "confidence": 75,
-          "focusArea": "Tip-over risks"
-        },
-        {
-          "title": "Unsecured Secondary Table Lamp",
-          "severity": "Low",
-          "confidence": 70,
-          "focusArea": "Tip-over risks"
+          "focusArea": "Chemical storage"
         }
       ],
       "problems": [],
-      "share": "share-11-living-left.jpg",
-      "result": "result-11-living-left.json",
+      "share": "share-09-laundry.jpg",
+      "result": "result-09-laundry.json",
+      "focusAreas": [
+        "Trip hazards",
+        "Water leaks",
+        "Electric",
+        "Fire",
+        "Chemical storage"
+      ],
+      "aggressiveness": 0.7
+    },
+    {
+      "id": "10-living-windows",
+      "label": "Living (windows)",
+      "ok": true,
+      "http": 200,
+      "seconds": 2.71,
+      "score": 88,
+      "summary": "Dining space is clean with minimal hazards, though curtain drape length presents a slight trip risk.",
+      "hazardCount": 2,
+      "hazards": [
+        {
+          "title": "Puddling Curtain Fabric",
+          "severity": "Low",
+          "confidence": 76,
+          "focusArea": "Trip hazards"
+        },
+        {
+          "title": "Floor-to-Ceiling Glass Impact",
+          "severity": "Low",
+          "confidence": 70,
+          "focusArea": "Windows & falls"
+        }
+      ],
+      "problems": [],
+      "share": "share-10-living-windows.jpg",
+      "result": "result-10-living-windows.json",
       "focusAreas": [
         "Windows & falls",
+        "Trip hazards",
         "Tip-over risks",
         "Poor lighting"
       ],
       "aggressiveness": 0.55
     },
     {
-      "id": "12-living-right",
-      "label": "Living right crop",
+      "id": "11-dining",
+      "label": "Dining room",
       "ok": true,
       "http": 200,
-      "seconds": 2.34,
-      "score": 88,
-      "summary": "Living area is tidy with minimal hazards, though a tight walkway between table and sofa poses trip risks.",
-      "hazardCount": 1,
+      "seconds": 3.7,
+      "score": 78,
+      "summary": "Dining space presents minor breakable glass and potential sharp edge risks for children.",
+      "hazardCount": 4,
       "hazards": [
         {
-          "title": "Restricted sofa walkway clearance",
+          "title": "Accessible Glass Decanters",
+          "severity": "Medium",
+          "confidence": 88,
+          "focusArea": "Child proofing"
+        },
+        {
+          "title": "Fragile Tall Glassware",
+          "severity": "Low",
+          "confidence": 82,
+          "focusArea": "Sharp objects"
+        },
+        {
+          "title": "Sharp Table Edges",
+          "severity": "Low",
+          "confidence": 76,
+          "focusArea": "Child proofing"
+        },
+        {
+          "title": "Narrow Base Tall Pedestal Vase",
+          "severity": "Low",
+          "confidence": 70,
+          "focusArea": "Tip-over risks"
+        }
+      ],
+      "problems": [],
+      "share": "share-11-dining.jpg",
+      "result": "result-11-dining.json",
+      "focusAreas": [
+        "Fire",
+        "Sharp objects",
+        "Tip-over risks",
+        "Child proofing"
+      ],
+      "aggressiveness": 0.6
+    },
+    {
+      "id": "12-living-modern",
+      "label": "Living (modern)",
+      "ok": true,
+      "http": 200,
+      "seconds": 3.49,
+      "score": 78,
+      "summary": "Living space is tidy but has minor tip-over, toxic plant, and ottoman trip hazards.",
+      "hazardCount": 4,
+      "hazards": [
+        {
+          "title": "Toxic Snake Plant to Pets",
+          "severity": "Medium",
+          "confidence": 88,
+          "focusArea": "Pet hazards"
+        },
+        {
+          "title": "Tall Fragile Decor Tip-Over",
+          "severity": "Low",
+          "confidence": 75,
+          "focusArea": "Tip-over risks"
+        },
+        {
+          "title": "Floor Poufs In Walkway",
           "severity": "Low",
           "confidence": 72,
           "focusArea": "Trip hazards"
-        }
-      ],
-      "problems": [],
-      "share": "share-12-living-right.jpg",
-      "result": "result-12-living-right.json",
-      "focusAreas": [
-        "Trip hazards",
-        "Blocked exits",
-        "Electric"
-      ],
-      "aggressiveness": 0.55
-    },
-    {
-      "id": "13-living-wall",
-      "label": "Living wall crop",
-      "ok": true,
-      "http": 200,
-      "seconds": 2.82,
-      "score": 82,
-      "summary": "Potential furniture tip-over risks identified on the credenza and table lamp.",
-      "hazardCount": 2,
-      "hazards": [
-        {
-          "title": "Unanchored Credenza",
-          "severity": "Medium",
-          "confidence": 78,
-          "focusArea": "Tip-over risks"
         },
         {
-          "title": "Unsecured Table Lamp",
-          "severity": "Low",
-          "confidence": 85,
+          "title": "Arc Floor Lamp Tip-Over",
+          "severity": "Medium",
+          "confidence": 70,
           "focusArea": "Tip-over risks"
         }
       ],
       "problems": [],
-      "share": "share-13-living-wall.jpg",
-      "result": "result-13-living-wall.json",
+      "share": "share-12-living-modern.jpg",
+      "result": "result-12-living-modern.json",
       "focusAreas": [
+        "Trip hazards",
         "Tip-over risks",
-        "Peeling paint",
-        "Electric"
-      ],
-      "aggressiveness": 0.75
-    },
-    {
-      "id": "14-stock-island",
-      "label": "Stock island crop",
-      "ok": true,
-      "http": 200,
-      "seconds": 2.12,
-      "score": 92,
-      "summary": "Kitchen island is clean and tidy with minimal hazards detected.",
-      "hazardCount": 1,
-      "hazards": [
-        {
-          "title": "Pot lid placed near island edge",
-          "severity": "Low",
-          "confidence": 76,
-          "focusArea": "Kitchen hazards"
-        }
-      ],
-      "problems": [],
-      "share": "share-14-stock-island.jpg",
-      "result": "result-14-stock-island.json",
-      "focusAreas": [
-        "Kitchen hazards",
-        "Sharp objects",
-        "Fire"
-      ],
-      "aggressiveness": 0.55
-    },
-    {
-      "id": "15-stock-cookware",
-      "label": "Stock cookware crop",
-      "ok": true,
-      "http": 200,
-      "seconds": 5.73,
-      "score": 78,
-      "summary": "Heavy cookware sits near counter edge and cabinet glass lacks childproof latches.",
-      "hazardCount": 3,
-      "hazards": [
-        {
-          "title": "Heavy pot near counter edge",
-          "severity": "Medium",
-          "confidence": 88,
-          "focusArea": "Kitchen hazards"
-        },
-        {
-          "title": "Unlatched glass cabinet doors",
-          "severity": "Medium",
-          "confidence": 82,
-          "focusArea": "Child proofing"
-        },
-        {
-          "title": "Towel beneath large pot",
-          "severity": "Low",
-          "confidence": 75,
-          "focusArea": "Kitchen hazards"
-        }
-      ],
-      "problems": [],
-      "share": "share-15-stock-cookware.jpg",
-      "result": "result-15-stock-cookware.json",
-      "focusAreas": [
-        "Kitchen hazards",
-        "Fire",
-        "Child proofing"
-      ],
-      "aggressiveness": 0.7
-    },
-    {
-      "id": "16-stock-floor",
-      "label": "Stock floor crop",
-      "ok": true,
-      "http": 200,
-      "seconds": 6.48,
-      "score": 78,
-      "summary": "Heavy cookware sits near counter edges accessible to children or pets.",
-      "hazardCount": 3,
-      "hazards": [
-        {
-          "title": "Unsecured Heavy Pot Near Edge",
-          "severity": "Medium",
-          "confidence": 88,
-          "focusArea": "Child proofing"
-        },
-        {
-          "title": "Loose Cookware Lid Near Edge",
-          "severity": "Medium",
-          "confidence": 85,
-          "focusArea": "Child proofing"
-        },
-        {
-          "title": "Accessible Hot Pot Hazard",
-          "severity": "Medium",
-          "confidence": 80,
-          "focusArea": "Pet hazards"
-        }
-      ],
-      "problems": [],
-      "share": "share-16-stock-floor.jpg",
-      "result": "result-16-stock-floor.json",
-      "focusAreas": [
-        "Trip hazards",
-        "Child proofing",
+        "Electric",
         "Pet hazards"
       ],
       "aggressiveness": 0.55
     },
     {
-      "id": "17-stock-wide",
-      "label": "Stock wide crop",
+      "id": "13-living-stairs",
+      "label": "Living + stairs",
       "ok": true,
       "http": 200,
-      "seconds": 3.15,
-      "score": 85,
-      "summary": "Kitchen island holds heavy hot cookware placed near edge over cloths that could slip.",
-      "hazardCount": 2,
+      "seconds": 3.4,
+      "score": 62,
+      "summary": "Floating stairs lack handrails and the transparent balustrade creates fall and collision risks.",
+      "hazardCount": 3,
       "hazards": [
         {
-          "title": "Pot near counter edge on cloth",
+          "title": "Staircase Missing Handrail",
+          "severity": "High",
+          "confidence": 94,
+          "focusArea": "Stairs & falls"
+        },
+        {
+          "title": "Low-Visibility Glass Balustrade",
           "severity": "Medium",
+          "confidence": 85,
+          "focusArea": "Child proofing"
+        },
+        {
+          "title": "Raised Texture Rug Edge",
+          "severity": "Low",
+          "confidence": 78,
+          "focusArea": "Trip hazards"
+        }
+      ],
+      "problems": [],
+      "share": "share-13-living-stairs.jpg",
+      "result": "result-13-living-stairs.json",
+      "focusAreas": [
+        "Stairs & falls",
+        "Trip hazards",
+        "Kitchen hazards",
+        "Child proofing"
+      ],
+      "aggressiveness": 0.65
+    },
+    {
+      "id": "14-kitchen-cooking",
+      "label": "Kitchen (cooking)",
+      "ok": true,
+      "http": 200,
+      "seconds": 3.16,
+      "score": 68,
+      "summary": "Stove-edge cookpot placement and reach-across scraping create burn and scald risks.",
+      "hazardCount": 3,
+      "hazards": [
+        {
+          "title": "Large pot at cooktop edge",
+          "severity": "High",
           "confidence": 88,
           "focusArea": "Kitchen hazards"
         },
         {
-          "title": "Loose lid near counter edge",
-          "severity": "Low",
-          "confidence": 85,
+          "title": "Reaching over open hot pot",
+          "severity": "Medium",
+          "confidence": 82,
           "focusArea": "Kitchen hazards"
+        },
+        {
+          "title": "Accessible front range dials",
+          "severity": "Medium",
+          "confidence": 75,
+          "focusArea": "Child proofing"
         }
       ],
       "problems": [],
-      "share": "share-17-stock-wide.jpg",
-      "result": "result-17-stock-wide.json",
+      "share": "share-14-kitchen-cooking.jpg",
+      "result": "result-14-kitchen-cooking.json",
       "focusAreas": [
+        "Fire",
         "Kitchen hazards",
-        "Trip hazards",
-        "Blocked exits",
-        "Fire"
+        "Sharp objects",
+        "Child proofing"
       ],
-      "aggressiveness": 0.55
+      "aggressiveness": 0.7
     },
     {
-      "id": "18-kitchen-upper",
-      "label": "Kitchen upper crop",
+      "id": "15-home-office",
+      "label": "Home office",
       "ok": true,
       "http": 200,
-      "seconds": 3.88,
-      "score": 74,
-      "summary": "Kitchen has visible cutting hazards on the counter edge and items near the cooktop.",
-      "hazardCount": 3,
+      "seconds": 2.64,
+      "score": 88,
+      "summary": "Workspace is well-organized with minimal hazards, noting an exposed electrical cord near baseboard.",
+      "hazardCount": 2,
       "hazards": [
         {
-          "title": "Exposed knife on counter edge",
-          "severity": "Medium",
-          "confidence": 92,
-          "focusArea": "Kitchen hazards"
-        },
-        {
-          "title": "Towel hung on oven door handle",
+          "title": "Trailing Floor Cable",
           "severity": "Low",
           "confidence": 85,
-          "focusArea": "Fire"
+          "focusArea": "Trip hazards"
         },
         {
-          "title": "Cord near sink splash zone",
-          "severity": "Medium",
-          "confidence": 78,
+          "title": "Unsecured Wall Cord",
+          "severity": "Low",
+          "confidence": 80,
           "focusArea": "Electric"
         }
       ],
       "problems": [],
-      "share": "share-18-kitchen-upper.jpg",
-      "result": "result-18-kitchen-upper.json",
+      "share": "share-15-home-office.jpg",
+      "result": "result-15-home-office.json",
       "focusAreas": [
-        "Fire",
         "Electric",
-        "Kitchen hazards"
+        "Trip hazards",
+        "Fire",
+        "Tip-over risks"
       ],
-      "aggressiveness": 0.5
+      "aggressiveness": 0.55
     },
     {
-      "id": "19-living-close",
-      "label": "Living close crop",
+      "id": "16-bathroom-modern",
+      "label": "Bathroom (modern)",
       "ok": true,
       "http": 200,
-      "seconds": 3.62,
-      "score": 68,
-      "summary": "Visible tip risks from unanchored tall items and fragile objects within toddler reach.",
-      "hazardCount": 4,
+      "seconds": 3.3,
+      "score": 82,
+      "summary": "Bathroom is clean and modern, but loose mat and sharp vanity edges pose slip and impact hazards.",
+      "hazardCount": 3,
       "hazards": [
         {
-          "title": "Tall Plant Tip Risk",
+          "title": "Unsecured bath mat",
           "severity": "Medium",
-          "confidence": 85,
-          "focusArea": "Tip-over risks"
+          "confidence": 88,
+          "focusArea": "Trip hazards"
         },
         {
-          "title": "Fragile Tall Vase on Table",
-          "severity": "Medium",
-          "confidence": 90,
-          "focusArea": "Child proofing"
-        },
-        {
-          "title": "Unanchored Credenza Cabinet",
-          "severity": "Medium",
-          "confidence": 78,
-          "focusArea": "Tip-over risks"
-        },
-        {
-          "title": "Loose Table Decor & Candle",
+          "title": "Sharp floating vanity corners",
           "severity": "Low",
           "confidence": 82,
           "focusArea": "Child proofing"
-        }
-      ],
-      "problems": [],
-      "share": "share-19-living-close.jpg",
-      "result": "result-19-living-close.json",
-      "focusAreas": [
-        "Trip hazards",
-        "Tip-over risks",
-        "Child proofing"
-      ],
-      "aggressiveness": 0.8
-    },
-    {
-      "id": "20-stock-corner",
-      "label": "Stock corner crop",
-      "ok": true,
-      "http": 200,
-      "seconds": 5.33,
-      "score": 85,
-      "summary": "Kitchen is clean and orderly with minimal visible hazards, mainly potential burn or slip risks.",
-      "hazardCount": 2,
-      "hazards": [
-        {
-          "title": "Heavy pot near island edge",
-          "severity": "Medium",
-          "confidence": 80,
-          "focusArea": "Kitchen hazards"
         },
         {
-          "title": "Glassware on upper open shelf",
+          "title": "Accessible toilet lid",
           "severity": "Low",
-          "confidence": 70,
-          "focusArea": "Kitchen hazards"
+          "confidence": 78,
+          "focusArea": "Child proofing"
         }
       ],
       "problems": [],
-      "share": "share-20-stock-corner.jpg",
-      "result": "result-20-stock-corner.json",
+      "share": "share-16-bathroom-modern.jpg",
+      "result": "result-16-bathroom-modern.json",
+      "focusAreas": [
+        "Trip hazards",
+        "Water leaks",
+        "Child proofing",
+        "Mold & stains"
+      ],
+      "aggressiveness": 0.55
+    },
+    {
+      "id": "17-closet",
+      "label": "Closet / wardrobe",
+      "ok": true,
+      "http": 200,
+      "seconds": 3.87,
+      "score": 62,
+      "summary": "Tall unanchored furniture and exposed low-level wall sockets present tip-over and child safety risks.",
+      "hazardCount": 4,
+      "hazards": [
+        {
+          "title": "Unanchored Tall Wardrobe",
+          "severity": "High",
+          "confidence": 92,
+          "focusArea": "Tip-over risks"
+        },
+        {
+          "title": "Exposed Low Electrical Outlet",
+          "severity": "Medium",
+          "confidence": 88,
+          "focusArea": "Child proofing"
+        },
+        {
+          "title": "Accessible Drawers Create Ladder",
+          "severity": "Medium",
+          "confidence": 80,
+          "focusArea": "Child proofing"
+        },
+        {
+          "title": "Low Plug Near High-Traffic Zone",
+          "severity": "Low",
+          "confidence": 76,
+          "focusArea": "Electric"
+        }
+      ],
+      "problems": [],
+      "share": "share-17-closet.jpg",
+      "result": "result-17-closet.json",
+      "focusAreas": [
+        "Tip-over risks",
+        "Fire",
+        "Child proofing",
+        "Electric"
+      ],
+      "aggressiveness": 0.75
+    },
+    {
+      "id": "18-kitchen-island",
+      "label": "Kitchen (island)",
+      "ok": true,
+      "http": 200,
+      "seconds": 2.47,
+      "score": 86,
+      "summary": "Overall kitchen is tidy, but loose floor matting poses a tripping risk.",
+      "hazardCount": 1,
+      "hazards": [
+        {
+          "title": "Loose runner rug on floor",
+          "severity": "Medium",
+          "confidence": 88,
+          "focusArea": "Trip hazards"
+        }
+      ],
+      "problems": [],
+      "share": "share-18-kitchen-island.jpg",
+      "result": "result-18-kitchen-island.json",
       "focusAreas": [
         "Kitchen hazards",
+        "Fire",
         "Sharp objects",
-        "Chemical storage"
+        "Trip hazards"
       ],
-      "aggressiveness": 0.65
+      "aggressiveness": 0.55
+    },
+    {
+      "id": "19-patio-door",
+      "label": "Open plan + patio",
+      "ok": true,
+      "http": 200,
+      "seconds": 3.34,
+      "score": 88,
+      "summary": "Living area is tidy with minor tip-over and impact risks from low accent tables.",
+      "hazardCount": 3,
+      "hazards": [
+        {
+          "title": "Unstable pedestal side table",
+          "severity": "Low",
+          "confidence": 78,
+          "focusArea": "Child proofing"
+        },
+        {
+          "title": "Rigid table edge at child height",
+          "severity": "Low",
+          "confidence": 72,
+          "focusArea": "Child proofing"
+        },
+        {
+          "title": "Glass sliding door collision risk",
+          "severity": "Low",
+          "confidence": 68,
+          "focusArea": "Windows & falls"
+        }
+      ],
+      "problems": [],
+      "share": "share-19-patio-door.jpg",
+      "result": "result-19-patio-door.json",
+      "focusAreas": [
+        "Windows & falls",
+        "Trip hazards",
+        "Fire",
+        "Blocked exits",
+        "Child proofing"
+      ],
+      "aggressiveness": 0.55
+    },
+    {
+      "id": "20-garage",
+      "label": "Garage",
+      "ok": true,
+      "http": 200,
+      "seconds": 3.72,
+      "score": 68,
+      "summary": "Multiple uncontained chemicals and automotive fluids stored openly in work zone.",
+      "hazardCount": 3,
+      "hazards": [
+        {
+          "title": "Open Shelf Flammable Liquids",
+          "severity": "Medium",
+          "confidence": 88,
+          "focusArea": "Fire"
+        },
+        {
+          "title": "Unsecured Chemical Containers",
+          "severity": "Medium",
+          "confidence": 85,
+          "focusArea": "Chemical storage"
+        },
+        {
+          "title": "Floor Fluid Jug Obstruction",
+          "severity": "Low",
+          "confidence": 75,
+          "focusArea": "Trip hazards"
+        }
+      ],
+      "problems": [],
+      "share": "share-20-garage.jpg",
+      "result": "result-20-garage.json",
+      "focusAreas": [
+        "Fire",
+        "Chemical storage",
+        "Trip hazards",
+        "Electric"
+      ],
+      "aggressiveness": 0.7
     }
   ]
 }

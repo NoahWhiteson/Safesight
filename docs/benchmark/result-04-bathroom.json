@@ -1,0 +1,85 @@
+{
+  "score": 78,
+  "summary": "Bathroom is generally tidy, but a stool and accessible cabinet pose minor safety risks.",
+  "hazards": [
+    {
+      "id": "170f5b7e-30ef-4fa7-93f0-acb1439e8814",
+      "title": "Loose Step Stool",
+      "detail": "Lightweight step stool in the walkway can cause tripping or unsupervised climbing.",
+      "severity": "Medium",
+      "icon": "figure.fall",
+      "boundingBox": {
+        "x": 0.33,
+        "y": 0.77,
+        "width": 0.2,
+        "height": 0.22
+      },
+      "fixSteps": [
+        "Store the step stool away when not actively supervised.",
+        "Add non-slip rubber feet underneath to prevent sliding."
+      ],
+      "focusArea": "Child proofing",
+      "confidence": 85,
+      "status": "open"
+    },
+    {
+      "id": "167e6f17-8d98-4c1b-a4c5-0d51b21b950d",
+      "title": "Floor Obstruction",
+      "detail": "Potted plant on the floor reduces clearance and creates a trip risk in tight space.",
+      "severity": "Low",
+      "icon": "exclamationmark.triangle",
+      "boundingBox": {
+        "x": 0,
+        "y": 0.65,
+        "width": 0.27,
+        "height": 0.34
+      },
+      "fixSteps": [
+        "Relocate the planter off the floor to clear walking paths.",
+        "Keep the floor area around the pedestal sink open."
+      ],
+      "focusArea": "Trip hazards",
+      "confidence": 80,
+      "status": "open"
+    },
+    {
+      "id": "b1940740-26ff-4a0a-b5c7-361e384f7bb7",
+      "title": "Accessible Wall Cabinet",
+      "detail": "Wall-mounted cabinet lacks visible child safety locks for stored items.",
+      "severity": "Medium",
+      "icon": "lock.shield",
+      "boundingBox": {
+        "x": 0.82,
+        "y": 0.26,
+        "width": 0.18,
+        "height": 0.36
+      },
+      "fixSteps": [
+        "Install a magnetic or latch lock on cabinet doors.",
+        "Keep medicines and sharp items on high, locked shelves."
+      ],
+      "focusArea": "Child proofing",
+      "confidence": 75,
+      "status": "open"
+    }
+  ],
+  "products": [
+    {
+      "id": "4b4d845d-6406-4ae1-91d7-27df6461a028",
+      "name": "Magnetic Cabinet Locks",
+      "reason": "Prevents young children from opening medicine or storage cabinets.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "lock.fill",
+      "searchQuery": "magnetic safety cabinet locks baby proofing"
+    },
+    {
+      "id": "f38a2298-c6ad-4fac-846a-60a44fb90ba2",
+      "name": "Non-Slip Stool Pads",
+      "reason": "Prevents bathroom stools from sliding on smooth tile surfaces.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "shield.fill",
+      "searchQuery": "anti slip rubber pads for stool feet"
+    }
+  ],
+  "nextSteps": []
+}

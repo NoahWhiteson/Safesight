@@ -1,0 +1,85 @@
+{
+  "score": 68,
+  "summary": "Multiple uncontained chemicals and automotive fluids stored openly in work zone.",
+  "hazards": [
+    {
+      "id": "a6040733-ab41-4d46-bbc6-b69155a5711a",
+      "title": "Open Shelf Flammable Liquids",
+      "detail": "Automotive oils and fluids stored on open shelves increase workshop fire risk.",
+      "severity": "Medium",
+      "icon": "flame.fill",
+      "boundingBox": {
+        "x": 0.605,
+        "y": 0.257,
+        "width": 0.204,
+        "height": 0.084
+      },
+      "fixSteps": [
+        "Move flammable oils to a dedicated metal safety cabinet.",
+        "Keep storage separated from active heat or electrical sources."
+      ],
+      "focusArea": "Fire",
+      "confidence": 88,
+      "status": "open"
+    },
+    {
+      "id": "062b2aa9-e5e0-4b68-a0c5-f1057ab19c67",
+      "title": "Unsecured Chemical Containers",
+      "detail": "Bottles of vehicle fluids stored on open shelving risk accidental spills or leaks.",
+      "severity": "Medium",
+      "icon": "drop.triangle.fill",
+      "boundingBox": {
+        "x": 0.643,
+        "y": 0.56,
+        "width": 0.055,
+        "height": 0.095
+      },
+      "fixSteps": [
+        "Store fluids in a closed chemical cabinet with secondary containment.",
+        "Check caps and seals tightly after every use."
+      ],
+      "focusArea": "Chemical storage",
+      "confidence": 85,
+      "status": "open"
+    },
+    {
+      "id": "1b13ce6f-c76d-4beb-ab1f-d91b97d4b89f",
+      "title": "Floor Fluid Jug Obstruction",
+      "detail": "Fluid container resting near floor walkway poses a low-level trip and kick hazard.",
+      "severity": "Low",
+      "icon": "figure.walk",
+      "boundingBox": {
+        "x": 0.444,
+        "y": 0.698,
+        "width": 0.084,
+        "height": 0.1
+      },
+      "fixSteps": [
+        "Elevate jugs onto designated shelves away from walkways.",
+        "Keep clear minimum clearance around vehicle workspace."
+      ],
+      "focusArea": "Trip hazards",
+      "confidence": 75,
+      "status": "open"
+    }
+  ],
+  "products": [
+    {
+      "id": "efa627eb-04b6-4a2c-be9b-aa783cb9dd5d",
+      "name": "Flammable Storage Cabinet",
+      "reason": "Safely encloses combustible oils and chemicals to mitigate fire risks.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "archivebox.fill",
+      "searchQuery": "flammable safety cabinet garage"
+    },
+    {
+      "id": "7a839e5c-af15-4f39-a379-7ccf60af7e58",
+      "name": "Spill Containment Tray",
+      "reason": "Catches accidental leaks from fluid jugs and spray bottles.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "tray.fill",
+      "searchQuery": "chemical drip tray secondary containment"
+    }
+  ],
+  "nextSteps": []
+}

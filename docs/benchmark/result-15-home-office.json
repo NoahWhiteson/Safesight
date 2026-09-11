@@ -1,0 +1,57 @@
+{
+  "score": 88,
+  "summary": "Workspace is well-organized with minimal hazards, noting an exposed electrical cord near baseboard.",
+  "hazards": [
+    {
+      "id": "8cd6313d-b5e8-4c5e-ae6c-c61a1fc812cf",
+      "title": "Trailing Floor Cable",
+      "detail": "Cable runs down wall to floor near desk base, posing minor snag risk.",
+      "severity": "Low",
+      "icon": "figure.walk",
+      "boundingBox": {
+        "x": 0.35,
+        "y": 0.77,
+        "width": 0.08,
+        "height": 0.08
+      },
+      "fixSteps": [
+        "Secure the dangling wire along the baseboard or back of desk.",
+        "Use adhesive cable clips to keep cords elevated off floor."
+      ],
+      "focusArea": "Trip hazards",
+      "confidence": 85,
+      "status": "open"
+    },
+    {
+      "id": "dc463346-e8a1-4cb9-a1eb-5589f92ca4d7",
+      "title": "Unsecured Wall Cord",
+      "detail": "Exposed black power cord plugged near skirting board could be damaged.",
+      "severity": "Low",
+      "icon": "bolt.fill",
+      "boundingBox": {
+        "x": 0.35,
+        "y": 0.76,
+        "width": 0.07,
+        "height": 0.1
+      },
+      "fixSteps": [
+        "Inspect cord jacket for pinch damage from the desk or chair.",
+        "Bundle and secure slack behind the desk panel."
+      ],
+      "focusArea": "Electric",
+      "confidence": 80,
+      "status": "open"
+    }
+  ],
+  "products": [
+    {
+      "id": "e5f20074-d87f-4a4e-9f9e-d9c3d1043e34",
+      "name": "Self-Adhesive Cable Clips",
+      "reason": "Secures loose power cords against the desk leg or baseboard.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "cable.connector",
+      "searchQuery": "adhesive cable management clips desk"
+    }
+  ],
+  "nextSteps": []
+}

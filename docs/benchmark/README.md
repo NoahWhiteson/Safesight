@@ -1,44 +1,43 @@
 # AI benchmark
 
-Live proof that Safesight’s hosted vision pipeline returns real House Scores,
-hazard labels, confidences, and bounding boxes — then exports via the **exact**
-iOS `ScanShareExporter` (simulator CLI).
+Live proof on **20 distinct room photos** (unique files — not crops of one scene).
+Share cards are the exact iOS `ScanShareExporter` output.
 
-- **Ran:** `2026-09-11 02:17:04Z`
+- **Ran:** `2026-09-11 02:36:29Z`
 - **API:** `https://safesight.noahwhiteson.com`
-- **Model:** `gemini-3.8-flash` (from `/health`)
+- **Model:** `gemini-3.8-flash`
 - **Result:** **20/20 passed**
 
 ## Cases
 
 | # | Scene | HTTP | Latency | Score | Hazards | Check |
 |---|-------|------|---------|-------|---------|-------|
-| 1 | ✅ Kitchen (user) | 200 | 3.68s | 68 | 4 | ok |
-| 2 | ✅ Living / hallway | 200 | 3.01s | 82 | 3 | ok |
-| 3 | ✅ Kitchen (stock) | 200 | 2.73s | 88 | 2 | ok |
-| 4 | ✅ Kitchen mid crop | 200 | 3.25s | 78 | 2 | ok |
-| 5 | ✅ Kitchen counter crop | 200 | 3.63s | 62 | 3 | ok |
-| 6 | ✅ Kitchen floor crop | 200 | 2.91s | 62 | 2 | ok |
-| 7 | ✅ Kitchen oven crop | 200 | 5.12s | 68 | 4 | ok |
-| 8 | ✅ Kitchen island crop | 200 | 2.9s | 62 | 2 | ok |
-| 9 | ✅ Living center crop | 200 | 3.62s | 82 | 3 | ok |
-| 10 | ✅ Living floor crop | 200 | 5.46s | 78 | 4 | ok |
-| 11 | ✅ Living left crop | 200 | 4.31s | 85 | 3 | ok |
-| 12 | ✅ Living right crop | 200 | 2.34s | 88 | 1 | ok |
-| 13 | ✅ Living wall crop | 200 | 2.82s | 82 | 2 | ok |
-| 14 | ✅ Stock island crop | 200 | 2.12s | 92 | 1 | ok |
-| 15 | ✅ Stock cookware crop | 200 | 5.73s | 78 | 3 | ok |
-| 16 | ✅ Stock floor crop | 200 | 6.48s | 78 | 3 | ok |
-| 17 | ✅ Stock wide crop | 200 | 3.15s | 85 | 2 | ok |
-| 18 | ✅ Kitchen upper crop | 200 | 3.88s | 74 | 3 | ok |
-| 19 | ✅ Living close crop | 200 | 3.62s | 68 | 4 | ok |
-| 20 | ✅ Stock corner crop | 200 | 5.33s | 85 | 2 | ok |
+| 1 | ✅ Kitchen (user) | 200 | 5.39s | 68 | 4 | ok |
+| 2 | ✅ Living / hallway | 200 | 4.11s | 82 | 3 | ok |
+| 3 | ✅ Kitchen (stock) | 200 | 8.59s | 88 | 2 | ok |
+| 4 | ✅ Bathroom | 200 | 3.95s | 78 | 3 | ok |
+| 5 | ✅ Bedroom | 200 | 3.51s | 86 | 3 | ok |
+| 6 | ✅ Living (sofa) | 200 | 3.34s | 78 | 3 | ok |
+| 7 | ✅ Kitchen (white) | 200 | 2.84s | 82 | 2 | ok |
+| 8 | ✅ Bedroom (boho) | 200 | 2.98s | 82 | 2 | ok |
+| 9 | ✅ Laundry room | 200 | 3.75s | 88 | 2 | ok |
+| 10 | ✅ Living (windows) | 200 | 2.71s | 88 | 2 | ok |
+| 11 | ✅ Dining room | 200 | 3.7s | 78 | 4 | ok |
+| 12 | ✅ Living (modern) | 200 | 3.49s | 78 | 4 | ok |
+| 13 | ✅ Living + stairs | 200 | 3.4s | 62 | 3 | ok |
+| 14 | ✅ Kitchen (cooking) | 200 | 3.16s | 68 | 3 | ok |
+| 15 | ✅ Home office | 200 | 2.64s | 88 | 2 | ok |
+| 16 | ✅ Bathroom (modern) | 200 | 3.3s | 82 | 3 | ok |
+| 17 | ✅ Closet / wardrobe | 200 | 3.87s | 62 | 4 | ok |
+| 18 | ✅ Kitchen (island) | 200 | 2.47s | 86 | 1 | ok |
+| 19 | ✅ Open plan + patio | 200 | 3.34s | 88 | 3 | ok |
+| 20 | ✅ Garage | 200 | 3.72s | 68 | 3 | ok |
 
 ## Share cards (native `ScanShareExporter`)
 
 ### Kitchen (user) — 68/100
 
-> Exposed knife on the island and runner rug edges present cut and trip risks.
+> Exposed knife on the island edge and a runner rug without non-slip backing create injury and trip risks.
 
 <p align="center">
   <img src="share-01-kitchen-user.jpg" alt="Kitchen (user) Safesight share card" width="52%" />
@@ -46,28 +45,28 @@ iOS `ScanShareExporter` (simulator CLI).
 
 | Hazard | Severity | Confidence | Focus |
 |--------|----------|------------|-------|
-| Unsecured Kitchen Knife | High | 96% | Sharp objects |
-| Unsecured Kitchen Runner Rug | Medium | 82% | Trip hazards |
-| Towel Hanging on Oven Handle | Low | 75% | Fire |
-| Appliance Cord Near Sink | Medium | 78% | Kitchen hazards |
+| Unsecured Chef Knife on Counter | High | 98% | Sharp objects |
+| Curled Kitchen Runner Rug | Medium | 88% | Trip hazards |
+| Towel Hanging on Oven Handle | Low | 82% | Fire |
+| Combustible Paper Near Sink and Cook | Low | 74% | Kitchen hazards |
 
 ### Living / hallway — 82/100
 
-> Living area is generally tidy but presents minor tip-over and rug trip concerns.
+> Living room is well kept, but unanchored tall items present tip-over and path hazards.
 
 <p align="center">
-  <img src="share-02-hallway.jpg" alt="Living / hallway Safesight share card" width="52%" />
+  <img src="share-02-living-hallway.jpg" alt="Living / hallway Safesight share card" width="52%" />
 </p>
 
 | Hazard | Severity | Confidence | Focus |
 |--------|----------|------------|-------|
-| Tall Plant Tip-Over Hazard | Low | 75% | Tip-over risks |
-| Area Rug Edge Trip Risk | Low | 70% | Trip hazards |
-| Unanchored Credenza | Medium | 68% | Tip-over risks |
+| Tall Plant Tip-Over Risk | Medium | 84% | Tip-over risks |
+| Unanchored Credenza | Medium | 76% | Tip-over risks |
+| Area Rug Edge Trip Hazard | Low | 68% | Trip hazards |
 
 ### Kitchen (stock) — 88/100
 
-> Clean kitchen space with minimal hazards, primarily pots resting near island edge.
+> Clean kitchen space with minor risks from heavy cookware placed near the island edge.
 
 <p align="center">
   <img src="share-03-kitchen-stock.jpg" alt="Kitchen (stock) Safesight share card" width="52%" />
@@ -75,248 +74,250 @@ iOS `ScanShareExporter` (simulator CLI).
 
 | Hazard | Severity | Confidence | Focus |
 |--------|----------|------------|-------|
-| Heavy pot near island edge | Low | 75% | Kitchen hazards |
-| Loose cookware lid on counter | Low | 70% | Kitchen hazards |
+| Heavy pot lid near edge | Low | 85% | Kitchen hazards |
+| Unsecured Dutch oven placement | Low | 80% | Kitchen hazards |
 
-### Kitchen mid crop — 78/100
+### Bathroom — 78/100
 
-> Kitchen has fabric near the range surface and an unsecured floor runner.
+> Bathroom is generally tidy, but a stool and accessible cabinet pose minor safety risks.
 
 <p align="center">
-  <img src="share-04-kitchen-mid.jpg" alt="Kitchen mid crop Safesight share card" width="52%" />
+  <img src="share-04-bathroom.jpg" alt="Bathroom Safesight share card" width="52%" />
 </p>
 
 | Hazard | Severity | Confidence | Focus |
 |--------|----------|------------|-------|
-| Towel hanging on oven handle | Medium | 85% | Fire |
-| Unsecured kitchen floor runner | Low | 75% | Trip hazards |
+| Loose Step Stool | Medium | 85% | Child proofing |
+| Floor Obstruction | Low | 80% | Trip hazards |
+| Accessible Wall Cabinet | Medium | 75% | Child proofing |
 
-### Kitchen counter crop — 62/100
+### Bedroom — 86/100
 
-> Exposed knife on the island edge and a towel near the range pose immediate injury and fire risks.
+> The bedroom is well kept, but exposed hot bulbs and top-heavy accents pose minor hazards.
 
 <p align="center">
-  <img src="share-05-kitchen-counter.jpg" alt="Kitchen counter crop Safesight share card" width="52%" />
+  <img src="share-05-bedroom.jpg" alt="Bedroom Safesight share card" width="52%" />
 </p>
 
 | Hazard | Severity | Confidence | Focus |
 |--------|----------|------------|-------|
-| Unsecured Knife Near Island Edge | High | 98% | Sharp objects |
-| Towel Hung on Oven Handle | Medium | 85% | Kitchen hazards |
-| Loose Cloth Near Cooktop Area | Low | 78% | Kitchen hazards |
+| Low Exposed Light Fixture Bulbs | Medium | 84% | Fire |
+| Unanchored Nightstand Table Lamp | Low | 72% | Tip-over risks |
+| Floor-Length Drapes Near Window | Low | 65% | Windows & falls |
 
-### Kitchen floor crop — 62/100
+### Living (sofa) — 78/100
 
-> Exposed knife on the island edge presents a severe safety risk for children and pets.
+> Tall floor lamp and slender accent table present minor tip-over risks in the living space.
 
 <p align="center">
-  <img src="share-06-kitchen-floor.jpg" alt="Kitchen floor crop Safesight share card" width="52%" />
+  <img src="share-06-living-sofa.jpg" alt="Living (sofa) Safesight share card" width="52%" />
 </p>
 
 | Hazard | Severity | Confidence | Focus |
 |--------|----------|------------|-------|
-| Exposed Knife on Island Edge | High | 98% | Child proofing |
-| Kitchen Runner Rug Edge | Low | 78% | Trip hazards |
+| Slender Floor Lamp Tip Risk | Medium | 85% | Tip-over risks |
+| Fragile Tall Glass Vase | Medium | 88% | Pet hazards |
+| Loose Lamp Power Cord | Low | 72% | Trip hazards |
 
-### Kitchen oven crop — 68/100
+### Kitchen (white) — 82/100
 
-> Exposed knife and items near stove create cut and fire hazards.
+> Overall tidy kitchen with minor fire hazard and floor rug tripping risk.
 
 <p align="center">
-  <img src="share-07-kitchen-oven.jpg" alt="Kitchen oven crop Safesight share card" width="52%" />
+  <img src="share-07-kitchen-white.jpg" alt="Kitchen (white) Safesight share card" width="52%" />
 </p>
 
 | Hazard | Severity | Confidence | Focus |
 |--------|----------|------------|-------|
-| Unsecured Countertop Knife | High | 95% | Child proofing |
-| Combustible on Stovetop | Medium | 85% | Fire |
-| Towel Near Heat Source | Low | 75% | Fire |
-| Unsecured Lower Cabinets | Medium | 78% | Child proofing |
+| Towel hung on oven door handle | Medium | 88% | Fire |
+| Unsecured fringed floor rug | Medium | 92% | Trip hazards |
 
-### Kitchen island crop — 62/100
+### Bedroom (boho) — 82/100
 
-> An exposed knife near the counter edge creates an immediate laceration hazard.
+> Bedroom shows potential candle fire risk near foliage and an exposed bedside cord.
 
 <p align="center">
-  <img src="share-08-kitchen-island.jpg" alt="Kitchen island crop Safesight share card" width="52%" />
+  <img src="share-08-bedroom-boho.jpg" alt="Bedroom (boho) Safesight share card" width="52%" />
 </p>
 
 | Hazard | Severity | Confidence | Focus |
 |--------|----------|------------|-------|
-| Exposed knife near counter edge | High | 98% | Sharp objects |
-| Unsecured kitchen runner | Low | 75% | Trip hazards |
+| Candle Near Hanging Plants | Medium | 85% | Fire |
+| Unsecured Sconce Lamp Cord | Low | 78% | Electric |
 
-### Living center crop — 82/100
+### Laundry room — 88/100
 
-> Living room is well kept with a few tip-over and tripping risks.
+> Chemical detergent handling presents spill, contact, and ingestion risks if left unsecured.
 
 <p align="center">
-  <img src="share-09-living-center.jpg" alt="Living center crop Safesight share card" width="52%" />
+  <img src="share-09-laundry.jpg" alt="Laundry room Safesight share card" width="52%" />
 </p>
 
 | Hazard | Severity | Confidence | Focus |
 |--------|----------|------------|-------|
-| Unsecured Tall Plant | Medium | 88% | Tip-over risks |
-| Slender Tabletop Vase | Low | 84% | Tip-over risks |
-| Low Table Leg Trip Risk | Low | 72% | Trip hazards |
+| Open Detergent Container | Medium | 92% | Chemical storage |
+| Dispenser Spill Risk | Low | 75% | Chemical storage |
 
-### Living floor crop — 78/100
+### Living (windows) — 88/100
 
-> Living space is mostly tidy but features breakable decor and accessible potted plant hazards.
+> Dining space is clean with minimal hazards, though curtain drape length presents a slight trip risk.
 
 <p align="center">
-  <img src="share-10-living-floor.jpg" alt="Living floor crop Safesight share card" width="52%" />
+  <img src="share-10-living-windows.jpg" alt="Living (windows) Safesight share card" width="52%" />
 </p>
 
 | Hazard | Severity | Confidence | Focus |
 |--------|----------|------------|-------|
-| Fragile Tall Vase on Low Table | Medium | 88% | Child proofing |
-| Unprotected Indoor Ficus Tree | Low | 80% | Pet hazards |
-| Loose Glass Cloche on Floor/Shelf | Medium | 82% | Child proofing |
-| Unsecured Table Candle | Low | 75% | Child proofing |
+| Puddling Curtain Fabric | Low | 76% | Trip hazards |
+| Floor-to-Ceiling Glass Impact | Low | 70% | Windows & falls |
 
-### Living left crop — 85/100
+### Dining room — 78/100
 
-> Living area is well-lit with potential tip hazards on the sideboard.
+> Dining space presents minor breakable glass and potential sharp edge risks for children.
 
 <p align="center">
-  <img src="share-11-living-left.jpg" alt="Living left crop Safesight share card" width="52%" />
+  <img src="share-11-dining.jpg" alt="Dining room Safesight share card" width="52%" />
 </p>
 
 | Hazard | Severity | Confidence | Focus |
 |--------|----------|------------|-------|
-| Unanchored Sideboard Console | Medium | 80% | Tip-over risks |
-| Unsecured Heavy Table Lamp | Low | 75% | Tip-over risks |
-| Unsecured Secondary Table Lamp | Low | 70% | Tip-over risks |
+| Accessible Glass Decanters | Medium | 88% | Child proofing |
+| Fragile Tall Glassware | Low | 82% | Sharp objects |
+| Sharp Table Edges | Low | 76% | Child proofing |
+| Narrow Base Tall Pedestal Vase | Low | 70% | Tip-over risks |
 
-### Living right crop — 88/100
+### Living (modern) — 78/100
 
-> Living area is tidy with minimal hazards, though a tight walkway between table and sofa poses trip risks.
+> Living space is tidy but has minor tip-over, toxic plant, and ottoman trip hazards.
 
 <p align="center">
-  <img src="share-12-living-right.jpg" alt="Living right crop Safesight share card" width="52%" />
+  <img src="share-12-living-modern.jpg" alt="Living (modern) Safesight share card" width="52%" />
 </p>
 
 | Hazard | Severity | Confidence | Focus |
 |--------|----------|------------|-------|
-| Restricted sofa walkway clearance | Low | 72% | Trip hazards |
+| Toxic Snake Plant to Pets | Medium | 88% | Pet hazards |
+| Tall Fragile Decor Tip-Over | Low | 75% | Tip-over risks |
+| Floor Poufs In Walkway | Low | 72% | Trip hazards |
+| Arc Floor Lamp Tip-Over | Medium | 70% | Tip-over risks |
 
-### Living wall crop — 82/100
+### Living + stairs — 62/100
 
-> Potential furniture tip-over risks identified on the credenza and table lamp.
+> Floating stairs lack handrails and the transparent balustrade creates fall and collision risks.
 
 <p align="center">
-  <img src="share-13-living-wall.jpg" alt="Living wall crop Safesight share card" width="52%" />
+  <img src="share-13-living-stairs.jpg" alt="Living + stairs Safesight share card" width="52%" />
 </p>
 
 | Hazard | Severity | Confidence | Focus |
 |--------|----------|------------|-------|
-| Unanchored Credenza | Medium | 78% | Tip-over risks |
-| Unsecured Table Lamp | Low | 85% | Tip-over risks |
+| Staircase Missing Handrail | High | 94% | Stairs & falls |
+| Low-Visibility Glass Balustrade | Medium | 85% | Child proofing |
+| Raised Texture Rug Edge | Low | 78% | Trip hazards |
 
-### Stock island crop — 92/100
+### Kitchen (cooking) — 68/100
 
-> Kitchen island is clean and tidy with minimal hazards detected.
+> Stove-edge cookpot placement and reach-across scraping create burn and scald risks.
 
 <p align="center">
-  <img src="share-14-stock-island.jpg" alt="Stock island crop Safesight share card" width="52%" />
+  <img src="share-14-kitchen-cooking.jpg" alt="Kitchen (cooking) Safesight share card" width="52%" />
 </p>
 
 | Hazard | Severity | Confidence | Focus |
 |--------|----------|------------|-------|
-| Pot lid placed near island edge | Low | 76% | Kitchen hazards |
+| Large pot at cooktop edge | High | 88% | Kitchen hazards |
+| Reaching over open hot pot | Medium | 82% | Kitchen hazards |
+| Accessible front range dials | Medium | 75% | Child proofing |
 
-### Stock cookware crop — 78/100
+### Home office — 88/100
 
-> Heavy cookware sits near counter edge and cabinet glass lacks childproof latches.
+> Workspace is well-organized with minimal hazards, noting an exposed electrical cord near baseboard.
 
 <p align="center">
-  <img src="share-15-stock-cookware.jpg" alt="Stock cookware crop Safesight share card" width="52%" />
+  <img src="share-15-home-office.jpg" alt="Home office Safesight share card" width="52%" />
 </p>
 
 | Hazard | Severity | Confidence | Focus |
 |--------|----------|------------|-------|
-| Heavy pot near counter edge | Medium | 88% | Kitchen hazards |
-| Unlatched glass cabinet doors | Medium | 82% | Child proofing |
-| Towel beneath large pot | Low | 75% | Kitchen hazards |
+| Trailing Floor Cable | Low | 85% | Trip hazards |
+| Unsecured Wall Cord | Low | 80% | Electric |
 
-### Stock floor crop — 78/100
+### Bathroom (modern) — 82/100
 
-> Heavy cookware sits near counter edges accessible to children or pets.
+> Bathroom is clean and modern, but loose mat and sharp vanity edges pose slip and impact hazards.
 
 <p align="center">
-  <img src="share-16-stock-floor.jpg" alt="Stock floor crop Safesight share card" width="52%" />
+  <img src="share-16-bathroom-modern.jpg" alt="Bathroom (modern) Safesight share card" width="52%" />
 </p>
 
 | Hazard | Severity | Confidence | Focus |
 |--------|----------|------------|-------|
-| Unsecured Heavy Pot Near Edge | Medium | 88% | Child proofing |
-| Loose Cookware Lid Near Edge | Medium | 85% | Child proofing |
-| Accessible Hot Pot Hazard | Medium | 80% | Pet hazards |
+| Unsecured bath mat | Medium | 88% | Trip hazards |
+| Sharp floating vanity corners | Low | 82% | Child proofing |
+| Accessible toilet lid | Low | 78% | Child proofing |
 
-### Stock wide crop — 85/100
+### Closet / wardrobe — 62/100
 
-> Kitchen island holds heavy hot cookware placed near edge over cloths that could slip.
+> Tall unanchored furniture and exposed low-level wall sockets present tip-over and child safety risks.
 
 <p align="center">
-  <img src="share-17-stock-wide.jpg" alt="Stock wide crop Safesight share card" width="52%" />
+  <img src="share-17-closet.jpg" alt="Closet / wardrobe Safesight share card" width="52%" />
 </p>
 
 | Hazard | Severity | Confidence | Focus |
 |--------|----------|------------|-------|
-| Pot near counter edge on cloth | Medium | 88% | Kitchen hazards |
-| Loose lid near counter edge | Low | 85% | Kitchen hazards |
+| Unanchored Tall Wardrobe | High | 92% | Tip-over risks |
+| Exposed Low Electrical Outlet | Medium | 88% | Child proofing |
+| Accessible Drawers Create Ladder | Medium | 80% | Child proofing |
+| Low Plug Near High-Traffic Zone | Low | 76% | Electric |
 
-### Kitchen upper crop — 74/100
+### Kitchen (island) — 86/100
 
-> Kitchen has visible cutting hazards on the counter edge and items near the cooktop.
+> Overall kitchen is tidy, but loose floor matting poses a tripping risk.
 
 <p align="center">
-  <img src="share-18-kitchen-upper.jpg" alt="Kitchen upper crop Safesight share card" width="52%" />
+  <img src="share-18-kitchen-island.jpg" alt="Kitchen (island) Safesight share card" width="52%" />
 </p>
 
 | Hazard | Severity | Confidence | Focus |
 |--------|----------|------------|-------|
-| Exposed knife on counter edge | Medium | 92% | Kitchen hazards |
-| Towel hung on oven door handle | Low | 85% | Fire |
-| Cord near sink splash zone | Medium | 78% | Electric |
+| Loose runner rug on floor | Medium | 88% | Trip hazards |
 
-### Living close crop — 68/100
+### Open plan + patio — 88/100
 
-> Visible tip risks from unanchored tall items and fragile objects within toddler reach.
+> Living area is tidy with minor tip-over and impact risks from low accent tables.
 
 <p align="center">
-  <img src="share-19-living-close.jpg" alt="Living close crop Safesight share card" width="52%" />
+  <img src="share-19-patio-door.jpg" alt="Open plan + patio Safesight share card" width="52%" />
 </p>
 
 | Hazard | Severity | Confidence | Focus |
 |--------|----------|------------|-------|
-| Tall Plant Tip Risk | Medium | 85% | Tip-over risks |
-| Fragile Tall Vase on Table | Medium | 90% | Child proofing |
-| Unanchored Credenza Cabinet | Medium | 78% | Tip-over risks |
-| Loose Table Decor & Candle | Low | 82% | Child proofing |
+| Unstable pedestal side table | Low | 78% | Child proofing |
+| Rigid table edge at child height | Low | 72% | Child proofing |
+| Glass sliding door collision risk | Low | 68% | Windows & falls |
 
-### Stock corner crop — 85/100
+### Garage — 68/100
 
-> Kitchen is clean and orderly with minimal visible hazards, mainly potential burn or slip risks.
+> Multiple uncontained chemicals and automotive fluids stored openly in work zone.
 
 <p align="center">
-  <img src="share-20-stock-corner.jpg" alt="Stock corner crop Safesight share card" width="52%" />
+  <img src="share-20-garage.jpg" alt="Garage Safesight share card" width="52%" />
 </p>
 
 | Hazard | Severity | Confidence | Focus |
 |--------|----------|------------|-------|
-| Heavy pot near island edge | Medium | 80% | Kitchen hazards |
-| Glassware on upper open shelf | Low | 70% | Kitchen hazards |
+| Open Shelf Flammable Liquids | Medium | 88% | Fire |
+| Unsecured Chemical Containers | Medium | 85% | Chemical storage |
+| Floor Fluid Jug Obstruction | Low | 75% | Trip hazards |
 
 ## How to re-run
 
 ```bash
-# Requires Safesight/SafesightAPISecrets.plist (gitignored) with API_SECRET
 python3 scripts/run_benchmark.py
 python3 scripts/validate_benchmark.py
 ```
 
-Sources live in `docs/benchmark/sources/` (full frames + crops of real room photos).
+Sources: `docs/benchmark/sources/` (20 unique photos).
 
 [← Back to README](../README.md)

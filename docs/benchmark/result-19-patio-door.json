@@ -1,0 +1,85 @@
+{
+  "score": 88,
+  "summary": "Living area is tidy with minor tip-over and impact risks from low accent tables.",
+  "hazards": [
+    {
+      "id": "eb538dd3-30a0-4765-bd74-2480c8a97ffe",
+      "title": "Unstable pedestal side table",
+      "detail": "Narrow base small pedestal table can easily tip if bumped by running children.",
+      "severity": "Low",
+      "icon": "exclamationmark.triangle",
+      "boundingBox": {
+        "x": 0.67,
+        "y": 0.67,
+        "width": 0.25,
+        "height": 0.23
+      },
+      "fixSteps": [
+        "Relocate table against a wall or beside the sofa arm",
+        "Swap with a broader-based or heavier side table"
+      ],
+      "focusArea": "Child proofing",
+      "confidence": 78,
+      "status": "open"
+    },
+    {
+      "id": "0751e4a1-2ba9-453f-94b5-7aa30d44ce08",
+      "title": "Rigid table edge at child height",
+      "detail": "Hard marble coffee table edge presents an impact risk during slips or falls.",
+      "severity": "Low",
+      "icon": "shield.lefthalf.filled",
+      "boundingBox": {
+        "x": 0.4,
+        "y": 0.65,
+        "width": 0.33,
+        "height": 0.14
+      },
+      "fixSteps": [
+        "Attach silicone edge cushions around perimeter",
+        "Allow wider clear passage between sofa and table"
+      ],
+      "focusArea": "Child proofing",
+      "confidence": 72,
+      "status": "open"
+    },
+    {
+      "id": "79a6862c-4c5a-42bb-a1b4-6d0ff0d0edd0",
+      "title": "Glass sliding door collision risk",
+      "detail": "Floor-to-ceiling clear glass doors can cause impact injury if closed and unseen.",
+      "severity": "Low",
+      "icon": "eye",
+      "boundingBox": {
+        "x": 0,
+        "y": 0.312,
+        "width": 0.17,
+        "height": 0.25
+      },
+      "fixSteps": [
+        "Apply subtle visual decals at adult and child eye levels",
+        "Keep track clear and ensure door slides smoothly"
+      ],
+      "focusArea": "Windows & falls",
+      "confidence": 68,
+      "status": "open"
+    }
+  ],
+  "products": [
+    {
+      "id": "3b5318b2-0bd6-4c3a-9850-fdcaa1d46589",
+      "name": "Clear Edge Protectors",
+      "reason": "Softens sharp table perimeters against child head bumps.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "shield",
+      "searchQuery": "clear table edge guard silicone"
+    },
+    {
+      "id": "ce1d312c-e6b1-42fa-8303-6c78b01132c5",
+      "name": "Glass Safety Decals",
+      "reason": "Prevents people and pets from walking into closed glass doors.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "sparkles",
+      "searchQuery": "sliding glass door safety decals"
+    }
+  ],
+  "nextSteps": []
+}
