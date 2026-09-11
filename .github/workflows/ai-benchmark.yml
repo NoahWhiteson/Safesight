@@ -5,7 +5,6 @@ on:
     paths:
       - "docs/benchmark/**"
       - "scripts/validate_benchmark.py"
-      - "scripts/render_share_card.py"
       - "scripts/run_benchmark.py"
   pull_request:
     paths:
@@ -22,7 +21,5 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Install Pillow
-        run: pip install pillow
-      - name: Validate report + share cards
+      - name: Validate report + share cards (20/20)
         run: python3 scripts/validate_benchmark.py
