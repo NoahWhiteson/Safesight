@@ -3,7 +3,13 @@ import cors from "cors";
 import crypto from "crypto";
 import express from "express";
 import multer from "multer";
+import path from "path";
+import { fileURLToPath } from "url";
 import { analyzeWithGemini } from "./gemini.js";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const PUBLIC_DIR = path.join(__dirname, "../public");
+const DEMO_VIDEO = path.join(PUBLIC_DIR, "demovideo.mp4");
 
 const PORT = Number(process.env.PORT || 8787);
 const GEMINI_API_KEY = (process.env.GEMINI_API_KEY || "").trim();
@@ -88,6 +94,68 @@ app.get("/health", (_req, res) => {
     hasKey: Boolean(GEMINI_API_KEY),
     authRequired: Boolean(API_SECRET),
   });
+});
+
+/** Raw MP4 — used by README embeds and direct downloads. */
+app.get("/demovideo.mp4", (req, res) => {
+  res.sendFile(DEMO_VIDEO, {
+    acceptRanges: true,
+    headers: {
+      "Content-Type": "video/mp4",
+      "Cache-Control": "public, max-age=86400",
+    },
+  }, (err) => {
+    if (err && !res.headersSent) {
+      res.status(404).json({ error: "Demo video not found" });
+    }
+  });
+});
+
+/** Watch page at /demovideo */
+app.get(["/demovideo", "/demovideo/"], (_req, res) => {
+  res.type("html").send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Safesight — Demo</title>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      font-family: Inter, system-ui, -apple-system, sans-serif;
+      background: #f5f5f7;
+      color: #141414;
+      padding: 24px;
+    }
+    main { width: min(960px, 100%); }
+    h1 { font-size: 1.25rem; margin: 0 0 12px; letter-spacing: -0.02em; }
+    p { margin: 0 0 20px; color: #737373; font-size: 0.95rem; }
+    video {
+      width: 100%;
+      border-radius: 16px;
+      background: #000;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+    }
+    a { color: #007aff; text-decoration: none; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Safesight demo</h1>
+    <p>Point your camera at a room. Safesight finds visible risks and tells you what to fix.</p>
+    <video controls playsinline preload="metadata" src="/demovideo.mp4">
+      Your browser can’t play this video.
+      <a href="/demovideo.mp4">Download the MP4</a>
+    </video>
+    <p style="margin-top:16px"><a href="https://github.com/NoahWhiteson/Safesight">View the project on GitHub</a></p>
+  </main>
+</body>
+</html>`);
 });
 
 /**
