@@ -1,0 +1,57 @@
+{
+  "score": 85,
+  "summary": "Heavy cookware sits resting on soft cloth near the counter edge.",
+  "hazards": [
+    {
+      "id": "abfcd286-9baf-492a-aaa2-44c67da1dd50",
+      "title": "Cookware Near Counter Edge",
+      "detail": "Heavy Dutch oven resting on loose cloth near the edge poses a pull or tip hazard.",
+      "severity": "Medium",
+      "icon": "flame.fill",
+      "boundingBox": {
+        "x": 0.18,
+        "y": 0.556,
+        "width": 0.32,
+        "height": 0.12
+      },
+      "fixSteps": [
+        "Push pots toward the center of the island away from walking edges.",
+        "Use dedicated silicone trivets rather than folded fabric towels."
+      ],
+      "focusArea": "Cooking & heat",
+      "confidence": 80,
+      "status": "open"
+    },
+    {
+      "id": "6a1f839e-5572-4913-8c62-791145f24467",
+      "title": "Loose Pot Lid on Island",
+      "detail": "Heavy ceramic lid placed flat near the edge could slip or get knocked off.",
+      "severity": "Low",
+      "icon": "circle.grid.cross",
+      "boundingBox": {
+        "x": 0,
+        "y": 0.61,
+        "width": 0.25,
+        "height": 0.07
+      },
+      "fixSteps": [
+        "Store lid securely on top of pot or place on a dedicated stand.",
+        "Keep loose lids further back from countertop edges."
+      ],
+      "focusArea": "Cooking & heat",
+      "confidence": 75,
+      "status": "open"
+    }
+  ],
+  "products": [
+    {
+      "id": "747cbffa-3820-47e6-a369-2dc446faab29",
+      "name": "Silicone Heat Resistant Trivets",
+      "reason": "Prevents hot cookware from slipping on smooth countertop surfaces.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "shield.lefthalf.filled",
+      "searchQuery": "silicone hot pads trivets non slip"
+    }
+  ],
+  "nextSteps": []
+}

@@ -1,0 +1,86 @@
+{
+  "ranAt": "2026-09-11 02:05:25Z",
+  "api": "https://safesight.noahwhiteson.com",
+  "model": "gemini-3.8-flash",
+  "passed": 3,
+  "total": 3,
+  "cases": [
+    {
+      "id": "kitchen",
+      "label": "Kitchen",
+      "ok": true,
+      "http": 200,
+      "seconds": 3.14,
+      "score": 68,
+      "summary": "Exposed knife and an unanchored floor runner present clear kitchen hazards.",
+      "hazardCount": 3,
+      "hazards": [
+        {
+          "title": "Exposed Knife on Counter",
+          "severity": "High",
+          "confidence": 98
+        },
+        {
+          "title": "Loose Floor Runner",
+          "severity": "Medium",
+          "confidence": 85
+        },
+        {
+          "title": "Towel on Oven Handle",
+          "severity": "Low",
+          "confidence": 75
+        }
+      ],
+      "share": "share-kitchen.jpg",
+      "result": "result-kitchen.json"
+    },
+    {
+      "id": "hallway",
+      "label": "Hallway",
+      "ok": true,
+      "http": 200,
+      "seconds": 3.8,
+      "score": 82,
+      "summary": "Living space is tidy but tight clearances and loose rug perimeters present minor trip hazards.",
+      "hazardCount": 2,
+      "hazards": [
+        {
+          "title": "Low clearance around coffee table",
+          "severity": "Medium",
+          "confidence": 85
+        },
+        {
+          "title": "Potential rug edge curl",
+          "severity": "Low",
+          "confidence": 75
+        }
+      ],
+      "share": "share-hallway.jpg",
+      "result": "result-hallway.json"
+    },
+    {
+      "id": "kitchen-stock",
+      "label": "Kitchen (stock)",
+      "ok": true,
+      "http": 200,
+      "seconds": 2.98,
+      "score": 85,
+      "summary": "Heavy cookware sits resting on soft cloth near the counter edge.",
+      "hazardCount": 2,
+      "hazards": [
+        {
+          "title": "Cookware Near Counter Edge",
+          "severity": "Medium",
+          "confidence": 80
+        },
+        {
+          "title": "Loose Pot Lid on Island",
+          "severity": "Low",
+          "confidence": 75
+        }
+      ],
+      "share": "share-kitchen-stock.jpg",
+      "result": "result-kitchen-stock.json"
+    }
+  ]
+}

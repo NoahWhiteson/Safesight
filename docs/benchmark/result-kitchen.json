@@ -1,0 +1,85 @@
+{
+  "score": 68,
+  "summary": "Exposed knife and an unanchored floor runner present clear kitchen hazards.",
+  "hazards": [
+    {
+      "id": "0dd1c9ca-d597-4b66-a1ae-c00b4e8b8e46",
+      "title": "Exposed Knife on Counter",
+      "detail": "Large chef's knife left loose on countertop edge risks severe cuts.",
+      "severity": "High",
+      "icon": "scissors",
+      "boundingBox": {
+        "x": 0.16,
+        "y": 0.63,
+        "width": 0.33,
+        "height": 0.06
+      },
+      "fixSteps": [
+        "Store knife in a block, magnetic strip, or sheathed in a drawer.",
+        "Move sharp utensils away from countertop edges when not in use."
+      ],
+      "focusArea": "Knives & sharp tools",
+      "confidence": 98,
+      "status": "open"
+    },
+    {
+      "id": "090ce454-9d13-40b3-a61c-217bf6559309",
+      "title": "Loose Floor Runner",
+      "detail": "Kitchen runner rug without grip backing can shift and cause trips.",
+      "severity": "Medium",
+      "icon": "figure.fall",
+      "boundingBox": {
+        "x": 0.55,
+        "y": 0.63,
+        "width": 0.19,
+        "height": 0.16
+      },
+      "fixSteps": [
+        "Place a non-skid rubber rug pad directly underneath the runner.",
+        "Ensure edges lie flat against the flooring to prevent catching feet."
+      ],
+      "focusArea": "Slips & trips",
+      "confidence": 85,
+      "status": "open"
+    },
+    {
+      "id": "5450a1c1-1e9e-4d81-8386-840551a238a2",
+      "title": "Towel on Oven Handle",
+      "detail": "Hanging dish towel near oven heating elements poses a mild burn risk.",
+      "severity": "Low",
+      "icon": "flame.fill",
+      "boundingBox": {
+        "x": 0.77,
+        "y": 0.44,
+        "width": 0.08,
+        "height": 0.11
+      },
+      "fixSteps": [
+        "Hang towels away from heated cooking appliances.",
+        "Keep stove area clear of flammable cloth items."
+      ],
+      "focusArea": "Cooking & heat",
+      "confidence": 75,
+      "status": "open"
+    }
+  ],
+  "products": [
+    {
+      "id": "493f9839-7f2e-4aa5-a170-f6f160031e39",
+      "name": "Magnetic Knife Strip",
+      "reason": "Safely mounts sharp knives out of reach on walls.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "scissors",
+      "searchQuery": "wall mounted magnetic knife strip"
+    },
+    {
+      "id": "06b225f9-2ffe-4ed0-ac88-c7cc81f8fdd6",
+      "name": "Non-Slip Rug Pad",
+      "reason": "Prevents kitchen runner from sliding and bunching.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "shield.fill",
+      "searchQuery": "non slip runner rug pad grip"
+    }
+  ],
+  "nextSteps": []
+}
