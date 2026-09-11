@@ -1,0 +1,65 @@
+{
+  "score": 62,
+  "summary": "An exposed knife near the counter edge creates an immediate laceration hazard.",
+  "hazards": [
+    {
+      "id": "0f983abe-5396-41eb-859b-d52664dc3a8c",
+      "title": "Exposed knife near counter edge",
+      "detail": "Chef knife is left exposed and close to the edge where it could easily be knocked off.",
+      "severity": "High",
+      "icon": "exclamationmark.triangle.fill",
+      "boundingBox": {
+        "x": 0.22,
+        "y": 0.51,
+        "width": 0.51,
+        "height": 0.11
+      },
+      "fixSteps": [
+        "Store the knife in a block, magnetic strip, or protective sheath.",
+        "Keep sharp cutlery pushed back from all counter edges."
+      ],
+      "focusArea": "Sharp objects",
+      "confidence": 98,
+      "status": "open"
+    },
+    {
+      "id": "acbff048-1d24-46b3-aa20-85fe53b6621d",
+      "title": "Unsecured kitchen runner",
+      "detail": "Floor runner in the walk path lacks visible non-slip backing or corner grips.",
+      "severity": "Low",
+      "icon": "figure.fall",
+      "boundingBox": {
+        "x": 0.8,
+        "y": 0.49,
+        "width": 0.19999999999999996,
+        "height": 0.31
+      },
+      "fixSteps": [
+        "Apply non-skid rug tape or place a non-slip pad beneath the rug.",
+        "Ensure runner edges stay completely flat against the floor."
+      ],
+      "focusArea": "Trip hazards",
+      "confidence": 75,
+      "status": "open"
+    }
+  ],
+  "products": [
+    {
+      "id": "925aef9a-9c2a-459d-a22d-3636b816839f",
+      "name": "Universal Knife Sheath",
+      "reason": "Protects hands and blade when knife is resting on counters or in draw\u2026",
+      "priceLabel": "Shop on Amazon",
+      "icon": "shield.fill",
+      "searchQuery": "universal kitchen knife blade guard sheath"
+    },
+    {
+      "id": "34824cce-b739-42a4-8468-41db34809305",
+      "name": "Non-Slip Rug Grippers",
+      "reason": "Prevents kitchen runners from sliding or curling at the edges.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "square.grid.2x2.fill",
+      "searchQuery": "non slip rug corner grippers hardwood floors"
+    }
+  ],
+  "nextSteps": []
+}

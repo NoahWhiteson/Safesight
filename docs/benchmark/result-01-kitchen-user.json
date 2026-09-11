@@ -1,0 +1,105 @@
+{
+  "score": 68,
+  "summary": "Exposed knife on the island and runner rug edges present cut and trip risks.",
+  "hazards": [
+    {
+      "id": "aa109df0-57c4-4f0c-bdd2-ed85e60611af",
+      "title": "Unsecured Kitchen Knife",
+      "detail": "Large chef knife left loose on the island countertop edge risking cuts.",
+      "severity": "High",
+      "icon": "scissors",
+      "boundingBox": {
+        "x": 0.15,
+        "y": 0.63,
+        "width": 0.35,
+        "height": 0.07
+      },
+      "fixSteps": [
+        "Store knife in a wooden knife block or magnetic rack.",
+        "Keep sharp blades away from counter edges."
+      ],
+      "focusArea": "Sharp objects",
+      "confidence": 96,
+      "status": "open"
+    },
+    {
+      "id": "e7dddca2-9355-4401-8337-4d5cff731414",
+      "title": "Unsecured Kitchen Runner Rug",
+      "detail": "Runner rug lacks grip tape and edges could curl, causing a trip hazard.",
+      "severity": "Medium",
+      "icon": "figure.walk",
+      "boundingBox": {
+        "x": 0.54,
+        "y": 0.62,
+        "width": 0.2,
+        "height": 0.17
+      },
+      "fixSteps": [
+        "Apply non-skid rug tape along all edges.",
+        "Ensure runner lies completely flat against floor."
+      ],
+      "focusArea": "Trip hazards",
+      "confidence": 82,
+      "status": "open"
+    },
+    {
+      "id": "c4b77756-5bb2-499b-a9d6-b7f66f50bec3",
+      "title": "Towel Hanging on Oven Handle",
+      "detail": "Cloth towel hanging directly on the oven door handle poses a heat risk.",
+      "severity": "Low",
+      "icon": "flame.fill",
+      "boundingBox": {
+        "x": 0.77,
+        "y": 0.44,
+        "width": 0.09,
+        "height": 0.11
+      },
+      "fixSteps": [
+        "Relocate fabric towels away from oven and cooktop.",
+        "Use a wall hook away from heating elements."
+      ],
+      "focusArea": "Fire",
+      "confidence": 75,
+      "status": "open"
+    },
+    {
+      "id": "ab07bcc5-9842-4705-af33-d35cecca448a",
+      "title": "Appliance Cord Near Sink",
+      "detail": "Countertop appliance sits close to sink basin creating splash risk.",
+      "severity": "Medium",
+      "icon": "bolt.fill",
+      "boundingBox": {
+        "x": 0,
+        "y": 0.35,
+        "width": 0.16,
+        "height": 0.14
+      },
+      "fixSteps": [
+        "Move air fryer further away from the sink area.",
+        "Keep electrical cords tidy and dry."
+      ],
+      "focusArea": "Kitchen hazards",
+      "confidence": 78,
+      "status": "open"
+    }
+  ],
+  "products": [
+    {
+      "id": "5a49ac9a-66b2-4d21-87c7-0aca72ba4e14",
+      "name": "Universal Knife Block",
+      "reason": "Safely stores exposed knives off countertop surfaces.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "shield.fill",
+      "searchQuery": "countertop knife block without knives"
+    },
+    {
+      "id": "fe6f724f-9e9e-434c-be1b-3abd4f237cf7",
+      "name": "Non-Slip Rug Grippers",
+      "reason": "Anchors runner rug edges to prevent tripping.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "square.fill",
+      "searchQuery": "rug corner grippers hardwood floors"
+    }
+  ],
+  "nextSteps": []
+}

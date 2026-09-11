@@ -28,24 +28,25 @@ https://github.com/user-attachments/assets/f64f8f53-fefa-4e8b-b71f-d148672f56f8
 
 ## AI proof
 
-Live hosted scans against `https://safesight.noahwhiteson.com` — **3/3 passed** on `gemini-3.8-flash` (~3s each). Share cards are the **exact** iOS export from `ScanShareExporter` (not a mock).
+Live hosted suite against `https://safesight.noahwhiteson.com` — **20/20 passed** on `gemini-3.8-flash` (avg ~3.8s). Each case returns a valid score, hazards, confidences, and tight boxes; share cards are the **exact** iOS `ScanShareExporter` output.
 
-| Scene | Latency | House Score | Hazards |
-|-------|---------|-------------|---------|
-| Kitchen | 3.1s | 68 | 3 |
-| Hallway | 3.8s | 82 | 2 |
-| Kitchen (stock) | 3.0s | 85 | 2 |
+| | |
+|--|--|
+| **Passed** | 20 / 20 |
+| **Hazards found** | 53 total |
+| **Scores** | 62–92 (avg 77) |
+| **Latency** | 2.1–6.5s |
 
 <p align="center">
-  <img src="docs/benchmark/share-kitchen.jpg" alt="Kitchen share card — House Score 68" width="46%" />
+  <img src="docs/benchmark/share-01-kitchen-user.jpg" alt="Kitchen share card — House Score 68" width="46%" />
   &nbsp;
-  <img src="docs/benchmark/share-hallway.jpg" alt="Hallway share card — House Score 82" width="46%" />
+  <img src="docs/benchmark/share-02-hallway.jpg" alt="Hallway share card — House Score 82" width="46%" />
 </p>
 <p align="center">
-  <sub>Kitchen · 68/100 &nbsp;·&nbsp; Hallway · 82/100</sub>
+  <sub>Kitchen · 68/100 &nbsp;·&nbsp; Living · 82/100 — full 20-case table in the benchmark</sub>
 </p>
 
-Full tables, raw JSON, and how to re-run: **[docs/benchmark](docs/benchmark/README.md)**
+Full tables, raw JSON, native share cards, and how to re-run: **[docs/benchmark](docs/benchmark/README.md)**
 
 ---
 

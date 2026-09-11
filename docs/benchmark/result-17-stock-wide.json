@@ -1,0 +1,57 @@
+{
+  "score": 85,
+  "summary": "Kitchen island holds heavy hot cookware placed near edge over cloths that could slip.",
+  "hazards": [
+    {
+      "id": "825d41bc-e4f5-4139-804c-a1d48a01dfa7",
+      "title": "Pot near counter edge on cloth",
+      "detail": "Heavy Dutch oven resting on loose towel near edge risks sliding or being pulled off.",
+      "severity": "Medium",
+      "icon": "flame",
+      "boundingBox": {
+        "x": 0.31000000000000005,
+        "y": 0.348,
+        "width": 0.22,
+        "height": 0.18
+      },
+      "fixSteps": [
+        "Move heavy cookware inward away from island edge.",
+        "Use non-slip silicone trivets instead of loose cloth towels."
+      ],
+      "focusArea": "Kitchen hazards",
+      "confidence": 88,
+      "status": "open"
+    },
+    {
+      "id": "acdcdc56-f3c3-4fea-8aaa-29b538cf4798",
+      "title": "Loose lid near counter edge",
+      "detail": "Heavy enameled cast-iron lid sits near edge and could fall, causing foot injury.",
+      "severity": "Low",
+      "icon": "exclamationmark.triangle.fill",
+      "boundingBox": {
+        "x": 0,
+        "y": 0.64,
+        "width": 0.27,
+        "height": 0.11
+      },
+      "fixSteps": [
+        "Place lid securely back onto pot or center on island.",
+        "Store unused cookware components safely inside cabinets."
+      ],
+      "focusArea": "Kitchen hazards",
+      "confidence": 85,
+      "status": "open"
+    }
+  ],
+  "products": [
+    {
+      "id": "a8d6b148-eda7-451b-bf21-1262f39bdd93",
+      "name": "Silicone Heat Resistant Trivet Mats",
+      "reason": "Prevents hot cookware from slipping on smooth quartz surfaces.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "shield.fill",
+      "searchQuery": "silicone non-slip trivet mats heat resistant"
+    }
+  ],
+  "nextSteps": []
+}

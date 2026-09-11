@@ -1,0 +1,85 @@
+{
+  "score": 82,
+  "summary": "Living area is generally tidy but presents minor tip-over and rug trip concerns.",
+  "hazards": [
+    {
+      "id": "eb287bd3-917b-4db7-b06b-396735783356",
+      "title": "Tall Plant Tip-Over Hazard",
+      "detail": "Tall potted plant in basket could tip over if bumped along the walkway.",
+      "severity": "Low",
+      "icon": "exclamationmark.triangle",
+      "boundingBox": {
+        "x": 0.57,
+        "y": 0.22,
+        "width": 0.28,
+        "height": 0.43
+      },
+      "fixSteps": [
+        "Use a heavier base inside the basket to increase stability.",
+        "Shift plant away from the primary walkway edge."
+      ],
+      "focusArea": "Tip-over risks",
+      "confidence": 75,
+      "status": "open"
+    },
+    {
+      "id": "0123b11e-9fda-4826-a31a-440fbf476f63",
+      "title": "Area Rug Edge Trip Risk",
+      "detail": "Area rug edges sitting on hard flooring can lift or shift, causing trips.",
+      "severity": "Low",
+      "icon": "figure.fall",
+      "boundingBox": {
+        "x": 0.05,
+        "y": 0.638,
+        "width": 0.35,
+        "height": 0.35
+      },
+      "fixSteps": [
+        "Place non-slip rug grippers beneath the corners.",
+        "Ensure the rug lays completely flat against the floor."
+      ],
+      "focusArea": "Trip hazards",
+      "confidence": 70,
+      "status": "open"
+    },
+    {
+      "id": "65cb53d5-2ebc-48b4-9735-eaa3de7dc3e5",
+      "title": "Unanchored Credenza",
+      "detail": "Heavy wall-adjacent console credenza is vulnerable to tipping if pulled.",
+      "severity": "Medium",
+      "icon": "shield.lefthalf.filled",
+      "boundingBox": {
+        "x": 0.12,
+        "y": 0.49,
+        "width": 0.44,
+        "height": 0.15
+      },
+      "fixSteps": [
+        "Fasten furniture anti-tip safety straps to wall studs.",
+        "Keep heavy lamps and decor centered or towards the back."
+      ],
+      "focusArea": "Tip-over risks",
+      "confidence": 68,
+      "status": "open"
+    }
+  ],
+  "products": [
+    {
+      "id": "accaf536-717b-4654-a6e1-70c9f9ffc34e",
+      "name": "Furniture Anti-Tip Wall Straps",
+      "reason": "Secures console tables and credenzas firmly to wall studs.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "shield.fill",
+      "searchQuery": "furniture anti tip safety straps wall anchor"
+    },
+    {
+      "id": "eeae067e-daf1-410a-b42c-41bc48d3e9f7",
+      "name": "Non-Slip Rug Gripper Tape",
+      "reason": "Prevents rug edges and corners from curling or shifting.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "square.grid.2x2",
+      "searchQuery": "corner rug grippers anti curl non slip"
+    }
+  ],
+  "nextSteps": []
+}

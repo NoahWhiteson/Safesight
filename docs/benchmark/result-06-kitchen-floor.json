@@ -1,0 +1,65 @@
+{
+  "score": 62,
+  "summary": "Exposed knife on the island edge presents a severe safety risk for children and pets.",
+  "hazards": [
+    {
+      "id": "c4c48a16-b01b-40ae-aa62-0917b8c41d33",
+      "title": "Exposed Knife on Island Edge",
+      "detail": "Large knife resting near counter edge can be pulled down by children or pets.",
+      "severity": "High",
+      "icon": "exclamationmark.triangle.fill",
+      "boundingBox": {
+        "x": 0.14,
+        "y": 0.29,
+        "width": 0.35,
+        "height": 0.11
+      },
+      "fixSteps": [
+        "Store the knife in a secure block, drawer, or magnetic strip.",
+        "Move sharp items toward the center of counters away from reachable ed\u2026"
+      ],
+      "focusArea": "Child proofing",
+      "confidence": 98,
+      "status": "open"
+    },
+    {
+      "id": "649891c7-a494-4d40-9879-d1943e295df5",
+      "title": "Kitchen Runner Rug Edge",
+      "detail": "Unanchored runner rug edge near cooking area poses a trip hazard.",
+      "severity": "Low",
+      "icon": "figure.walk",
+      "boundingBox": {
+        "x": 0.53,
+        "y": 0.26,
+        "width": 0.22,
+        "height": 0.33
+      },
+      "fixSteps": [
+        "Place non-slip rug grippers or tape underneath the runner.",
+        "Ensure runner lies completely flat along walk pathways."
+      ],
+      "focusArea": "Trip hazards",
+      "confidence": 78,
+      "status": "open"
+    }
+  ],
+  "products": [
+    {
+      "id": "3059a1a1-023e-40a1-af5a-2ffdeda1d2d3",
+      "name": "Magnetic Knife Strip",
+      "reason": "Keeps sharp knives elevated and out of reach of children and pets.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "shield.lefthalf.filled",
+      "searchQuery": "wall mount magnetic knife strip holder"
+    },
+    {
+      "id": "cd33248c-5ac4-4c69-9c5d-be7003686ac1",
+      "name": "Non-Slip Rug Grippers",
+      "reason": "Secures runner edges to floor to prevent sliding and trips.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "square.grid.2x2.fill",
+      "searchQuery": "non slip rug corner grippers hardwood floors"
+    }
+  ],
+  "nextSteps": []
+}
