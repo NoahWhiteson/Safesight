@@ -8,6 +8,28 @@ Share cards are the exact iOS `ScanShareExporter` output.
 - **Model:** `gemini-3.8-flash`
 - **Result:** **20/20 passed**
 
+## Safesight in real rooms
+
+Real scans from the app — boxes on the photo, confidence on each label, House Score on the share card.
+
+<p align="center">
+  <img src="../assets/share-examples/desk.jpg" alt="Desk scan — House Score 88" width="46%" />
+  &nbsp;
+  <img src="../assets/share-examples/bathroom.jpg" alt="Bathroom scan — House Score 82" width="46%" />
+</p>
+<p align="center">
+  <sub>Desk · 88/100 &nbsp;·&nbsp; Bathroom · 82/100</sub>
+</p>
+
+<p align="center">
+  <img src="../assets/share-examples/hallway.jpg" alt="Hallway scan — House Score 68" width="46%" />
+  &nbsp;
+  <img src="../assets/share-examples/kitchen.jpg" alt="Kitchen scan — House Score 78" width="46%" />
+</p>
+<p align="center">
+  <sub>Hallway · 68/100 &nbsp;·&nbsp; Kitchen · 78/100</sub>
+</p>
+
 ## Cases
 
 | # | Scene | HTTP | Latency | Score | Hazards | Check |
@@ -310,14 +332,5 @@ Share cards are the exact iOS `ScanShareExporter` output.
 | Open Shelf Flammable Liquids | Medium | 88% | Fire |
 | Unsecured Chemical Containers | Medium | 85% | Chemical storage |
 | Floor Fluid Jug Obstruction | Low | 75% | Trip hazards |
-
-## How to re-run
-
-```bash
-python3 scripts/run_benchmark.py
-python3 scripts/validate_benchmark.py
-```
-
-Sources: `docs/benchmark/sources/` (20 unique photos).
 
 [← Back to README](../README.md)
