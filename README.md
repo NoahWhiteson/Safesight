@@ -16,6 +16,20 @@
 
 ---
 
+## Demo
+
+<p align="center">
+  <video src="docs/assets/Safesight_Project_Presentation_v10_no_icons_straight_edges_even_pacing.mp4" width="100%" controls playsinline>
+    <a href="docs/assets/Safesight_Project_Presentation_v10_no_icons_straight_edges_even_pacing.mp4">Watch the Safesight product demo</a>
+  </video>
+</p>
+
+<p align="center">
+  <a href="docs/assets/Safesight_Project_Presentation_v10_no_icons_straight_edges_even_pacing.mp4"><strong>▶ Watch demo video</strong></a>
+</p>
+
+---
+
 ## Table of contents
 
 1. [Setup / run](./docs/setup.md)
