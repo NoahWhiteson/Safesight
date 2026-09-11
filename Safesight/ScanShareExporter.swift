@@ -5,13 +5,18 @@
 //  Renders a shareable PNG: annotated scan + logo + score.
 //
 
-import SwiftUI
 import UIKit
+#if !SHARE_EXPORT_CLI
+import SwiftUI
+#endif
 
 enum ScanShareExporter {
     /// Max long-edge for the exported PNG.
     private static let maxLongEdge: CGFloat = 1600
     private static let pad: CGFloat = 28
+
+    /// Optional logo for offline/CLI export when the asset catalog isn't loaded.
+    static var logoOverride: UIImage?
 
     static func renderPNG(image: UIImage, hazards: [ScanHazardDTO], score: Int) -> Data? {
         renderUIImage(image: image, hazards: hazards, score: score)?.pngData()
@@ -282,7 +287,9 @@ enum ScanShareExporter {
         let logoSide = max(36, min(canvas.width, canvas.height) * 0.072)
         let rect = CGRect(x: pad, y: pad, width: logoSide, height: logoSide)
 
-        guard let logo = UIImage(named: "AppLogo")?.withRenderingMode(.alwaysTemplate) else {
+        let named = UIImage(named: "AppLogo")?.withRenderingMode(.alwaysTemplate)
+        let override = logoOverride?.withRenderingMode(.alwaysTemplate)
+        guard let logo = named ?? override else {
             let mark = "S" as NSString
             let font = UIFont.systemFont(ofSize: logoSide * 0.55, weight: .bold)
             let size = mark.size(withAttributes: [.font: font])
@@ -389,6 +396,7 @@ enum ScanShareExporter {
     }
 }
 
+#if !SHARE_EXPORT_CLI
 // MARK: - System share sheet
 
 struct ShareSheet: UIViewControllerRepresentable {
@@ -426,3 +434,4 @@ enum ScanSharePresenter {
         }
     }
 }
+#endif

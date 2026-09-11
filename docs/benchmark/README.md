@@ -1,8 +1,8 @@
 # AI benchmark
 
 Live proof that Safesight’s hosted vision pipeline returns real House Scores,
-hazard labels, confidences, and bounding boxes — then renders the **same share card**
-chrome the iOS app exports (`ScanShareExporter`).
+hazard labels, confidences, and bounding boxes — then exports the **exact same PNG chrome**
+as the iOS share sheet via `ScanShareExporter` (simulator CLI → JPEG for GitHub size).
 
 - **Ran:** `2026-09-11 02:05:25Z`
 - **API:** `https://safesight.noahwhiteson.com`
@@ -17,7 +17,7 @@ chrome the iOS app exports (`ScanShareExporter`).
 | ✅ Hallway | 200 | 3.8s | 82 | 2 |
 | ✅ Kitchen (stock) | 200 | 2.98s | 85 | 2 |
 
-## Share cards (app export UI)
+## Share cards (native `ScanShareExporter`)
 
 ### Kitchen — 68/100
 
@@ -63,7 +63,12 @@ chrome the iOS app exports (`ScanShareExporter`).
 
 ```bash
 # Requires Safesight/SafesightAPISecrets.plist (gitignored) with API_SECRET
+# Share cards are rendered by the real ScanShareExporter (iOS Simulator CLI).
 python3 scripts/run_benchmark.py
+
+# Or re-export cards only from committed JSON:
+python3 scripts/render_share_card_native.py docs/benchmark/source-kitchen.jpg \
+  docs/benchmark/result-kitchen.json docs/benchmark/share-kitchen.jpg
 ```
 
 Raw JSON for each case is committed beside the share cards for auditability.
