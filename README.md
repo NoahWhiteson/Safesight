@@ -26,6 +26,29 @@ https://github.com/user-attachments/assets/f64f8f53-fefa-4e8b-b71f-d148672f56f8
 
 ---
 
+## AI proof
+
+Live hosted scans against `https://safesight.noahwhiteson.com` — **3/3 passed** on `gemini-3.8-flash` (~3s each). Share cards use the same export chrome as the iOS app (`ScanShareExporter`).
+
+| Scene | Latency | House Score | Hazards |
+|-------|---------|-------------|---------|
+| Kitchen | 3.1s | 68 | 3 |
+| Hallway | 3.8s | 82 | 2 |
+| Kitchen (stock) | 3.0s | 85 | 2 |
+
+<p align="center">
+  <img src="docs/benchmark/share-kitchen.jpg" alt="Kitchen share card — House Score 68" width="46%" />
+  &nbsp;
+  <img src="docs/benchmark/share-hallway.jpg" alt="Hallway share card — House Score 82" width="46%" />
+</p>
+<p align="center">
+  <sub>Kitchen · 68/100 &nbsp;·&nbsp; Hallway · 82/100</sub>
+</p>
+
+Full tables, raw JSON, and how to re-run: **[docs/benchmark](docs/benchmark/README.md)**
+
+---
+
 ## Table of contents
 
 1. [Setup / run](./docs/setup.md)
@@ -39,9 +62,10 @@ https://github.com/user-attachments/assets/f64f8f53-fefa-4e8b-b71f-d148672f56f8
 9. [FAQ](./docs/faq.md)
 10. [Shipaton Next Gen](./docs/shipaton-next-gen.md)
 11. [Safesight in real rooms](./docs/real-scans.md)
-12. [Terms of Service](./docs/terms-of-service.md)
-13. [Privacy Policy](./docs/privacy-policy.md)
-14. [Disclaimer & license](./docs/disclaimer-and-license.md)
+12. [AI benchmark](./docs/benchmark/README.md)
+13. [Terms of Service](./docs/terms-of-service.md)
+14. [Privacy Policy](./docs/privacy-policy.md)
+15. [Disclaimer & license](./docs/disclaimer-and-license.md)
 
 ---
 

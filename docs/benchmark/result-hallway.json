@@ -1,0 +1,57 @@
+{
+  "score": 82,
+  "summary": "Living space is tidy but tight clearances and loose rug perimeters present minor trip hazards.",
+  "hazards": [
+    {
+      "id": "6867f188-30a7-42cd-90fe-94d54a7e363a",
+      "title": "Low clearance around coffee table",
+      "detail": "Narrow walkway between low table and seating risks stumbles or bruised shins.",
+      "severity": "Medium",
+      "icon": "figure.walk",
+      "boundingBox": {
+        "x": 0.31,
+        "y": 0.62,
+        "width": 0.4,
+        "height": 0.17
+      },
+      "fixSteps": [
+        "Ensure at least 18 inches of clearance between seating and table.",
+        "Reposition armchairs slightly outward to widen walking path."
+      ],
+      "focusArea": "Slips & trips",
+      "confidence": 85,
+      "status": "open"
+    },
+    {
+      "id": "a3a324d4-1eed-4bcb-8238-51e20fc8340a",
+      "title": "Potential rug edge curl",
+      "detail": "Area rug edges sit directly under high-traffic walking paths without visible anchoring.",
+      "severity": "Low",
+      "icon": "skew",
+      "boundingBox": {
+        "x": 0.24,
+        "y": 0.66,
+        "width": 0.52,
+        "height": 0.32
+      },
+      "fixSteps": [
+        "Apply rug gripper tape along edges to prevent curling.",
+        "Ensure a non-slip pad covers the entire underside."
+      ],
+      "focusArea": "Slips & trips",
+      "confidence": 75,
+      "status": "open"
+    }
+  ],
+  "products": [
+    {
+      "id": "16dd01ac-6087-4b8d-b830-106790a86839",
+      "name": "Non-Slip Rug Tape Grippers",
+      "reason": "Anchors rug edges flat to floor to prevent tripping.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "square.fill.and.line.vertical.and.square",
+      "searchQuery": "corner rug grippers adhesive washable"
+    }
+  ],
+  "nextSteps": []
+}
