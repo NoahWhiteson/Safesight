@@ -26,6 +26,29 @@ https://github.com/user-attachments/assets/f64f8f53-fefa-4e8b-b71f-d148672f56f8
 
 ---
 
+## AI proof
+
+Live hosted suite against `https://safesight.noahwhiteson.com` — **20/20 passed** on `gemini-3.8-flash` across **20 distinct room photos** (unique files, not crops of one scene). Share cards are the exact iOS `ScanShareExporter` output.
+
+| | |
+|--|--|
+| **Passed** | 20 / 20 |
+| **Distinct sources** | 20 unique photos |
+| **Scenes** | kitchen · living · bathroom · bedroom · dining · office · closet · garage · laundry · stairs |
+| **Latency** | ~2.5–8.6s |
+
+<p align="center">
+  <img src="docs/benchmark/share-01-kitchen-user.jpg" alt="Kitchen share card" width="31%" />
+  &nbsp;
+  <img src="docs/benchmark/share-04-bathroom.jpg" alt="Bathroom share card" width="31%" />
+  &nbsp;
+  <img src="docs/benchmark/share-11-dining.jpg" alt="Dining share card" width="31%" />
+</p>
+
+Full 20-case table, raw JSON, and native share cards: **[docs/benchmark](docs/benchmark/README.md)**
+
+---
+
 ## Table of contents
 
 1. [Setup / run](./docs/setup.md)
@@ -39,9 +62,10 @@ https://github.com/user-attachments/assets/f64f8f53-fefa-4e8b-b71f-d148672f56f8
 9. [FAQ](./docs/faq.md)
 10. [Shipaton Next Gen](./docs/shipaton-next-gen.md)
 11. [Safesight in real rooms](./docs/real-scans.md)
-12. [Terms of Service](./docs/terms-of-service.md)
-13. [Privacy Policy](./docs/privacy-policy.md)
-14. [Disclaimer & license](./docs/disclaimer-and-license.md)
+12. [AI benchmark](./docs/benchmark/README.md)
+13. [Terms of Service](./docs/terms-of-service.md)
+14. [Privacy Policy](./docs/privacy-policy.md)
+15. [Disclaimer & license](./docs/disclaimer-and-license.md)
 
 ---
 

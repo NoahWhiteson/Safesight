@@ -1,0 +1,97 @@
+{
+  "score": 78,
+  "summary": "Living space is tidy but has minor tip-over, toxic plant, and ottoman trip hazards.",
+  "hazards": [
+    {
+      "id": "6be8e6e1-e886-4101-8df7-8d716058412e",
+      "title": "Toxic Snake Plant to Pets",
+      "detail": "Sansevieria contains saponins toxic to cats and dogs if chewed.",
+      "severity": "Medium",
+      "icon": "leaf.fill",
+      "boundingBox": {
+        "x": 0.35,
+        "y": 0.56,
+        "width": 0.08,
+        "height": 0.17
+      },
+      "fixSteps": [
+        "Relocate the snake plant out of pet reach.",
+        "Replace with a pet-safe alternative like a spider plant."
+      ],
+      "focusArea": "Pet hazards",
+      "confidence": 88,
+      "status": "open"
+    },
+    {
+      "id": "af5f63e2-de92-4662-8607-5aeabd2b6b42",
+      "title": "Tall Fragile Decor Tip-Over",
+      "detail": "Tall ceramic vases on low table can easily be knocked over by pets.",
+      "severity": "Low",
+      "icon": "exclamationmark.triangle.fill",
+      "boundingBox": {
+        "x": 0.43,
+        "y": 0.62,
+        "width": 0.07,
+        "height": 0.12
+      },
+      "fixSteps": [
+        "Secure the base with museum putty to prevent tipping.",
+        "Move breakable ceramics to an elevated, stable surface."
+      ],
+      "focusArea": "Tip-over risks",
+      "confidence": 75,
+      "status": "open"
+    },
+    {
+      "id": "84300964-7b9c-4f69-b623-d0fd9389d371",
+      "title": "Floor Poufs In Walkway",
+      "detail": "Low leather ottomans obstruct the path around the coffee table.",
+      "severity": "Low",
+      "icon": "figure.walk",
+      "boundingBox": {
+        "x": 0.28,
+        "y": 0.77,
+        "width": 0.46,
+        "height": 0.14
+      },
+      "fixSteps": [
+        "Tuck poufs under or alongside the coffee table when not in use.",
+        "Ensure at least 2 feet of clear walking space around furniture."
+      ],
+      "focusArea": "Trip hazards",
+      "confidence": 72,
+      "status": "open"
+    },
+    {
+      "id": "c0cd86e7-e7ba-4566-9f97-2e02996d1278",
+      "title": "Arc Floor Lamp Tip-Over",
+      "detail": "Overhanging arc lamp may become unstable or tip if bumped.",
+      "severity": "Medium",
+      "icon": "lamp.floor.fill",
+      "boundingBox": {
+        "x": 0.77,
+        "y": 0.32,
+        "width": 0.22,
+        "height": 0.14
+      },
+      "fixSteps": [
+        "Confirm the base is properly weighted and placed behind the sofa.",
+        "Ensure clear head clearance to avoid bumping the shade."
+      ],
+      "focusArea": "Tip-over risks",
+      "confidence": 70,
+      "status": "open"
+    }
+  ],
+  "products": [
+    {
+      "id": "7c55bcd1-2b89-40f8-9e28-59e11423d95b",
+      "name": "Museum Putty",
+      "reason": "Prevents tabletop vases and decor from tipping over.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "shield.fill",
+      "searchQuery": "clear museum putty earthquake gel"
+    }
+  ],
+  "nextSteps": []
+}

@@ -1,0 +1,85 @@
+{
+  "score": 86,
+  "summary": "The bedroom is well kept, but exposed hot bulbs and top-heavy accents pose minor hazards.",
+  "hazards": [
+    {
+      "id": "eac37377-619c-4d29-84ec-c8cc26e22d9d",
+      "title": "Low Exposed Light Fixture Bulbs",
+      "detail": "Bare pendant bulbs hang near the foot of the bed, posing burn and contact fire risks.",
+      "severity": "Medium",
+      "icon": "lightbulb.fill",
+      "boundingBox": {
+        "x": 0.39,
+        "y": 0.1,
+        "width": 0.29,
+        "height": 0.27
+      },
+      "fixSteps": [
+        "Swap incandescent-style bulbs for cooler LED bulbs immediately.",
+        "Shorten the hanging rod to ensure safe overhead clearance."
+      ],
+      "focusArea": "Fire",
+      "confidence": 84,
+      "status": "open"
+    },
+    {
+      "id": "5908e98a-d02a-480e-a052-5a11ae65b721",
+      "title": "Unanchored Nightstand Table Lamp",
+      "detail": "Tall bedside lamp sits near edge without stability aids and can tip easily.",
+      "severity": "Low",
+      "icon": "lamp.table.fill",
+      "boundingBox": {
+        "x": 0.6,
+        "y": 0.44,
+        "width": 0.09,
+        "height": 0.11
+      },
+      "fixSteps": [
+        "Apply museum putty or adhesive pads beneath the lamp base.",
+        "Route the power cord securely to avoid snagging when in bed."
+      ],
+      "focusArea": "Tip-over risks",
+      "confidence": 72,
+      "status": "open"
+    },
+    {
+      "id": "9e0deaf4-d9d0-4f1d-894f-eeb99b31b179",
+      "title": "Floor-Length Drapes Near Window",
+      "detail": "Deep hanging curtains near window opening could present catch or egress hazards.",
+      "severity": "Low",
+      "icon": "curtains.closed",
+      "boundingBox": {
+        "x": 0.71,
+        "y": 0.22,
+        "width": 0.13,
+        "height": 0.37
+      },
+      "fixSteps": [
+        "Install curtain tiebacks to keep the window area clear and accessible.",
+        "Ensure window latches and safety stops are functional behind drapes."
+      ],
+      "focusArea": "Windows & falls",
+      "confidence": 65,
+      "status": "open"
+    }
+  ],
+  "products": [
+    {
+      "id": "599e59d4-65d3-42b1-b06a-1af5c5c5471d",
+      "name": "Museum Gel Putty",
+      "reason": "Secures bedside lamps to tabletop surfaces to prevent knock-overs.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "shield.fill",
+      "searchQuery": "clear museum putty for lamps"
+    },
+    {
+      "id": "c04f73d2-6eaf-4170-8760-092a8998019c",
+      "name": "Cool-Touch LED Filament Bulbs",
+      "reason": "Eliminates excessive heat output from exposed chandelier sockets.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "lightbulb.fill",
+      "searchQuery": "LED cool touch chandelier bulbs"
+    }
+  ],
+  "nextSteps": []
+}

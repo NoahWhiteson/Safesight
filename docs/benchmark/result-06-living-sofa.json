@@ -1,0 +1,85 @@
+{
+  "score": 78,
+  "summary": "Tall floor lamp and slender accent table present minor tip-over risks in the living space.",
+  "hazards": [
+    {
+      "id": "101ef312-8190-4ae2-aca8-3a88d6dfa0ce",
+      "title": "Slender Floor Lamp Tip Risk",
+      "detail": "Tall top-heavy metal floor lamp can tip over if bumped by pets or people.",
+      "severity": "Medium",
+      "icon": "exclamationmark.triangle.fill",
+      "boundingBox": {
+        "x": 0.05,
+        "y": 0.206,
+        "width": 0.31,
+        "height": 0.607
+      },
+      "fixSteps": [
+        "Position lamp base closer against the wall corner",
+        "Secure the lamp base with a discreet floor weight or bracket"
+      ],
+      "focusArea": "Tip-over risks",
+      "confidence": 85,
+      "status": "open"
+    },
+    {
+      "id": "752393dc-7f61-4148-bdc9-3e7cb29c8cf6",
+      "title": "Fragile Tall Glass Vase",
+      "detail": "Tall glass vase on a narrow pedestal table is prone to tipping and shattering.",
+      "severity": "Medium",
+      "icon": "pawprint.fill",
+      "boundingBox": {
+        "x": 0.72,
+        "y": 0.344,
+        "width": 0.17,
+        "height": 0.245
+      },
+      "fixSteps": [
+        "Secure the vase base using clear museum putty",
+        "Move glass vase to a broader, low-traffic surface"
+      ],
+      "focusArea": "Pet hazards",
+      "confidence": 88,
+      "status": "open"
+    },
+    {
+      "id": "2ed8a119-7c4a-49c5-a076-cb157bd50a5f",
+      "title": "Loose Lamp Power Cord",
+      "detail": "Floor lamp power cord sits exposed across the base on bare wood floor.",
+      "severity": "Low",
+      "icon": "figure.walk",
+      "boundingBox": {
+        "x": 0.04,
+        "y": 0.778,
+        "width": 0.08,
+        "height": 0.05
+      },
+      "fixSteps": [
+        "Tuck cord flush against the wall baseboard",
+        "Fasten cord along baseboard with adhesive clips"
+      ],
+      "focusArea": "Trip hazards",
+      "confidence": 72,
+      "status": "open"
+    }
+  ],
+  "products": [
+    {
+      "id": "e2a915e6-a263-4516-ae1d-5ea34fd4c4dd",
+      "name": "Museum Wax Adhesive",
+      "reason": "Prevents glass vase from toppling off narrow accent table.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "shield.fill",
+      "searchQuery": "clear museum gel putty for glass"
+    },
+    {
+      "id": "8b395d02-2d31-41c1-b104-78ce940a2b98",
+      "name": "Self-Adhesive Cable Clips",
+      "reason": "Secures floor lamp cord flush to wall to prevent tripping.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "bolt.fill",
+      "searchQuery": "clear floor cord adhesive clips"
+    }
+  ],
+  "nextSteps": []
+}

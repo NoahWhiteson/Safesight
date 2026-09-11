@@ -1,0 +1,85 @@
+{
+  "score": 68,
+  "summary": "Stove-edge cookpot placement and reach-across scraping create burn and scald risks.",
+  "hazards": [
+    {
+      "id": "82f048c3-5f32-4bff-8dfe-aeac34c4eff3",
+      "title": "Large pot at cooktop edge",
+      "detail": "Tall stockpot sits near front grates, risking hot liquid spills or tip-overs.",
+      "severity": "High",
+      "icon": "flame.fill",
+      "boundingBox": {
+        "x": 0.34,
+        "y": 0.72,
+        "width": 0.33,
+        "height": 0.22
+      },
+      "fixSteps": [
+        "Move heavy stockpots to rear burners whenever feasible.",
+        "Keep handles oriented inward away from the cooktop perimeter."
+      ],
+      "focusArea": "Kitchen hazards",
+      "confidence": 88,
+      "status": "open"
+    },
+    {
+      "id": "b13d5ffc-fb56-47c4-b6ff-697d6f5f2f03",
+      "title": "Reaching over open hot pot",
+      "detail": "Scraping ingredients into pot while reaching directly over rim creates steam burn risk.",
+      "severity": "Medium",
+      "icon": "hand.raised.slash.fill",
+      "boundingBox": {
+        "x": 0,
+        "y": 0.51,
+        "width": 0.53,
+        "height": 0.24
+      },
+      "fixSteps": [
+        "Lower the cutting board close to the rim to prevent splashback.",
+        "Angle hands and body clear of escaping steam."
+      ],
+      "focusArea": "Kitchen hazards",
+      "confidence": 82,
+      "status": "open"
+    },
+    {
+      "id": "15f03b66-8a99-4103-8827-0bac9e5d45ca",
+      "title": "Accessible front range dials",
+      "detail": "Front-mounted stove control knobs are easily turned by young children.",
+      "severity": "Medium",
+      "icon": "lock.shield.fill",
+      "boundingBox": {
+        "x": 0.16,
+        "y": 0.85,
+        "width": 0.17,
+        "height": 0.08
+      },
+      "fixSteps": [
+        "Install clear safety knob covers over front burner controls.",
+        "Remove removable burner knobs when the range is unattended."
+      ],
+      "focusArea": "Child proofing",
+      "confidence": 75,
+      "status": "open"
+    }
+  ],
+  "products": [
+    {
+      "id": "095a6cd8-c8a5-472d-9afb-36d06d19aa19",
+      "name": "Stove Knob Safety Covers",
+      "reason": "Prevents accidental activation of gas cooktop burners.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "shield.fill",
+      "searchQuery": "child safety stove knob covers"
+    },
+    {
+      "id": "753a9bad-d022-4255-9a09-7cc41156f6ef",
+      "name": "Cooktop Stove Guard",
+      "reason": "Blocks children and accidental bumps from tipping hot pots.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "lock.fill",
+      "searchQuery": "stove top safety guard toddler"
+    }
+  ],
+  "nextSteps": []
+}

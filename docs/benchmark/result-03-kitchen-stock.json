@@ -1,0 +1,57 @@
+{
+  "score": 88,
+  "summary": "Clean kitchen space with minor risks from heavy cookware placed near the island edge.",
+  "hazards": [
+    {
+      "id": "6daf36dc-eb5e-417f-930e-654653af6911",
+      "title": "Heavy pot lid near edge",
+      "detail": "Cast iron lid rests near the counter perimeter and could fall, risking foot injury.",
+      "severity": "Low",
+      "icon": "exclamationmark.triangle",
+      "boundingBox": {
+        "x": 0.31000000000000005,
+        "y": 0.348,
+        "width": 0.22,
+        "height": 0.18
+      },
+      "fixSteps": [
+        "Move the lid farther inward away from the island edge.",
+        "Store the lid directly on the pot when not in use."
+      ],
+      "focusArea": "Kitchen hazards",
+      "confidence": 85,
+      "status": "open"
+    },
+    {
+      "id": "716b9167-c0b3-4dc4-a127-31df08bdcbfd",
+      "title": "Unsecured Dutch oven placement",
+      "detail": "Large heavy pot sitting on a cloth near edge poses spill or pull-down risk.",
+      "severity": "Low",
+      "icon": "flame",
+      "boundingBox": {
+        "x": 0.18,
+        "y": 0.55,
+        "width": 0.32,
+        "height": 0.12
+      },
+      "fixSteps": [
+        "Push cookware toward the center of the kitchen island.",
+        "Remove loose cloth mats that can be accidentally pulled."
+      ],
+      "focusArea": "Kitchen hazards",
+      "confidence": 80,
+      "status": "open"
+    }
+  ],
+  "products": [
+    {
+      "id": "b6589988-64f6-4008-9719-45d56e95748a",
+      "name": "Non-Slip Silicone Trivet",
+      "reason": "Prevents hot heavy pots from sliding around polished stone countertop\u2026",
+      "priceLabel": "Shop on Amazon",
+      "icon": "shield.lefthalf.filled",
+      "searchQuery": "silicone hot pads trivets heat resistant non slip"
+    }
+  ],
+  "nextSteps": []
+}

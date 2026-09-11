@@ -1,0 +1,93 @@
+{
+  "score": 82,
+  "summary": "Bathroom is clean and modern, but loose mat and sharp vanity edges pose slip and impact hazards.",
+  "hazards": [
+    {
+      "id": "dc2e7c3f-ed0a-4836-9128-204452fd588a",
+      "title": "Unsecured bath mat",
+      "detail": "Lightweight cloth mat on smooth tile can slip underfoot or bunch up, causing a fall.",
+      "severity": "Medium",
+      "icon": "figure.fall",
+      "boundingBox": {
+        "x": 0.28,
+        "y": 0.67,
+        "width": 0.39,
+        "height": 0.12
+      },
+      "fixSteps": [
+        "Place a non-skid rubber backing pad beneath the fabric mat.",
+        "Alternatively replace it with an anti-slip silicone bath mat."
+      ],
+      "focusArea": "Trip hazards",
+      "confidence": 88,
+      "status": "open"
+    },
+    {
+      "id": "fc88a2cc-3487-4de2-a4a4-5559a1d8f545",
+      "title": "Sharp floating vanity corners",
+      "detail": "Rigid low-height vanity corners pose impact injury risk for young children.",
+      "severity": "Low",
+      "icon": "shield.lefthalf.filled",
+      "boundingBox": {
+        "x": 0.67,
+        "y": 0.49,
+        "width": 0.26,
+        "height": 0.31
+      },
+      "fixSteps": [
+        "Attach clear soft silicone corner guards to exterior vanity corners.",
+        "Ensure protectors are securely taped with strong adhesive."
+      ],
+      "focusArea": "Child proofing",
+      "confidence": 82,
+      "status": "open"
+    },
+    {
+      "id": "e6cfbf92-5594-4e65-b020-b62c9ebcdc65",
+      "title": "Accessible toilet lid",
+      "detail": "Unlatched toilet lid presents drowning and pinching risks for small toddlers.",
+      "severity": "Low",
+      "icon": "lock.fill",
+      "boundingBox": {
+        "x": 0.49,
+        "y": 0.56,
+        "width": 0.14,
+        "height": 0.12
+      },
+      "fixSteps": [
+        "Install a child safety strap lock across the toilet lid.",
+        "Keep bathroom door closed when small children are unsupervised."
+      ],
+      "focusArea": "Child proofing",
+      "confidence": 78,
+      "status": "open"
+    }
+  ],
+  "products": [
+    {
+      "id": "1f55476b-72e0-4220-8d65-d0144bd29eea",
+      "name": "Non-Slip Rug Underlay",
+      "reason": "Prevents fabric bath mat from sliding on polished tile floor.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "square.grid.2x2.fill",
+      "searchQuery": "non slip rug gripper pad bathroom"
+    },
+    {
+      "id": "85e0f213-bc7e-4387-a4fa-c4214abecb38",
+      "name": "Clear Corner Protectors",
+      "reason": "Cushions sharp 90-degree corners on the floating vanity.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "shield.fill",
+      "searchQuery": "baby proofing clear corner guards furniture"
+    },
+    {
+      "id": "bfb9a87d-afe0-4466-a61f-933e805bffcd",
+      "name": "Child Safety Toilet Lock",
+      "reason": "Prevents young children from opening the toilet lid.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "lock.shield.fill",
+      "searchQuery": "toilet seat lock for child safety"
+    }
+  ],
+  "nextSteps": []
+}

@@ -1,0 +1,37 @@
+{
+  "score": 86,
+  "summary": "Overall kitchen is tidy, but loose floor matting poses a tripping risk.",
+  "hazards": [
+    {
+      "id": "3099046a-a296-4fa0-ab1c-b23e78270024",
+      "title": "Loose runner rug on floor",
+      "detail": "Runner lacks visible non-slip backing or taped edges and can slide easily.",
+      "severity": "Medium",
+      "icon": "figure.fall",
+      "boundingBox": {
+        "x": 0.34,
+        "y": 0.36,
+        "width": 0.22,
+        "height": 0.18
+      },
+      "fixSteps": [
+        "Place a non-slip rug pad underneath the entire area of the rug.",
+        "Secure curled edges with double-sided floor rug tape."
+      ],
+      "focusArea": "Trip hazards",
+      "confidence": 88,
+      "status": "open"
+    }
+  ],
+  "products": [
+    {
+      "id": "fdbe9bf4-1bf3-4fbd-8d5e-4ef151dfb027",
+      "name": "Non-Slip Rug Pad",
+      "reason": "Prevents kitchen rugs from slipping and sliding on hard flooring.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "rectangle.split.3x3",
+      "searchQuery": "cushioned non slip rug pad gripper"
+    }
+  ],
+  "nextSteps": []
+}

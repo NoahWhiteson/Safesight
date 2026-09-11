@@ -1,0 +1,65 @@
+{
+  "score": 82,
+  "summary": "Overall tidy kitchen with minor fire hazard and floor rug tripping risk.",
+  "hazards": [
+    {
+      "id": "c6877bf1-509d-419d-b7d7-f6471e615742",
+      "title": "Towel hung on oven door handle",
+      "detail": "Cloth hanging near the oven burners can catch fire or ignite when preheating.",
+      "severity": "Medium",
+      "icon": "flame.fill",
+      "boundingBox": {
+        "x": 0.796,
+        "y": 0.709,
+        "width": 0.12,
+        "height": 0.204
+      },
+      "fixSteps": [
+        "Relocate fabric towels away from cooking appliances.",
+        "Use a wall hook or cabinet towel bar away from heat sources."
+      ],
+      "focusArea": "Fire",
+      "confidence": 88,
+      "status": "open"
+    },
+    {
+      "id": "15768a7f-6047-4871-8b66-dfedbfb1e9ba",
+      "title": "Unsecured fringed floor rug",
+      "detail": "Unanchored rug edges and fringes on slick flooring cause slips and trips.",
+      "severity": "Medium",
+      "icon": "figure.fall",
+      "boundingBox": {
+        "x": 0.062,
+        "y": 0.918,
+        "width": 0.439,
+        "height": 0.08199999999999996
+      },
+      "fixSteps": [
+        "Place a non-skid rubber underlayment beneath the runner.",
+        "Tuck or secure fringes flat to prevent catching shoes."
+      ],
+      "focusArea": "Trip hazards",
+      "confidence": 92,
+      "status": "open"
+    }
+  ],
+  "products": [
+    {
+      "id": "d0d7867a-a995-4434-9e80-407a3e12718f",
+      "name": "Non-Slip Rug Pad Gripper",
+      "reason": "Prevents rug slippage and curling edges in high-traffic work zones.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "square.grid.2x2",
+      "searchQuery": "cushioned non slip rug pad runner kitchen"
+    },
+    {
+      "id": "950d4429-0e0e-4e29-9f9e-8c7d6c7bb366",
+      "name": "Magnetic Kitchen Towel Bar",
+      "reason": "Provides a secure hanging spot away from stovetop heat.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "tag.fill",
+      "searchQuery": "magnetic kitchen towel holder refrigerator"
+    }
+  ],
+  "nextSteps": []
+}

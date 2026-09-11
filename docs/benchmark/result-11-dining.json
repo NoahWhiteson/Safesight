@@ -1,0 +1,105 @@
+{
+  "score": 78,
+  "summary": "Dining space presents minor breakable glass and potential sharp edge risks for children.",
+  "hazards": [
+    {
+      "id": "db06ecde-2f77-4989-bbc2-f9cd559feef0",
+      "title": "Accessible Glass Decanters",
+      "detail": "Heavy glass liquor decanters on low console can easily shatter if pulled down.",
+      "severity": "Medium",
+      "icon": "wineglass",
+      "boundingBox": {
+        "x": 0.63,
+        "y": 0.46,
+        "width": 0.17,
+        "height": 0.11
+      },
+      "fixSteps": [
+        "Relocate breakable decanters to higher locked cabinets.",
+        "Store alcoholic liquids safely out of reach of children."
+      ],
+      "focusArea": "Child proofing",
+      "confidence": 88,
+      "status": "open"
+    },
+    {
+      "id": "16a4eeb3-3b78-466e-bfe2-60e228ef12f1",
+      "title": "Fragile Tall Glassware",
+      "detail": "Drinking glasses set along table edge can easily be knocked over or broken.",
+      "severity": "Low",
+      "icon": "exclamationmark.triangle",
+      "boundingBox": {
+        "x": 0.11,
+        "y": 0.54,
+        "width": 0.11,
+        "height": 0.08
+      },
+      "fixSteps": [
+        "Push glassware toward the center of table when unattended.",
+        "Substitute with durable shatterproof drinkware around young children."
+      ],
+      "focusArea": "Sharp objects",
+      "confidence": 82,
+      "status": "open"
+    },
+    {
+      "id": "e177c937-fbcd-4e1a-b401-17a6e696c448",
+      "title": "Sharp Table Edges",
+      "detail": "Square dining table corners are at toddler head height and risk blunt injury.",
+      "severity": "Low",
+      "icon": "shield",
+      "boundingBox": {
+        "x": 0,
+        "y": 0.61,
+        "width": 0.11,
+        "height": 0.07
+      },
+      "fixSteps": [
+        "Install soft corner guards on table edges.",
+        "Ensure clear walking paths around table perimeters."
+      ],
+      "focusArea": "Child proofing",
+      "confidence": 76,
+      "status": "open"
+    },
+    {
+      "id": "6f83fec5-ff25-42de-81fe-eb5269c2f79d",
+      "title": "Narrow Base Tall Pedestal Vase",
+      "detail": "Tall ceramic vase placed on sideboard could tip if bumped or reached.",
+      "severity": "Low",
+      "icon": "arrow.triangle.swap",
+      "boundingBox": {
+        "x": 0.14,
+        "y": 0.42,
+        "width": 0.07,
+        "height": 0.14
+      },
+      "fixSteps": [
+        "Secure base with museum putty to prevent tipping.",
+        "Move tall fragile decor away from accessible edges."
+      ],
+      "focusArea": "Tip-over risks",
+      "confidence": 70,
+      "status": "open"
+    }
+  ],
+  "products": [
+    {
+      "id": "2620194f-efb2-4afc-b5cf-7bb4468774cc",
+      "name": "Clear Corner Protectors",
+      "reason": "Cushions hard sharp edges of the dining table.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "shield.lefthalf.filled",
+      "searchQuery": "silicone baby proofing table corner protectors"
+    },
+    {
+      "id": "33cff853-0484-463e-9639-e3be71d42d25",
+      "name": "Museum Putty Adhesive",
+      "reason": "Secures decorative glassware and vases from tipping over.",
+      "priceLabel": "Shop on Amazon",
+      "icon": "hand.tap",
+      "searchQuery": "quakehold museum putty for breakables"
+    }
+  ],
+  "nextSteps": []
+}
