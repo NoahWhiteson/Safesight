@@ -18,12 +18,11 @@
 
 ## Demo
 
-<p align="center">
-  <video src="[https://safesight.noahwhiteson.com/demovideo](https://github.com/user-attachments/assets/f0131b1d-21c7-44b3-872c-98e45059a964
-)" width="100%" controls playsinline preload="metadata">
-    <a href="https://safesight.noahwhiteson.com/demovideo">Safesight product demo</a>
-  </video>
-</p>
+
+
+https://github.com/user-attachments/assets/6319d88e-d856-4c3b-aed9-08e64e1f3803
+
+
 
 ---
 
