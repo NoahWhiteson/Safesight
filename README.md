@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/safesight-banner.png" alt="Safesight" width="100%" />
+  <img src="docs/assets/safesight-banner.jpg" alt="Safesight" width="100%" />
 </p>
 
 <p align="center">
