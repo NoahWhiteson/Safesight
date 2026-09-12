@@ -18,7 +18,9 @@
 
 ## Demo
 
+**Try it live:** [safesightdemo.noahwhiteson.com](https://safesightdemo.noahwhiteson.com/)
 
+That site is **not** the Safesight app. It’s a lightweight web demo so you can upload a room photo and see the same live API / core analysis path the iOS app uses — without the full product experience or every feature.
 
 https://github.com/user-attachments/assets/f64f8f53-fefa-4e8b-b71f-d148672f56f8
 
