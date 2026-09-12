@@ -784,5 +784,22 @@
       ],
       "aggressiveness": 0.7
     }
-  ]
+  ],
+  "accuracy": {
+    "cases": 20,
+    "casesPassed": 19,
+    "microRecall": 0.9643,
+    "microPrecision": 0.9464,
+    "microF1": 0.9553,
+    "macroRecall": 0.975,
+    "macroPrecision": 0.9458,
+    "macroF1": 0.9495,
+    "meanIoU": 0.3415,
+    "localizationAt03": 0.4958,
+    "meanSeverityAgreement": 1.0,
+    "scoreBandHits": 20,
+    "requiredFound": 27,
+    "requiredMissed": 1,
+    "falsePositives": 3
+  }
 }

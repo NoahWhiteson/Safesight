@@ -5,21 +5,23 @@ on:
     paths:
       - "docs/benchmark/**"
       - "scripts/validate_benchmark.py"
+      - "scripts/score_benchmark.py"
       - "scripts/run_benchmark.py"
   pull_request:
     paths:
       - "docs/benchmark/**"
       - "scripts/validate_benchmark.py"
+      - "scripts/score_benchmark.py"
   workflow_dispatch:
 
 jobs:
   validate:
-    name: Validate committed benchmark artifacts
+    name: Validate schema + detection accuracy
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Validate report + share cards (20/20)
+      - name: Schema + accuracy gates
         run: python3 scripts/validate_benchmark.py

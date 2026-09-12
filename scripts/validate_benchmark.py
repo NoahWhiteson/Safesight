@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Offline schema + quality checks on committed 20-case benchmark artifacts."""
+"""Offline schema checks + detection-accuracy scoring on committed benchmark artifacts."""
 
 from __future__ import annotations
 
 import json
+import subprocess
 import sys
 from pathlib import Path
 
@@ -32,7 +33,10 @@ def main() -> None:
         fail(f"expected 20 case rows, got {len(cases)}")
     if passed != 20:
         bad = [c["id"] for c in cases if not c.get("ok")]
-        fail(f"not all cases passed: {passed}/{total} — failed: {bad}")
+        fail(f"not all schema cases passed: {passed}/{total} — failed: {bad}")
+
+    if not (BENCH / "ground-truth.json").exists():
+        fail("docs/benchmark/ground-truth.json missing")
 
     seen_ids = set()
     for case in cases:
@@ -106,8 +110,35 @@ def main() -> None:
             fail(f"{cid}: report still has problems {case['problems']}")
 
     print(
-        f"OK — {passed}/{total} cases validated "
+        f"OK schema — {passed}/{total} cases "
         f"({report.get('ranAt')}, model={report.get('model')})"
+    )
+
+    proc = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "scripts" / "score_benchmark.py"),
+            "--fail-recall-under",
+            "0.85",
+            "--fail-under",
+            "0.80",
+        ],
+        cwd=str(ROOT),
+    )
+    if proc.returncode != 0:
+        fail("detection accuracy gate failed — see score_benchmark.py output")
+
+    metrics_path = BENCH / "metrics.json"
+    if not metrics_path.exists():
+        fail("metrics.json missing after scoring")
+    metrics = json.loads(metrics_path.read_text())
+    summary = metrics.get("summary") or {}
+    print(
+        f"OK accuracy — F1={summary.get('microF1')} "
+        f"recall={summary.get('microRecall')} "
+        f"precision={summary.get('microPrecision')} "
+        f"cases={summary.get('casesPassed')}/{summary.get('cases')} "
+        f"IoU={summary.get('meanIoU')} loc@0.3={summary.get('localizationAt03')}"
     )
 
 

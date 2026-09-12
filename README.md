@@ -30,13 +30,15 @@ https://github.com/user-attachments/assets/f64f8f53-fefa-4e8b-b71f-d148672f56f8
 
 ## AI proof
 
-Live hosted suite against `https://safesight.noahwhiteson.com` — **20/20 passed** on `gemini-3.8-flash` across **20 distinct room photos** (unique files, not crops of one scene). Share cards are the exact iOS `ScanShareExporter` output.
+Live hosted suite against `https://safesight.noahwhiteson.com` — **20 distinct room photos** scored against human ground truth (not schema smoke alone). Share cards are the exact iOS `ScanShareExporter` output.
 
 | | |
 |--|--|
-| **Passed** | 20 / 20 |
-| **Distinct sources** | 20 unique photos |
-| **Scenes** | kitchen · living · bathroom · bedroom · dining · office · closet · garage · laundry · stairs |
+| **Required-hazard recall** | 96.4% (27/28) |
+| **Precision / F1** | 94.6% / 95.5% |
+| **Mean IoU / Loc@0.3** | 34% / 50% |
+| **Accuracy cases** | 19 / 20 (missed leaning mirror) |
+| **Schema smoke** | 20 / 20 HTTP 200 |
 | **Latency** | ~2.5–8.6s |
 
 <p align="center">
