@@ -6,7 +6,7 @@
 | API | Safesight server (`server/`) — Gemini key stays off-device |
 | Vision | Google Gemini via `POST /v1/analyze` |
 | Auth | Shared `SAFESIGHT_API_SECRET` (Bearer) + per-IP rate limit |
-| Subscriptions | RevenueCat (`monthly` / `yearly` → `safesight_pro`) |
+| Subscriptions | RevenueCat (`monthly` / `yearly` → `safesight_pro`) — see [RevenueCat / Premium](./revenuecat.md) |
 | Commerce hints | Amazon-style search picks tied to hazards |
 | Persistence | On-device scan images + history index |
 

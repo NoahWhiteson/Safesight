@@ -72,7 +72,7 @@ cp Safesight/SafesightAPISecrets.example.plist Safesight/SafesightAPISecrets.pli
 2. `⌘R`  
 3. Onboarding → **Scan** → capture or **upload** a room photo  
 
-RevenueCat uses a **Test Store** key in `RevenueCatConfig.swift` (`safesight_pro`, products `monthly` / `yearly`). Paywall flows work without a paid Apple Developer account for Next Gen.
+RevenueCat uses a **Test Store** key in `RevenueCatConfig.swift` (`safesight_pro`, products `monthly` / `yearly`). Paywall flows work without a paid Apple Developer account for Next Gen. Details: [RevenueCat / Premium](./revenuecat.md).
 
 ## 3. Hosted API (optional — not public)
 

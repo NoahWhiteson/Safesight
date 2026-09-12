@@ -63,13 +63,14 @@ Full 20-case table, raw JSON, and native share cards: **[docs/benchmark](docs/be
 6. [What’s inside the experience](./docs/experience.md)
 7. [Design principles](./docs/design-principles.md)
 8. [Tech at a glance](./docs/tech.md)
-9. [FAQ](./docs/faq.md)
-10. [Shipaton Next Gen](./docs/shipaton-next-gen.md)
-11. [Safesight in real rooms](./docs/real-scans.md)
-12. [AI benchmark](./docs/benchmark/README.md)
-13. [Terms of Service](./docs/terms-of-service.md)
-14. [Privacy Policy](./docs/privacy-policy.md)
-15. [Disclaimer & license](./docs/disclaimer-and-license.md)
+9. [RevenueCat / Premium](./docs/revenuecat.md)
+10. [FAQ](./docs/faq.md)
+11. [Shipaton Next Gen](./docs/shipaton-next-gen.md)
+12. [Safesight in real rooms](./docs/real-scans.md)
+13. [AI benchmark](./docs/benchmark/README.md)
+14. [Terms of Service](./docs/terms-of-service.md)
+15. [Privacy Policy](./docs/privacy-policy.md)
+16. [Disclaimer & license](./docs/disclaimer-and-license.md)
 
 ---
 

@@ -36,6 +36,8 @@ Safesight suggests **product picks** matched to the hazards it found, so “I se
 
 ## Premium
 
-Free use covers the core experience with limits. **Premium** (via RevenueCat) unlocks unlimited scanning and premium focus areas — the monetization layer Shipaton cares about, wired as a real subscription entitlement (`safesight_pro`).
+Free use covers the core experience with limits. **Premium** (via RevenueCat) unlocks unlimited scanning, premium focus areas, and the full Home dashboard (AI summary & product picks) — wired as a real subscription entitlement (`safesight_pro`).
+
+Full implementation notes: **[RevenueCat / Premium](./revenuecat.md)**.
 
 [← Back to README](../README.md)
