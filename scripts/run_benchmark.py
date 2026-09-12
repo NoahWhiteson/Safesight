@@ -316,13 +316,16 @@ def main():
     lines = [
         "# AI benchmark",
         "",
-        "Live proof on **20 distinct room photos** (unique files — not crops of one scene).",
+        "Live suite on **20 distinct room photos** (unique files — not crops of one scene).",
         "Share cards are the exact iOS `ScanShareExporter` output.",
+        "",
+        "This is a **detection-accuracy** benchmark against human labels in "
+        "[`ground-truth.json`](./ground-truth.json) — not “JSON came back OK.”",
         "",
         f"- **Ran:** `{ran_at}`",
         f"- **API:** `{API}`",
         f"- **Model:** `{model}`",
-        f"- **Result:** **{passed}/{len(rows)} passed**",
+        f"- **Schema smoke:** {passed}/{len(rows)} HTTP 200 + valid structure",
         "",
         "## Safesight in real rooms",
         "",
@@ -346,10 +349,12 @@ def main():
         "  <sub>Hallway · 68/100 &nbsp;·&nbsp; Kitchen · 78/100</sub>",
         "</p>",
         "",
-        "## Cases",
+        "## Cases (schema smoke)",
         "",
-        "| # | Scene | HTTP | Latency | Score | Hazards | Check |",
-        "|---|-------|------|---------|-------|---------|-------|",
+        "HTTP/latency/structure only — see **Detection accuracy** above for labeled scoring.",
+        "",
+        "| # | Scene | HTTP | Latency | Score | Hazards | Schema |",
+        "|---|-------|------|---------|-------|---------|--------|",
     ]
     for i, r in enumerate(rows, 1):
         status = "✅" if r["ok"] else "❌"
@@ -385,6 +390,11 @@ def main():
         "",
     ]
     (BENCH / "README.md").write_text("\n".join(lines))
+    # Overlay detection-accuracy section from ground-truth.json
+    subprocess.run(
+        [sys.executable, str(ROOT / "scripts" / "score_benchmark.py"), "--write-readme"],
+        check=False,
+    )
     print(f"\nreport {passed}/{len(rows)} -> {BENCH / 'README.md'}")
     if passed != len(rows):
         raise SystemExit(1)

@@ -64,7 +64,7 @@ Answers tailored for Shipaton Next Gen review: what we claim, what we don’t, a
 
 ### How often does it miss genuine hazards?
 
-We do **not** claim a published miss rate (e.g. “misses X% of hazards”). There is no labeled golden set or third-party audit in this repo yet.
+We publish a labeled detection benchmark in [docs/benchmark](./benchmark/README.md): required-hazard recall/precision/F1, box IoU, and per-case misses against [`ground-truth.json`](./benchmark/ground-truth.json). It is **not** a third-party audit or a certified miss rate for every home — boxes stay directional and Gemini is stochastic — but it is more than “structured JSON came back.”
 
 In practice, misses cluster around:
 
@@ -104,15 +104,11 @@ So a box should usually land on the right region (cord, outlet, doorway). Expect
 
 ### Does the displayed “confidence” reflect measured accuracy or only the model’s self-reported confidence?
 
-**Self-reported only.**
+**Self-reported only** on the label chip.
 
-The UI percentage is the model’s `confidence` field (0–100), prompted as “how sure you are this hazard is real and correctly identified.” The API clamps/sanitizes the number for display. It is **not**:
+The UI percentage is the model’s `confidence` field (0–100), prompted as “how sure you are this hazard is real and correctly identified.” Separately, the repo benchmark reports **precision / recall / F1 / IoU** against human labels — that is *not* what the on-hazard % shows.
 
-- precision/recall from a benchmark  
-- calibration against human labels  
-- IoU against ground-truth boxes  
-
-Reading tip: use it as a **relative** signal within a scan (clear cord tip-over often high; ambiguous clutter lower), not as a scientific accuracy metre.
+Reading tip: use the chip as a **relative** signal within a scan (clear cord tip-over often high; ambiguous clutter lower), not as a scientific accuracy metre.
 
 ### How stable are results when the same room is scanned twice?
 
@@ -145,6 +141,6 @@ What it is not:
 
 ### What should we evaluate for Next Gen?
 
-Per [Shipaton Next Gen](./shipaton-next-gen.md) / Devpost: idea, working progress, RevenueCat use, craft — via **demo video + this repo** (including [Setup / run](./setup.md)). Prefer judging the **scan → boxes → act → Premium** loop over asking for detector-benchmark numbers we don’t publish.
+Per [Shipaton Next Gen](./shipaton-next-gen.md) / Devpost: idea, working progress, RevenueCat use, craft — via **demo video + this repo** (including [Setup / run](./setup.md)). Prefer judging the **scan → boxes → act → Premium** loop, and use [docs/benchmark](./benchmark/README.md) if you want labeled detection numbers (recall/precision/IoU) rather than marketing “20/20 structured OK.”
 
 [← Back to README](../README.md)

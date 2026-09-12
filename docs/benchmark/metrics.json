@@ -1,0 +1,1120 @@
+{
+  "version": 1,
+  "iouThreshold": 0.2,
+  "summary": {
+    "cases": 20,
+    "casesPassed": 19,
+    "microRecall": 0.9643,
+    "microPrecision": 0.9464,
+    "microF1": 0.9553,
+    "macroRecall": 0.975,
+    "macroPrecision": 0.9458,
+    "macroF1": 0.9495,
+    "meanIoU": 0.3415,
+    "localizationAt03": 0.4958,
+    "meanSeverityAgreement": 1.0,
+    "scoreBandHits": 20,
+    "requiredFound": 27,
+    "requiredMissed": 1,
+    "falsePositives": 3
+  },
+  "cases": [
+    {
+      "id": "01-kitchen-user",
+      "label": "Kitchen (user)",
+      "ok": true,
+      "tpRequired": 2,
+      "fnRequired": 0,
+      "fp": 1,
+      "requiredCount": 2,
+      "optionalCount": 1,
+      "predCount": 4,
+      "recall": 1.0,
+      "precision": 0.75,
+      "f1": 0.8571,
+      "meanIoU": 0.3512,
+      "localizationAt03": 0.6667,
+      "severityAgreement": 1.0,
+      "score": 68,
+      "scoreBand": [
+        55,
+        85
+      ],
+      "scoreInBand": true,
+      "matches": [
+        {
+          "gtId": "knife-on-island",
+          "gtFocus": "Sharp objects",
+          "predTitle": "Unsecured Chef Knife on Counter",
+          "predFocus": "Sharp objects",
+          "required": true,
+          "iou": 0.423,
+          "localizedAt03": true,
+          "severityMatch": true
+        },
+        {
+          "gtId": "towel-on-oven",
+          "gtFocus": "Fire",
+          "predTitle": "Towel Hanging on Oven Handle",
+          "predFocus": "Fire",
+          "required": false,
+          "iou": 0.354,
+          "localizedAt03": true,
+          "severityMatch": true
+        },
+        {
+          "gtId": "runner-rug",
+          "gtFocus": "Trip hazards",
+          "predTitle": "Curled Kitchen Runner Rug",
+          "predFocus": "Trip hazards",
+          "required": true,
+          "iou": 0.276,
+          "localizedAt03": false,
+          "severityMatch": true
+        }
+      ],
+      "missedRequired": [],
+      "unmatchedPredictions": [
+        {
+          "title": "Combustible Paper Near Sink and Cook",
+          "focusArea": "Kitchen hazards",
+          "severity": "Low"
+        }
+      ]
+    },
+    {
+      "id": "02-living-hallway",
+      "label": "Living / hallway",
+      "ok": false,
+      "tpRequired": 1,
+      "fnRequired": 1,
+      "fp": 0,
+      "requiredCount": 2,
+      "optionalCount": 2,
+      "predCount": 3,
+      "recall": 0.5,
+      "precision": 1.0,
+      "f1": 0.6667,
+      "meanIoU": 0.4447,
+      "localizationAt03": 0.6667,
+      "severityAgreement": 1.0,
+      "score": 82,
+      "scoreBand": [
+        70,
+        95
+      ],
+      "scoreInBand": true,
+      "matches": [
+        {
+          "gtId": "tall-plant-tip",
+          "gtFocus": "Tip-over risks",
+          "predTitle": "Tall Plant Tip-Over Risk",
+          "predFocus": "Tip-over risks",
+          "required": true,
+          "iou": 0.611,
+          "localizedAt03": true,
+          "severityMatch": true
+        },
+        {
+          "gtId": "unanchored-credenza",
+          "gtFocus": "Tip-over risks",
+          "predTitle": "Unanchored Credenza",
+          "predFocus": "Tip-over risks",
+          "required": false,
+          "iou": 0.524,
+          "localizedAt03": true,
+          "severityMatch": true
+        },
+        {
+          "gtId": "rug-edge",
+          "gtFocus": "Trip hazards",
+          "predTitle": "Area Rug Edge Trip Hazard",
+          "predFocus": "Trip hazards",
+          "required": false,
+          "iou": 0.199,
+          "localizedAt03": false,
+          "severityMatch": true
+        }
+      ],
+      "missedRequired": [
+        {
+          "id": "leaning-mirror",
+          "focusArea": "Tip-over risks",
+          "aliases": [
+            "mirror",
+            "leaning"
+          ]
+        }
+      ],
+      "unmatchedPredictions": []
+    },
+    {
+      "id": "03-kitchen-stock",
+      "label": "Kitchen (stock)",
+      "ok": true,
+      "tpRequired": 1,
+      "fnRequired": 0,
+      "fp": 1,
+      "requiredCount": 1,
+      "optionalCount": 0,
+      "predCount": 2,
+      "recall": 1.0,
+      "precision": 0.5,
+      "f1": 0.6667,
+      "meanIoU": 0.22,
+      "localizationAt03": 0.0,
+      "severityAgreement": 1.0,
+      "score": 88,
+      "scoreBand": [
+        75,
+        100
+      ],
+      "scoreInBand": true,
+      "matches": [
+        {
+          "gtId": "cookware-near-edge",
+          "gtFocus": "Kitchen hazards",
+          "predTitle": "Heavy pot lid near edge",
+          "predFocus": "Kitchen hazards",
+          "required": true,
+          "iou": 0.22,
+          "localizedAt03": false,
+          "severityMatch": true
+        }
+      ],
+      "missedRequired": [],
+      "unmatchedPredictions": [
+        {
+          "title": "Unsecured Dutch oven placement",
+          "focusArea": "Kitchen hazards",
+          "severity": "Low"
+        }
+      ]
+    },
+    {
+      "id": "04-bathroom",
+      "label": "Bathroom",
+      "ok": true,
+      "tpRequired": 1,
+      "fnRequired": 0,
+      "fp": 0,
+      "requiredCount": 1,
+      "optionalCount": 2,
+      "predCount": 3,
+      "recall": 1.0,
+      "precision": 1.0,
+      "f1": 1.0,
+      "meanIoU": 0.5338,
+      "localizationAt03": 1.0,
+      "severityAgreement": 1.0,
+      "score": 78,
+      "scoreBand": [
+        65,
+        95
+      ],
+      "scoreInBand": true,
+      "matches": [
+        {
+          "gtId": "accessible-cabinet",
+          "gtFocus": "Child proofing",
+          "predTitle": "Accessible Wall Cabinet",
+          "predFocus": "Child proofing",
+          "required": false,
+          "iou": 0.576,
+          "localizedAt03": true,
+          "severityMatch": true
+        },
+        {
+          "gtId": "floor-clutter-plant",
+          "gtFocus": "Trip hazards",
+          "predTitle": "Floor Obstruction",
+          "predFocus": "Trip hazards",
+          "required": false,
+          "iou": 0.537,
+          "localizedAt03": true,
+          "severityMatch": true
+        },
+        {
+          "gtId": "step-stool",
+          "gtFocus": "Child proofing",
+          "predTitle": "Loose Step Stool",
+          "predFocus": "Child proofing",
+          "required": true,
+          "iou": 0.488,
+          "localizedAt03": true,
+          "severityMatch": true
+        }
+      ],
+      "missedRequired": [],
+      "unmatchedPredictions": []
+    },
+    {
+      "id": "05-bedroom",
+      "label": "Bedroom",
+      "ok": true,
+      "tpRequired": 1,
+      "fnRequired": 0,
+      "fp": 0,
+      "requiredCount": 1,
+      "optionalCount": 2,
+      "predCount": 3,
+      "recall": 1.0,
+      "precision": 1.0,
+      "f1": 1.0,
+      "meanIoU": 0.4064,
+      "localizationAt03": 0.6667,
+      "severityAgreement": 1.0,
+      "score": 86,
+      "scoreBand": [
+        70,
+        100
+      ],
+      "scoreInBand": true,
+      "matches": [
+        {
+          "gtId": "exposed-bulbs",
+          "gtFocus": "Fire",
+          "predTitle": "Low Exposed Light Fixture Bulbs",
+          "predFocus": "Fire",
+          "required": true,
+          "iou": 0.559,
+          "localizedAt03": true,
+          "severityMatch": true
+        },
+        {
+          "gtId": "drapes-window",
+          "gtFocus": "Windows & falls",
+          "predTitle": "Floor-Length Drapes Near Window",
+          "predFocus": "Windows & falls",
+          "required": false,
+          "iou": 0.385,
+          "localizedAt03": true,
+          "severityMatch": true
+        },
+        {
+          "gtId": "nightstand-lamp",
+          "gtFocus": "Tip-over risks",
+          "predTitle": "Unanchored Nightstand Table Lamp",
+          "predFocus": "Tip-over risks",
+          "required": false,
+          "iou": 0.275,
+          "localizedAt03": false,
+          "severityMatch": true
+        }
+      ],
+      "missedRequired": [],
+      "unmatchedPredictions": []
+    },
+    {
+      "id": "06-living-sofa",
+      "label": "Living (sofa)",
+      "ok": true,
+      "tpRequired": 2,
+      "fnRequired": 0,
+      "fp": 0,
+      "requiredCount": 2,
+      "optionalCount": 1,
+      "predCount": 3,
+      "recall": 1.0,
+      "precision": 1.0,
+      "f1": 1.0,
+      "meanIoU": 0.4425,
+      "localizationAt03": 0.6667,
+      "severityAgreement": 1.0,
+      "score": 78,
+      "scoreBand": [
+        65,
+        95
+      ],
+      "scoreInBand": true,
+      "matches": [
+        {
+          "gtId": "floor-lamp-tip",
+          "gtFocus": "Tip-over risks",
+          "predTitle": "Slender Floor Lamp Tip Risk",
+          "predFocus": "Tip-over risks",
+          "required": true,
+          "iou": 0.672,
+          "localizedAt03": true,
+          "severityMatch": true
+        },
+        {
+          "gtId": "fragile-vase",
+          "gtFocus": "Pet hazards",
+          "predTitle": "Fragile Tall Glass Vase",
+          "predFocus": "Pet hazards",
+          "required": true,
+          "iou": 0.555,
+          "localizedAt03": true,
+          "severityMatch": true
+        },
+        {
+          "gtId": "lamp-cord",
+          "gtFocus": "Trip hazards",
+          "predTitle": "Loose Lamp Power Cord",
+          "predFocus": "Trip hazards",
+          "required": false,
+          "iou": 0.1,
+          "localizedAt03": false,
+          "severityMatch": true
+        }
+      ],
+      "missedRequired": [],
+      "unmatchedPredictions": []
+    },
+    {
+      "id": "07-kitchen-white",
+      "label": "Kitchen (white)",
+      "ok": true,
+      "tpRequired": 2,
+      "fnRequired": 0,
+      "fp": 0,
+      "requiredCount": 2,
+      "optionalCount": 0,
+      "predCount": 2,
+      "recall": 1.0,
+      "precision": 1.0,
+      "f1": 1.0,
+      "meanIoU": 0.4222,
+      "localizationAt03": 1.0,
+      "severityAgreement": 1.0,
+      "score": 82,
+      "scoreBand": [
+        70,
+        95
+      ],
+      "scoreInBand": true,
+      "matches": [
+        {
+          "gtId": "floor-rug",
+          "gtFocus": "Trip hazards",
+          "predTitle": "Unsecured fringed floor rug",
+          "predFocus": "Trip hazards",
+          "required": true,
+          "iou": 0.436,
+          "localizedAt03": true,
+          "severityMatch": true
+        },
+        {
+          "gtId": "towel-on-oven",
+          "gtFocus": "Fire",
+          "predTitle": "Towel hung on oven door handle",
+          "predFocus": "Fire",
+          "required": true,
+          "iou": 0.408,
+          "localizedAt03": true,
+          "severityMatch": true
+        }
+      ],
+      "missedRequired": [],
+      "unmatchedPredictions": []
+    },
+    {
+      "id": "08-bedroom-boho",
+      "label": "Bedroom (boho)",
+      "ok": true,
+      "tpRequired": 1,
+      "fnRequired": 0,
+      "fp": 0,
+      "requiredCount": 1,
+      "optionalCount": 1,
+      "predCount": 2,
+      "recall": 1.0,
+      "precision": 1.0,
+      "f1": 1.0,
+      "meanIoU": 0.1187,
+      "localizationAt03": 0.0,
+      "severityAgreement": 1.0,
+      "score": 82,
+      "scoreBand": [
+        70,
+        95
+      ],
+      "scoreInBand": true,
+      "matches": [
+        {
+          "gtId": "sconce-cord",
+          "gtFocus": "Electric",
+          "predTitle": "Unsecured Sconce Lamp Cord",
+          "predFocus": "Electric",
+          "required": false,
+          "iou": 0.171,
+          "localizedAt03": false,
+          "severityMatch": true
+        },
+        {
+          "gtId": "candle-near-plants",
+          "gtFocus": "Fire",
+          "predTitle": "Candle Near Hanging Plants",
+          "predFocus": "Fire",
+          "required": true,
+          "iou": 0.067,
+          "localizedAt03": false,
+          "severityMatch": true
+        }
+      ],
+      "missedRequired": [],
+      "unmatchedPredictions": []
+    },
+    {
+      "id": "09-laundry",
+      "label": "Laundry room",
+      "ok": true,
+      "tpRequired": 1,
+      "fnRequired": 0,
+      "fp": 0,
+      "requiredCount": 1,
+      "optionalCount": 1,
+      "predCount": 2,
+      "recall": 1.0,
+      "precision": 1.0,
+      "f1": 1.0,
+      "meanIoU": 0.4305,
+      "localizationAt03": 1.0,
+      "severityAgreement": 1.0,
+      "score": 88,
+      "scoreBand": [
+        70,
+        100
+      ],
+      "scoreInBand": true,
+      "matches": [
+        {
+          "gtId": "spill-risk",
+          "gtFocus": "Chemical storage",
+          "predTitle": "Dispenser Spill Risk",
+          "predFocus": "Chemical storage",
+          "required": false,
+          "iou": 0.455,
+          "localizedAt03": true,
+          "severityMatch": true
+        },
+        {
+          "gtId": "open-detergent",
+          "gtFocus": "Chemical storage",
+          "predTitle": "Open Detergent Container",
+          "predFocus": "Chemical storage",
+          "required": true,
+          "iou": 0.406,
+          "localizedAt03": true,
+          "severityMatch": true
+        }
+      ],
+      "missedRequired": [],
+      "unmatchedPredictions": []
+    },
+    {
+      "id": "10-living-windows",
+      "label": "Living (windows)",
+      "ok": true,
+      "tpRequired": 1,
+      "fnRequired": 0,
+      "fp": 0,
+      "requiredCount": 1,
+      "optionalCount": 1,
+      "predCount": 2,
+      "recall": 1.0,
+      "precision": 1.0,
+      "f1": 1.0,
+      "meanIoU": 0.34,
+      "localizationAt03": 0.5,
+      "severityAgreement": 1.0,
+      "score": 88,
+      "scoreBand": [
+        75,
+        100
+      ],
+      "scoreInBand": true,
+      "matches": [
+        {
+          "gtId": "large-glass",
+          "gtFocus": "Windows & falls",
+          "predTitle": "Floor-to-Ceiling Glass Impact",
+          "predFocus": "Windows & falls",
+          "required": true,
+          "iou": 0.397,
+          "localizedAt03": true,
+          "severityMatch": true
+        },
+        {
+          "gtId": "curtain-puddle",
+          "gtFocus": "Trip hazards",
+          "predTitle": "Puddling Curtain Fabric",
+          "predFocus": "Trip hazards",
+          "required": false,
+          "iou": 0.283,
+          "localizedAt03": false,
+          "severityMatch": true
+        }
+      ],
+      "missedRequired": [],
+      "unmatchedPredictions": []
+    },
+    {
+      "id": "11-dining",
+      "label": "Dining room",
+      "ok": true,
+      "tpRequired": 1,
+      "fnRequired": 0,
+      "fp": 0,
+      "requiredCount": 1,
+      "optionalCount": 3,
+      "predCount": 4,
+      "recall": 1.0,
+      "precision": 1.0,
+      "f1": 1.0,
+      "meanIoU": 0.2014,
+      "localizationAt03": 0.0,
+      "severityAgreement": 1.0,
+      "score": 78,
+      "scoreBand": [
+        65,
+        95
+      ],
+      "scoreInBand": true,
+      "matches": [
+        {
+          "gtId": "pedestal-vase",
+          "gtFocus": "Tip-over risks",
+          "predTitle": "Narrow Base Tall Pedestal Vase",
+          "predFocus": "Tip-over risks",
+          "required": false,
+          "iou": 0.261,
+          "localizedAt03": false,
+          "severityMatch": true
+        },
+        {
+          "gtId": "glass-decanters",
+          "gtFocus": "Child proofing",
+          "predTitle": "Accessible Glass Decanters",
+          "predFocus": "Child proofing",
+          "required": true,
+          "iou": 0.249,
+          "localizedAt03": false,
+          "severityMatch": true
+        },
+        {
+          "gtId": "table-edge",
+          "gtFocus": "Child proofing",
+          "predTitle": "Sharp Table Edges",
+          "predFocus": "Child proofing",
+          "required": false,
+          "iou": 0.154,
+          "localizedAt03": false,
+          "severityMatch": true
+        },
+        {
+          "gtId": "fragile-glassware",
+          "gtFocus": "Sharp objects",
+          "predTitle": "Fragile Tall Glassware",
+          "predFocus": "Sharp objects",
+          "required": false,
+          "iou": 0.141,
+          "localizedAt03": false,
+          "severityMatch": true
+        }
+      ],
+      "missedRequired": [],
+      "unmatchedPredictions": []
+    },
+    {
+      "id": "12-living-modern",
+      "label": "Living (modern)",
+      "ok": true,
+      "tpRequired": 1,
+      "fnRequired": 0,
+      "fp": 0,
+      "requiredCount": 1,
+      "optionalCount": 3,
+      "predCount": 4,
+      "recall": 1.0,
+      "precision": 1.0,
+      "f1": 1.0,
+      "meanIoU": 0.3002,
+      "localizationAt03": 0.25,
+      "severityAgreement": 1.0,
+      "score": 78,
+      "scoreBand": [
+        65,
+        95
+      ],
+      "scoreInBand": true,
+      "matches": [
+        {
+          "gtId": "floor-obstacle",
+          "gtFocus": "Trip hazards",
+          "predTitle": "Floor Poufs In Walkway",
+          "predFocus": "Trip hazards",
+          "required": true,
+          "iou": 0.468,
+          "localizedAt03": true,
+          "severityMatch": true
+        },
+        {
+          "gtId": "arc-lamp",
+          "gtFocus": "Tip-over risks",
+          "predTitle": "Arc Floor Lamp Tip-Over",
+          "predFocus": "Tip-over risks",
+          "required": false,
+          "iou": 0.257,
+          "localizedAt03": false,
+          "severityMatch": true
+        },
+        {
+          "gtId": "pet-toxic-plant",
+          "gtFocus": "Pet hazards",
+          "predTitle": "Toxic Snake Plant to Pets",
+          "predFocus": "Pet hazards",
+          "required": false,
+          "iou": 0.252,
+          "localizedAt03": false,
+          "severityMatch": true
+        },
+        {
+          "gtId": "decor-tip",
+          "gtFocus": "Tip-over risks",
+          "predTitle": "Tall Fragile Decor Tip-Over",
+          "predFocus": "Tip-over risks",
+          "required": false,
+          "iou": 0.224,
+          "localizedAt03": false,
+          "severityMatch": true
+        }
+      ],
+      "missedRequired": [],
+      "unmatchedPredictions": []
+    },
+    {
+      "id": "13-living-stairs",
+      "label": "Living + stairs",
+      "ok": true,
+      "tpRequired": 2,
+      "fnRequired": 0,
+      "fp": 0,
+      "requiredCount": 2,
+      "optionalCount": 1,
+      "predCount": 3,
+      "recall": 1.0,
+      "precision": 1.0,
+      "f1": 1.0,
+      "meanIoU": 0.4442,
+      "localizationAt03": 0.6667,
+      "severityAgreement": 1.0,
+      "score": 62,
+      "scoreBand": [
+        50,
+        80
+      ],
+      "scoreInBand": true,
+      "matches": [
+        {
+          "gtId": "glass-balustrade",
+          "gtFocus": "Child proofing",
+          "predTitle": "Low-Visibility Glass Balustrade",
+          "predFocus": "Child proofing",
+          "required": true,
+          "iou": 0.542,
+          "localizedAt03": true,
+          "severityMatch": true
+        },
+        {
+          "gtId": "rug-edge",
+          "gtFocus": "Trip hazards",
+          "predTitle": "Raised Texture Rug Edge",
+          "predFocus": "Trip hazards",
+          "required": false,
+          "iou": 0.527,
+          "localizedAt03": true,
+          "severityMatch": true
+        },
+        {
+          "gtId": "stair-no-handrail",
+          "gtFocus": "Stairs & falls",
+          "predTitle": "Staircase Missing Handrail",
+          "predFocus": "Stairs & falls",
+          "required": true,
+          "iou": 0.264,
+          "localizedAt03": false,
+          "severityMatch": true
+        }
+      ],
+      "missedRequired": [],
+      "unmatchedPredictions": []
+    },
+    {
+      "id": "14-kitchen-cooking",
+      "label": "Kitchen (cooking)",
+      "ok": true,
+      "tpRequired": 2,
+      "fnRequired": 0,
+      "fp": 0,
+      "requiredCount": 2,
+      "optionalCount": 1,
+      "predCount": 3,
+      "recall": 1.0,
+      "precision": 1.0,
+      "f1": 1.0,
+      "meanIoU": 0.3869,
+      "localizationAt03": 0.6667,
+      "severityAgreement": 1.0,
+      "score": 68,
+      "scoreBand": [
+        55,
+        85
+      ],
+      "scoreInBand": true,
+      "matches": [
+        {
+          "gtId": "reach-over-heat",
+          "gtFocus": "Kitchen hazards",
+          "predTitle": "Reaching over open hot pot",
+          "predFocus": "Kitchen hazards",
+          "required": false,
+          "iou": 0.53,
+          "localizedAt03": true,
+          "severityMatch": true
+        },
+        {
+          "gtId": "hot-pot-edge",
+          "gtFocus": "Kitchen hazards",
+          "predTitle": "Large pot at cooktop edge",
+          "predFocus": "Kitchen hazards",
+          "required": true,
+          "iou": 0.415,
+          "localizedAt03": true,
+          "severityMatch": true
+        },
+        {
+          "gtId": "front-dials",
+          "gtFocus": "Child proofing",
+          "predTitle": "Accessible front range dials",
+          "predFocus": "Child proofing",
+          "required": true,
+          "iou": 0.216,
+          "localizedAt03": false,
+          "severityMatch": true
+        }
+      ],
+      "missedRequired": [],
+      "unmatchedPredictions": []
+    },
+    {
+      "id": "15-home-office",
+      "label": "Home office",
+      "ok": true,
+      "tpRequired": 1,
+      "fnRequired": 0,
+      "fp": 0,
+      "requiredCount": 1,
+      "optionalCount": 1,
+      "predCount": 2,
+      "recall": 1.0,
+      "precision": 1.0,
+      "f1": 1.0,
+      "meanIoU": 0.0987,
+      "localizationAt03": 0.0,
+      "severityAgreement": 1.0,
+      "score": 88,
+      "scoreBand": [
+        75,
+        100
+      ],
+      "scoreInBand": true,
+      "matches": [
+        {
+          "gtId": "floor-cable",
+          "gtFocus": "Trip hazards",
+          "predTitle": "Unsecured Wall Cord",
+          "predFocus": "Electric",
+          "required": true,
+          "iou": 0.112,
+          "localizedAt03": false,
+          "severityMatch": true
+        },
+        {
+          "gtId": "wall-cord",
+          "gtFocus": "Electric",
+          "predTitle": "Trailing Floor Cable",
+          "predFocus": "Trip hazards",
+          "required": false,
+          "iou": 0.085,
+          "localizedAt03": false,
+          "severityMatch": true
+        }
+      ],
+      "missedRequired": [],
+      "unmatchedPredictions": []
+    },
+    {
+      "id": "16-bathroom-modern",
+      "label": "Bathroom (modern)",
+      "ok": true,
+      "tpRequired": 1,
+      "fnRequired": 0,
+      "fp": 1,
+      "requiredCount": 1,
+      "optionalCount": 1,
+      "predCount": 3,
+      "recall": 1.0,
+      "precision": 0.6667,
+      "f1": 0.8,
+      "meanIoU": 0.4391,
+      "localizationAt03": 1.0,
+      "severityAgreement": 1.0,
+      "score": 82,
+      "scoreBand": [
+        70,
+        95
+      ],
+      "scoreInBand": true,
+      "matches": [
+        {
+          "gtId": "vanity-corners",
+          "gtFocus": "Child proofing",
+          "predTitle": "Sharp floating vanity corners",
+          "predFocus": "Child proofing",
+          "required": false,
+          "iou": 0.504,
+          "localizedAt03": true,
+          "severityMatch": true
+        },
+        {
+          "gtId": "bath-mat",
+          "gtFocus": "Trip hazards",
+          "predTitle": "Unsecured bath mat",
+          "predFocus": "Trip hazards",
+          "required": true,
+          "iou": 0.374,
+          "localizedAt03": true,
+          "severityMatch": true
+        }
+      ],
+      "missedRequired": [],
+      "unmatchedPredictions": [
+        {
+          "title": "Accessible toilet lid",
+          "focusArea": "Child proofing",
+          "severity": "Low"
+        }
+      ]
+    },
+    {
+      "id": "17-closet",
+      "label": "Closet / wardrobe",
+      "ok": true,
+      "tpRequired": 2,
+      "fnRequired": 0,
+      "fp": 0,
+      "requiredCount": 2,
+      "optionalCount": 2,
+      "predCount": 4,
+      "recall": 1.0,
+      "precision": 1.0,
+      "f1": 1.0,
+      "meanIoU": 0.4481,
+      "localizationAt03": 0.5,
+      "severityAgreement": 1.0,
+      "score": 62,
+      "scoreBand": [
+        50,
+        80
+      ],
+      "scoreInBand": true,
+      "matches": [
+        {
+          "gtId": "tall-wardrobe-tip",
+          "gtFocus": "Tip-over risks",
+          "predTitle": "Unanchored Tall Wardrobe",
+          "predFocus": "Tip-over risks",
+          "required": true,
+          "iou": 0.693,
+          "localizedAt03": true,
+          "severityMatch": true
+        },
+        {
+          "gtId": "drawer-ladder",
+          "gtFocus": "Child proofing",
+          "predTitle": "Accessible Drawers Create Ladder",
+          "predFocus": "Child proofing",
+          "required": false,
+          "iou": 0.566,
+          "localizedAt03": true,
+          "severityMatch": true
+        },
+        {
+          "gtId": "electric-outlet",
+          "gtFocus": "Electric",
+          "predTitle": "Low Plug Near High-Traffic Zone",
+          "predFocus": "Electric",
+          "required": false,
+          "iou": 0.267,
+          "localizedAt03": false,
+          "severityMatch": true
+        },
+        {
+          "gtId": "low-outlet",
+          "gtFocus": "Child proofing",
+          "predTitle": "Exposed Low Electrical Outlet",
+          "predFocus": "Child proofing",
+          "required": true,
+          "iou": 0.267,
+          "localizedAt03": false,
+          "severityMatch": true
+        }
+      ],
+      "missedRequired": [],
+      "unmatchedPredictions": []
+    },
+    {
+      "id": "18-kitchen-island",
+      "label": "Kitchen (island)",
+      "ok": true,
+      "tpRequired": 1,
+      "fnRequired": 0,
+      "fp": 0,
+      "requiredCount": 1,
+      "optionalCount": 0,
+      "predCount": 1,
+      "recall": 1.0,
+      "precision": 1.0,
+      "f1": 1.0,
+      "meanIoU": 0.2475,
+      "localizationAt03": 0.0,
+      "severityAgreement": 1.0,
+      "score": 86,
+      "scoreBand": [
+        75,
+        100
+      ],
+      "scoreInBand": true,
+      "matches": [
+        {
+          "gtId": "runner-rug",
+          "gtFocus": "Trip hazards",
+          "predTitle": "Loose runner rug on floor",
+          "predFocus": "Trip hazards",
+          "required": true,
+          "iou": 0.248,
+          "localizedAt03": false,
+          "severityMatch": true
+        }
+      ],
+      "missedRequired": [],
+      "unmatchedPredictions": []
+    },
+    {
+      "id": "19-patio-door",
+      "label": "Open plan + patio",
+      "ok": true,
+      "tpRequired": 1,
+      "fnRequired": 0,
+      "fp": 0,
+      "requiredCount": 1,
+      "optionalCount": 2,
+      "predCount": 3,
+      "recall": 1.0,
+      "precision": 1.0,
+      "f1": 1.0,
+      "meanIoU": 0.365,
+      "localizationAt03": 0.6667,
+      "severityAgreement": 1.0,
+      "score": 88,
+      "scoreBand": [
+        75,
+        100
+      ],
+      "scoreInBand": true,
+      "matches": [
+        {
+          "gtId": "unstable-table",
+          "gtFocus": "Child proofing",
+          "predTitle": "Unstable pedestal side table",
+          "predFocus": "Child proofing",
+          "required": false,
+          "iou": 0.469,
+          "localizedAt03": true,
+          "severityMatch": true
+        },
+        {
+          "gtId": "child-height-edge",
+          "gtFocus": "Child proofing",
+          "predTitle": "Rigid table edge at child height",
+          "predFocus": "Child proofing",
+          "required": false,
+          "iou": 0.342,
+          "localizedAt03": true,
+          "severityMatch": true
+        },
+        {
+          "gtId": "glass-door",
+          "gtFocus": "Windows & falls",
+          "predTitle": "Glass sliding door collision risk",
+          "predFocus": "Windows & falls",
+          "required": true,
+          "iou": 0.283,
+          "localizedAt03": false,
+          "severityMatch": true
+        }
+      ],
+      "missedRequired": [],
+      "unmatchedPredictions": []
+    },
+    {
+      "id": "20-garage",
+      "label": "Garage",
+      "ok": true,
+      "tpRequired": 2,
+      "fnRequired": 0,
+      "fp": 0,
+      "requiredCount": 2,
+      "optionalCount": 1,
+      "predCount": 3,
+      "recall": 1.0,
+      "precision": 1.0,
+      "f1": 1.0,
+      "meanIoU": 0.1884,
+      "localizationAt03": 0.0,
+      "severityAgreement": 1.0,
+      "score": 68,
+      "scoreBand": [
+        55,
+        85
+      ],
+      "scoreInBand": true,
+      "matches": [
+        {
+          "gtId": "flammable-shelf",
+          "gtFocus": "Fire",
+          "predTitle": "Open Shelf Flammable Liquids",
+          "predFocus": "Fire",
+          "required": true,
+          "iou": 0.286,
+          "localizedAt03": false,
+          "severityMatch": true
+        },
+        {
+          "gtId": "floor-jug",
+          "gtFocus": "Trip hazards",
+          "predTitle": "Floor Fluid Jug Obstruction",
+          "predFocus": "Trip hazards",
+          "required": false,
+          "iou": 0.21,
+          "localizedAt03": false,
+          "severityMatch": true
+        },
+        {
+          "gtId": "chemical-containers",
+          "gtFocus": "Chemical storage",
+          "predTitle": "Unsecured Chemical Containers",
+          "predFocus": "Chemical storage",
+          "required": true,
+          "iou": 0.07,
+          "localizedAt03": false,
+          "severityMatch": true
+        }
+      ],
+      "missedRequired": [],
+      "unmatchedPredictions": []
+    }
+  ]
+}

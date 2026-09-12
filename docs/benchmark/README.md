@@ -1,12 +1,56 @@
 # AI benchmark
 
-Live proof on **20 distinct room photos** (unique files — not crops of one scene).
+Live suite on **20 distinct room photos** (unique files — not crops of one scene).
 Share cards are the exact iOS `ScanShareExporter` output.
+
+This is a **detection-accuracy** benchmark against human labels in
+[`ground-truth.json`](./ground-truth.json) — not “JSON came back OK.”
 
 - **Ran:** `2026-09-11 02:36:29Z`
 - **API:** `https://safesight.noahwhiteson.com`
 - **Model:** `gemini-3.8-flash`
-- **Result:** **20/20 passed**
+- **Schema smoke:** 20/20 HTTP 200 + valid structure
+- **Accuracy gate:** **19/20** cases found every required hazard · micro **F1 95.5%** · mean IoU **34%** · loc@0.3 **50%**
+
+## Detection accuracy
+
+Labeled ground truth in [`ground-truth.json`](./ground-truth.json). A case **passes** only if every **required** hazard is matched (alias and/or focus+box) and House Score lands in the labeled band. Schema-valid junk no longer counts as a pass.
+
+- **Required-hazard recall (micro):** 96.4% (27/28)
+- **Precision (micro):** 94.6%
+- **F1 (micro):** 95.5%
+- **Mean IoU (matched + boxed):** 34.2%
+- **Localization @ IoU≥0.3:** 49.6%
+- **Severity agreement (matched):** 100.0%
+- **Score band hits:** 20/20
+- **Cases with all required hazards found:** 19/20
+
+| # | Scene | Recall | Precision | F1 | IoU | Loc@0.3 | Sev | Score | Gate |
+|---|-------|--------|-----------|----|-----|---------|-----|-------|------|
+| 1 | ✅ Kitchen (user) | 100% | 75% | 86% | 35% | 67% | 100% | 68 | pass |
+| 2 | ❌ Living / hallway | 50% | 100% | 67% | 44% | 67% | 100% | 82 | miss |
+| 3 | ✅ Kitchen (stock) | 100% | 50% | 67% | 22% | 0% | 100% | 88 | pass |
+| 4 | ✅ Bathroom | 100% | 100% | 100% | 53% | 100% | 100% | 78 | pass |
+| 5 | ✅ Bedroom | 100% | 100% | 100% | 41% | 67% | 100% | 86 | pass |
+| 6 | ✅ Living (sofa) | 100% | 100% | 100% | 44% | 67% | 100% | 78 | pass |
+| 7 | ✅ Kitchen (white) | 100% | 100% | 100% | 42% | 100% | 100% | 82 | pass |
+| 8 | ✅ Bedroom (boho) | 100% | 100% | 100% | 12% | 0% | 100% | 82 | pass |
+| 9 | ✅ Laundry room | 100% | 100% | 100% | 43% | 100% | 100% | 88 | pass |
+| 10 | ✅ Living (windows) | 100% | 100% | 100% | 34% | 50% | 100% | 88 | pass |
+| 11 | ✅ Dining room | 100% | 100% | 100% | 20% | 0% | 100% | 78 | pass |
+| 12 | ✅ Living (modern) | 100% | 100% | 100% | 30% | 25% | 100% | 78 | pass |
+| 13 | ✅ Living + stairs | 100% | 100% | 100% | 44% | 67% | 100% | 62 | pass |
+| 14 | ✅ Kitchen (cooking) | 100% | 100% | 100% | 39% | 67% | 100% | 68 | pass |
+| 15 | ✅ Home office | 100% | 100% | 100% | 10% | 0% | 100% | 88 | pass |
+| 16 | ✅ Bathroom (modern) | 100% | 67% | 80% | 44% | 100% | 100% | 82 | pass |
+| 17 | ✅ Closet / wardrobe | 100% | 100% | 100% | 45% | 50% | 100% | 62 | pass |
+| 18 | ✅ Kitchen (island) | 100% | 100% | 100% | 25% | 0% | 100% | 86 | pass |
+| 19 | ✅ Open plan + patio | 100% | 100% | 100% | 36% | 67% | 100% | 88 | pass |
+| 20 | ✅ Garage | 100% | 100% | 100% | 19% | 0% | 100% | 68 | pass |
+
+### Missed required hazards
+
+- **Living / hallway** — `leaning-mirror` (Tip-over risks; aliases: mirror, leaning)
 
 ## Safesight in real rooms
 
@@ -30,10 +74,12 @@ Real scans from the app — boxes on the photo, confidence on each label, House 
   <sub>Hallway · 68/100 &nbsp;·&nbsp; Kitchen · 78/100</sub>
 </p>
 
-## Cases
+## Cases (schema smoke)
 
-| # | Scene | HTTP | Latency | Score | Hazards | Check |
-|---|-------|------|---------|-------|---------|-------|
+HTTP/latency/structure only — see **Detection accuracy** above for labeled scoring.
+
+| # | Scene | HTTP | Latency | Score | Hazards | Schema |
+|---|-------|------|---------|-------|---------|--------|
 | 1 | ✅ Kitchen (user) | 200 | 5.39s | 68 | 4 | ok |
 | 2 | ✅ Living / hallway | 200 | 4.11s | 82 | 3 | ok |
 | 3 | ✅ Kitchen (stock) | 200 | 8.59s | 88 | 2 | ok |

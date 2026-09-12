@@ -1,0 +1,559 @@
+{
+  "version": 1,
+  "iouThreshold": 0.2,
+  "notes": "Human labels for visible, in-scope hazards given each case's focusAreas. required=true items must be found. optional items absorb matching predictions so they are not false positives. Boxes are approximate normalized frames.",
+  "cases": {
+    "01-kitchen-user": {
+      "label": "Kitchen (user)",
+      "scoreBand": [55, 85],
+      "hazards": [
+        {
+          "id": "knife-on-island",
+          "required": true,
+          "focusArea": "Sharp objects",
+          "aliases": ["knife", "chef knife", "blade"],
+          "severity": "High",
+          "box": { "x": 0.12, "y": 0.60, "width": 0.42, "height": 0.10 }
+        },
+        {
+          "id": "runner-rug",
+          "required": true,
+          "focusArea": "Trip hazards",
+          "aliases": ["rug", "runner", "mat", "curled"],
+          "severity": "Medium",
+          "box": { "x": 0.50, "y": 0.55, "width": 0.35, "height": 0.30 }
+        },
+        {
+          "id": "towel-on-oven",
+          "required": false,
+          "focusArea": "Fire",
+          "aliases": ["towel", "oven handle", "cloth"],
+          "severity": "Low",
+          "box": { "x": 0.74, "y": 0.40, "width": 0.14, "height": 0.16 }
+        }
+      ]
+    },
+    "02-living-hallway": {
+      "label": "Living / hallway",
+      "scoreBand": [70, 95],
+      "hazards": [
+        {
+          "id": "tall-plant-tip",
+          "required": true,
+          "focusArea": "Tip-over risks",
+          "aliases": ["plant", "fiddle", "tip-over", "tip over"],
+          "severity": "Medium",
+          "box": { "x": 0.55, "y": 0.15, "width": 0.35, "height": 0.55 }
+        },
+        {
+          "id": "leaning-mirror",
+          "required": true,
+          "focusArea": "Tip-over risks",
+          "aliases": ["mirror", "leaning"],
+          "severity": "Medium",
+          "box": { "x": 0.62, "y": 0.18, "width": 0.22, "height": 0.50 }
+        },
+        {
+          "id": "rug-edge",
+          "required": false,
+          "focusArea": "Trip hazards",
+          "aliases": ["rug", "trip", "edge"],
+          "severity": "Low",
+          "box": { "x": 0.02, "y": 0.55, "width": 0.55, "height": 0.35 }
+        },
+        {
+          "id": "unanchored-credenza",
+          "required": false,
+          "focusArea": "Tip-over risks",
+          "aliases": ["credenza", "sideboard", "cabinet", "unanchored"],
+          "severity": "Medium",
+          "box": { "x": 0.10, "y": 0.45, "width": 0.55, "height": 0.25 }
+        }
+      ]
+    },
+    "03-kitchen-stock": {
+      "label": "Kitchen (stock)",
+      "scoreBand": [75, 100],
+      "hazards": [
+        {
+          "id": "cookware-near-edge",
+          "required": true,
+          "focusArea": "Kitchen hazards",
+          "aliases": ["pot", "dutch", "cookware", "lid", "edge"],
+          "severity": "Low",
+          "box": { "x": 0.15, "y": 0.30, "width": 0.45, "height": 0.40 }
+        }
+      ]
+    },
+    "04-bathroom": {
+      "label": "Bathroom",
+      "scoreBand": [65, 95],
+      "hazards": [
+        {
+          "id": "step-stool",
+          "required": true,
+          "focusArea": "Child proofing",
+          "aliases": ["stool", "step", "ladder"],
+          "severity": "Medium",
+          "box": { "x": 0.28, "y": 0.70, "width": 0.30, "height": 0.28 }
+        },
+        {
+          "id": "floor-clutter-plant",
+          "required": false,
+          "focusArea": "Trip hazards",
+          "aliases": ["plant", "obstruction", "floor", "pot"],
+          "severity": "Low",
+          "box": { "x": 0.0, "y": 0.55, "width": 0.35, "height": 0.40 }
+        },
+        {
+          "id": "accessible-cabinet",
+          "required": false,
+          "focusArea": "Child proofing",
+          "aliases": ["cabinet", "accessible", "drawer"],
+          "severity": "Medium",
+          "box": { "x": 0.75, "y": 0.20, "width": 0.25, "height": 0.45 }
+        }
+      ]
+    },
+    "05-bedroom": {
+      "label": "Bedroom",
+      "scoreBand": [70, 100],
+      "hazards": [
+        {
+          "id": "exposed-bulbs",
+          "required": true,
+          "focusArea": "Fire",
+          "aliases": ["bulb", "light fixture", "lamp shade", "exposed light"],
+          "severity": "Medium",
+          "box": { "x": 0.30, "y": 0.05, "width": 0.40, "height": 0.35 }
+        },
+        {
+          "id": "nightstand-lamp",
+          "required": false,
+          "focusArea": "Tip-over risks",
+          "aliases": ["lamp", "nightstand", "table lamp"],
+          "severity": "Low",
+          "box": { "x": 0.55, "y": 0.40, "width": 0.18, "height": 0.20 }
+        },
+        {
+          "id": "drapes-window",
+          "required": false,
+          "focusArea": "Windows & falls",
+          "aliases": ["drape", "curtain", "window"],
+          "severity": "Low",
+          "box": { "x": 0.65, "y": 0.15, "width": 0.25, "height": 0.50 }
+        }
+      ]
+    },
+    "06-living-sofa": {
+      "label": "Living (sofa)",
+      "scoreBand": [65, 95],
+      "hazards": [
+        {
+          "id": "floor-lamp-tip",
+          "required": true,
+          "focusArea": "Tip-over risks",
+          "aliases": ["floor lamp", "lamp tip", "slender"],
+          "severity": "Medium",
+          "box": { "x": 0.0, "y": 0.15, "width": 0.40, "height": 0.70 }
+        },
+        {
+          "id": "fragile-vase",
+          "required": true,
+          "focusArea": "Pet hazards",
+          "aliases": ["vase", "glass", "fragile"],
+          "severity": "Medium",
+          "box": { "x": 0.65, "y": 0.30, "width": 0.25, "height": 0.30 }
+        },
+        {
+          "id": "lamp-cord",
+          "required": false,
+          "focusArea": "Trip hazards",
+          "aliases": ["cord", "cable", "wire"],
+          "severity": "Low",
+          "box": { "x": 0.0, "y": 0.70, "width": 0.20, "height": 0.20 }
+        }
+      ]
+    },
+    "07-kitchen-white": {
+      "label": "Kitchen (white)",
+      "scoreBand": [70, 95],
+      "hazards": [
+        {
+          "id": "towel-on-oven",
+          "required": true,
+          "focusArea": "Fire",
+          "aliases": ["towel", "oven", "handle"],
+          "severity": "Medium",
+          "box": { "x": 0.75, "y": 0.65, "width": 0.20, "height": 0.30 }
+        },
+        {
+          "id": "floor-rug",
+          "required": true,
+          "focusArea": "Trip hazards",
+          "aliases": ["rug", "mat", "fringe"],
+          "severity": "Medium",
+          "box": { "x": 0.0, "y": 0.85, "width": 0.55, "height": 0.15 }
+        }
+      ]
+    },
+    "08-bedroom-boho": {
+      "label": "Bedroom (boho)",
+      "scoreBand": [70, 95],
+      "hazards": [
+        {
+          "id": "candle-near-plants",
+          "required": true,
+          "focusArea": "Fire",
+          "aliases": ["candle", "flame", "wax"],
+          "severity": "Medium",
+          "box": { "x": 0.50, "y": 0.50, "width": 0.20, "height": 0.15 }
+        },
+        {
+          "id": "sconce-cord",
+          "required": false,
+          "focusArea": "Electric",
+          "aliases": ["cord", "sconce", "wire", "lamp"],
+          "severity": "Low",
+          "box": { "x": 0.40, "y": 0.35, "width": 0.15, "height": 0.25 }
+        }
+      ]
+    },
+    "09-laundry": {
+      "label": "Laundry room",
+      "scoreBand": [70, 100],
+      "hazards": [
+        {
+          "id": "open-detergent",
+          "required": true,
+          "focusArea": "Chemical storage",
+          "aliases": ["detergent", "chemical", "bleach", "bottle", "dispenser"],
+          "severity": "Medium",
+          "box": { "x": 0.15, "y": 0.40, "width": 0.55, "height": 0.55 }
+        },
+        {
+          "id": "spill-risk",
+          "required": false,
+          "focusArea": "Chemical storage",
+          "aliases": ["spill", "pour", "dispenser", "drawer"],
+          "severity": "Low",
+          "box": { "x": 0.35, "y": 0.35, "width": 0.50, "height": 0.40 }
+        }
+      ]
+    },
+    "10-living-windows": {
+      "label": "Living (windows)",
+      "scoreBand": [75, 100],
+      "hazards": [
+        {
+          "id": "large-glass",
+          "required": true,
+          "focusArea": "Windows & falls",
+          "aliases": ["glass", "window", "impact", "pane", "sliding"],
+          "severity": "Low",
+          "box": { "x": 0.25, "y": 0.15, "width": 0.50, "height": 0.55 }
+        },
+        {
+          "id": "curtain-puddle",
+          "required": false,
+          "focusArea": "Trip hazards",
+          "aliases": ["curtain", "drape", "puddl", "fabric"],
+          "severity": "Low",
+          "box": { "x": 0.25, "y": 0.30, "width": 0.35, "height": 0.40 }
+        }
+      ]
+    },
+    "11-dining": {
+      "label": "Dining room",
+      "scoreBand": [65, 95],
+      "hazards": [
+        {
+          "id": "glass-decanters",
+          "required": true,
+          "focusArea": "Child proofing",
+          "aliases": ["decanter", "glassware", "bottle", "glass"],
+          "severity": "Medium",
+          "box": { "x": 0.55, "y": 0.40, "width": 0.30, "height": 0.25 }
+        },
+        {
+          "id": "fragile-glassware",
+          "required": false,
+          "focusArea": "Sharp objects",
+          "aliases": ["glassware", "glass", "stemware", "fragile"],
+          "severity": "Low",
+          "box": { "x": 0.05, "y": 0.45, "width": 0.25, "height": 0.25 }
+        },
+        {
+          "id": "table-edge",
+          "required": false,
+          "focusArea": "Child proofing",
+          "aliases": ["edge", "table", "corner", "sharp"],
+          "severity": "Low",
+          "box": { "x": 0.0, "y": 0.55, "width": 0.25, "height": 0.20 }
+        },
+        {
+          "id": "pedestal-vase",
+          "required": false,
+          "focusArea": "Tip-over risks",
+          "aliases": ["vase", "pedestal", "tip"],
+          "severity": "Low",
+          "box": { "x": 0.10, "y": 0.35, "width": 0.15, "height": 0.25 }
+        }
+      ]
+    },
+    "12-living-modern": {
+      "label": "Living (modern)",
+      "scoreBand": [65, 95],
+      "hazards": [
+        {
+          "id": "floor-obstacle",
+          "required": true,
+          "focusArea": "Trip hazards",
+          "aliases": ["pouf", "ottoman", "floor cushion", "walkway", "trip"],
+          "severity": "Low",
+          "box": { "x": 0.20, "y": 0.70, "width": 0.55, "height": 0.25 }
+        },
+        {
+          "id": "arc-lamp",
+          "required": false,
+          "focusArea": "Tip-over risks",
+          "aliases": ["lamp", "arc", "floor lamp"],
+          "severity": "Medium",
+          "box": { "x": 0.70, "y": 0.20, "width": 0.30, "height": 0.40 }
+        },
+        {
+          "id": "pet-toxic-plant",
+          "required": false,
+          "focusArea": "Pet hazards",
+          "aliases": ["snake plant", "toxic", "plant", "pet"],
+          "severity": "Medium",
+          "box": { "x": 0.28, "y": 0.50, "width": 0.18, "height": 0.30 }
+        },
+        {
+          "id": "decor-tip",
+          "required": false,
+          "focusArea": "Tip-over risks",
+          "aliases": ["decor", "vase", "tip", "fragile"],
+          "severity": "Low",
+          "box": { "x": 0.38, "y": 0.55, "width": 0.15, "height": 0.25 }
+        }
+      ]
+    },
+    "13-living-stairs": {
+      "label": "Living + stairs",
+      "scoreBand": [50, 80],
+      "hazards": [
+        {
+          "id": "stair-no-handrail",
+          "required": true,
+          "focusArea": "Stairs & falls",
+          "aliases": ["stair", "handrail", "railing", "balustrade"],
+          "severity": "High",
+          "box": { "x": 0.60, "y": 0.25, "width": 0.40, "height": 0.50 }
+        },
+        {
+          "id": "glass-balustrade",
+          "required": true,
+          "focusArea": "Child proofing",
+          "aliases": ["glass", "balustrade", "rail", "barrier"],
+          "severity": "Medium",
+          "box": { "x": 0.70, "y": 0.25, "width": 0.30, "height": 0.40 }
+        },
+        {
+          "id": "rug-edge",
+          "required": false,
+          "focusArea": "Trip hazards",
+          "aliases": ["rug", "edge", "trip", "texture"],
+          "severity": "Low",
+          "box": { "x": 0.20, "y": 0.60, "width": 0.70, "height": 0.35 }
+        }
+      ]
+    },
+    "14-kitchen-cooking": {
+      "label": "Kitchen (cooking)",
+      "scoreBand": [55, 85],
+      "hazards": [
+        {
+          "id": "hot-pot-edge",
+          "required": true,
+          "focusArea": "Kitchen hazards",
+          "aliases": ["pot", "cooktop", "stove", "hot", "edge", "burn"],
+          "severity": "High",
+          "box": { "x": 0.25, "y": 0.60, "width": 0.50, "height": 0.35 }
+        },
+        {
+          "id": "front-dials",
+          "required": true,
+          "focusArea": "Child proofing",
+          "aliases": ["dial", "knob", "control", "range"],
+          "severity": "Medium",
+          "box": { "x": 0.10, "y": 0.80, "width": 0.35, "height": 0.18 }
+        },
+        {
+          "id": "reach-over-heat",
+          "required": false,
+          "focusArea": "Kitchen hazards",
+          "aliases": ["reach", "hot", "steam", "burn", "scrape"],
+          "severity": "Medium",
+          "box": { "x": 0.0, "y": 0.40, "width": 0.60, "height": 0.40 }
+        }
+      ]
+    },
+    "15-home-office": {
+      "label": "Home office",
+      "scoreBand": [75, 100],
+      "hazards": [
+        {
+          "id": "floor-cable",
+          "required": true,
+          "focusArea": "Trip hazards",
+          "aliases": ["cable", "cord", "wire", "trailing"],
+          "severity": "Low",
+          "box": { "x": 0.25, "y": 0.70, "width": 0.25, "height": 0.25 }
+        },
+        {
+          "id": "wall-cord",
+          "required": false,
+          "focusArea": "Electric",
+          "aliases": ["cord", "outlet", "cable", "wire"],
+          "severity": "Low",
+          "box": { "x": 0.25, "y": 0.65, "width": 0.25, "height": 0.30 }
+        }
+      ]
+    },
+    "16-bathroom-modern": {
+      "label": "Bathroom (modern)",
+      "scoreBand": [70, 95],
+      "hazards": [
+        {
+          "id": "bath-mat",
+          "required": true,
+          "focusArea": "Trip hazards",
+          "aliases": ["mat", "rug", "bath mat", "slip"],
+          "severity": "Medium",
+          "box": { "x": 0.20, "y": 0.60, "width": 0.50, "height": 0.25 }
+        },
+        {
+          "id": "vanity-corners",
+          "required": false,
+          "focusArea": "Child proofing",
+          "aliases": ["vanity", "corner", "edge", "sharp"],
+          "severity": "Low",
+          "box": { "x": 0.55, "y": 0.40, "width": 0.40, "height": 0.40 }
+        }
+      ]
+    },
+    "17-closet": {
+      "label": "Closet / wardrobe",
+      "scoreBand": [50, 80],
+      "hazards": [
+        {
+          "id": "tall-wardrobe-tip",
+          "required": true,
+          "focusArea": "Tip-over risks",
+          "aliases": ["wardrobe", "dresser", "armoire", "unanchored", "tip"],
+          "severity": "High",
+          "box": { "x": 0.20, "y": 0.25, "width": 0.60, "height": 0.65 }
+        },
+        {
+          "id": "low-outlet",
+          "required": true,
+          "focusArea": "Child proofing",
+          "aliases": ["outlet", "socket", "receptacle", "plug"],
+          "severity": "Medium",
+          "box": { "x": 0.78, "y": 0.85, "width": 0.18, "height": 0.15 }
+        },
+        {
+          "id": "drawer-ladder",
+          "required": false,
+          "focusArea": "Child proofing",
+          "aliases": ["drawer", "ladder", "climb"],
+          "severity": "Medium",
+          "box": { "x": 0.20, "y": 0.70, "width": 0.55, "height": 0.25 }
+        },
+        {
+          "id": "electric-outlet",
+          "required": false,
+          "focusArea": "Electric",
+          "aliases": ["outlet", "plug", "socket", "electric"],
+          "severity": "Low",
+          "box": { "x": 0.78, "y": 0.85, "width": 0.18, "height": 0.15 }
+        }
+      ]
+    },
+    "18-kitchen-island": {
+      "label": "Kitchen (island)",
+      "scoreBand": [75, 100],
+      "hazards": [
+        {
+          "id": "runner-rug",
+          "required": true,
+          "focusArea": "Trip hazards",
+          "aliases": ["rug", "runner", "mat"],
+          "severity": "Medium",
+          "box": { "x": 0.25, "y": 0.25, "width": 0.40, "height": 0.40 }
+        }
+      ]
+    },
+    "19-patio-door": {
+      "label": "Open plan + patio",
+      "scoreBand": [75, 100],
+      "hazards": [
+        {
+          "id": "glass-door",
+          "required": true,
+          "focusArea": "Windows & falls",
+          "aliases": ["glass", "sliding", "door", "patio", "window"],
+          "severity": "Low",
+          "box": { "x": 0.0, "y": 0.20, "width": 0.30, "height": 0.50 }
+        },
+        {
+          "id": "child-height-edge",
+          "required": false,
+          "focusArea": "Child proofing",
+          "aliases": ["edge", "table", "corner", "child"],
+          "severity": "Low",
+          "box": { "x": 0.30, "y": 0.55, "width": 0.45, "height": 0.30 }
+        },
+        {
+          "id": "unstable-table",
+          "required": false,
+          "focusArea": "Child proofing",
+          "aliases": ["table", "pedestal", "unstable", "tip"],
+          "severity": "Low",
+          "box": { "x": 0.60, "y": 0.55, "width": 0.35, "height": 0.35 }
+        }
+      ]
+    },
+    "20-garage": {
+      "label": "Garage",
+      "scoreBand": [55, 85],
+      "hazards": [
+        {
+          "id": "flammable-shelf",
+          "required": true,
+          "focusArea": "Fire",
+          "aliases": ["flammable", "solvent", "fuel", "chemical", "shelf", "bottle"],
+          "severity": "Medium",
+          "box": { "x": 0.55, "y": 0.20, "width": 0.30, "height": 0.20 }
+        },
+        {
+          "id": "chemical-containers",
+          "required": true,
+          "focusArea": "Chemical storage",
+          "aliases": ["chemical", "container", "jug", "bottle", "fluid"],
+          "severity": "Medium",
+          "box": { "x": 0.55, "y": 0.45, "width": 0.25, "height": 0.30 }
+        },
+        {
+          "id": "floor-jug",
+          "required": false,
+          "focusArea": "Trip hazards",
+          "aliases": ["jug", "floor", "obstruction", "spill", "fluid"],
+          "severity": "Low",
+          "box": { "x": 0.35, "y": 0.65, "width": 0.20, "height": 0.20 }
+        }
+      ]
+    }
+  }
+}
