@@ -77,5 +77,5 @@ Full 20-case table, raw JSON, and native share cards: **[docs/benchmark](docs/be
 **Safesight** turns one room photo into labeled hazards, a House Score, and a path to fix — built for [Shipaton 2026 Next Gen](docs/shipaton-next-gen.md) with RevenueCat Premium.
 
 <p align="center">
-  <sub>Built with SwiftUI · Gemini · RevenueCat · for Shipaton Next Gen</sub>
+  <sub>Built with SwiftUI · Gemini · RevenueCat · for Shipaton Next Gen · THIS IS NOT A PROFESSIONAL HOME INSPECTION</sub>
 </p>
