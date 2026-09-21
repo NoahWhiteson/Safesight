@@ -50,6 +50,6 @@ We may update these Terms. Continued use after changes means you accept the upda
 
 ## 12. Contact
 
-noahwhiteson5@gmail.com
+contact@noahwhiteson.com
 
 [← Back to README](../README.md)
