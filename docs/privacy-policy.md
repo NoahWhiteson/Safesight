@@ -57,6 +57,6 @@ We may update this Policy. The “Last updated” date will change when we do.
 
 ## 11. Contact
 
-noahwhiteson5@gmail.com
+contact@noahwhiteson.com
 
 [← Back to README](../README.md)
