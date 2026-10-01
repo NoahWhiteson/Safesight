@@ -18,7 +18,7 @@
 
 ## Website
 
-**Visit the App Website:** [safesight.app](https://safesight.app)
+**Visit the App Website:** ([https://safesight.app](https://www.safesight.app/))
 
 ## Demo
 
