@@ -13,11 +13,16 @@ final class CameraController: NSObject, ObservableObject {
     @Published var authorizationDenied = false
     @Published var capturedImage: UIImage?
     @Published var isSessionRunning = false
+    @Published var isRecordingVideo = false
 
     let session = AVCaptureSession()
     private let sessionQueue = DispatchQueue(label: "safesight.camera.session")
     private let photoOutput = AVCapturePhotoOutput()
+    private let movieOutput = AVCaptureMovieFileOutput()
     private var continuation: CheckedContinuation<UIImage?, Never>?
+    private var movieContinuation: CheckedContinuation<URL?, Never>?
+    private var recordingStartedAt: Date?
+    private var autoStopTimer: DispatchWorkItem?
 
     func requestAccessAndConfigure() async {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
@@ -65,10 +70,62 @@ final class CameraController: NSObject, ObservableObject {
         }
     }
 
+    func startVideoRecording() {
+        sessionQueue.async {
+            guard !self.movieOutput.isRecording else { return }
+            let url = FileManager.default.temporaryDirectory
+                .appendingPathComponent("safesight-\(UUID().uuidString).mov")
+            try? FileManager.default.removeItem(at: url)
+
+            if let connection = self.movieOutput.connection(with: .video),
+               connection.isVideoRotationAngleSupported(90) {
+                connection.videoRotationAngle = 90
+            }
+
+            self.recordingStartedAt = Date()
+            DispatchQueue.main.async { self.isRecordingVideo = true }
+
+            let timer = DispatchWorkItem { [weak self] in
+                self?.stopVideoRecordingInternal()
+            }
+            self.autoStopTimer = timer
+            self.sessionQueue.asyncAfter(deadline: .now() + VideoScanPipeline.maxRecordSeconds, execute: timer)
+
+            self.movieOutput.startRecording(to: url, recordingDelegate: self)
+        }
+    }
+
+    func stopVideoRecording() async -> URL? {
+        await withCheckedContinuation { continuation in
+            self.movieContinuation = continuation
+            sessionQueue.async {
+                self.stopVideoRecordingInternal()
+            }
+        }
+    }
+
+    private func stopVideoRecordingInternal() {
+        autoStopTimer?.cancel()
+        autoStopTimer = nil
+        guard movieOutput.isRecording else {
+            DispatchQueue.main.async {
+                self.isRecordingVideo = false
+                self.movieContinuation?.resume(returning: nil)
+                self.movieContinuation = nil
+            }
+            return
+        }
+        movieOutput.stopRecording()
+    }
+
     private func configureSession() {
         sessionQueue.async {
             self.session.beginConfiguration()
-            self.session.sessionPreset = .photo
+            if self.session.canSetSessionPreset(.high) {
+                self.session.sessionPreset = .high
+            } else {
+                self.session.sessionPreset = .photo
+            }
 
             self.session.inputs.forEach { self.session.removeInput($0) }
             self.session.outputs.forEach { self.session.removeOutput($0) }
@@ -76,20 +133,51 @@ final class CameraController: NSObject, ObservableObject {
             guard
                 let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back),
                 let input = try? AVCaptureDeviceInput(device: device),
-                self.session.canAddInput(input),
-                self.session.canAddOutput(self.photoOutput)
+                self.session.canAddInput(input)
             else {
                 self.session.commitConfiguration()
                 return
             }
 
             self.session.addInput(input)
-            self.session.addOutput(self.photoOutput)
-            if let connection = self.photoOutput.connection(with: .video),
-               connection.isVideoRotationAngleSupported(90) {
-                connection.videoRotationAngle = 90
+
+            if self.session.canAddOutput(self.photoOutput) {
+                self.session.addOutput(self.photoOutput)
+                if let connection = self.photoOutput.connection(with: .video),
+                   connection.isVideoRotationAngleSupported(90) {
+                    connection.videoRotationAngle = 90
+                }
             }
+
+            if self.session.canAddOutput(self.movieOutput) {
+                self.session.addOutput(self.movieOutput)
+                if let connection = self.movieOutput.connection(with: .video),
+                   connection.isVideoRotationAngleSupported(90) {
+                    connection.videoRotationAngle = 90
+                }
+            }
+
             self.session.commitConfiguration()
+        }
+    }
+}
+
+extension CameraController: AVCaptureFileOutputRecordingDelegate {
+    func fileOutput(
+        _ output: AVCaptureFileOutput,
+        didFinishRecordingTo outputFileURL: URL,
+        from connections: [AVCaptureConnection],
+        error: Error?
+    ) {
+        DispatchQueue.main.async {
+            self.isRecordingVideo = false
+            self.recordingStartedAt = nil
+            if error != nil {
+                self.movieContinuation?.resume(returning: nil)
+            } else {
+                self.movieContinuation?.resume(returning: outputFileURL)
+            }
+            self.movieContinuation = nil
         }
     }
 }

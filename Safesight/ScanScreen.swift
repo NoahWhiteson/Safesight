@@ -29,8 +29,15 @@ struct ScanScreen: View {
     @State private var showScanFailed = false
     @State private var isRetrying = false
     @State private var photoPickerItem: PhotosPickerItem?
+    @State private var captureMode: CaptureMode = .photo
+    @State private var activeRoomIndex = 0
 
     private let resultsPeekDetent = PresentationDetent.height(156)
+
+    private enum CaptureMode {
+        case photo
+        case video
+    }
 
     var body: some View {
         ZStack {
@@ -39,7 +46,7 @@ struct ScanScreen: View {
             if let resultImage, let live = liveScanResult {
                 ScanAnnotatedImageView(
                     image: resultImage,
-                    hazards: live.hazards,
+                    hazards: displayedHazards(for: live),
                     highlightedID: highlightedHazardID,
                     onSelectHazard: { id in
                         highlightedHazardID = id
@@ -90,6 +97,21 @@ struct ScanScreen: View {
                     .padding(.horizontal, 22)
                     .padding(.top, 12)
 
+                    if camera.isRecordingVideo {
+                        HStack(spacing: 8) {
+                            Circle()
+                                .fill(Color.red)
+                                .frame(width: 10, height: 10)
+                            Text("Recording")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundStyle(.white)
+                        }
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 8)
+                        .background(Capsule().fill(.black.opacity(0.45)))
+                        .padding(.top, 10)
+                    }
+
                     Spacer()
 
                     HStack(alignment: .center) {
@@ -106,22 +128,7 @@ struct ScanScreen: View {
 
                         Spacer()
 
-                        Button {
-                            Haptics.medium()
-                            Task { await takePhoto() }
-                        } label: {
-                            ZStack {
-                                Circle()
-                                    .strokeBorder(.white, lineWidth: 4)
-                                    .frame(width: 78, height: 78)
-                                Circle()
-                                    .fill(.white)
-                                    .frame(width: 64, height: 64)
-                                    .opacity(isCapturing ? 0.55 : 1)
-                            }
-                        }
-                        .buttonStyle(.plain)
-                        .disabled(isCapturing || showThinking || !camera.isAuthorized)
+                        captureControlCluster
 
                         Spacer()
 
@@ -157,6 +164,7 @@ struct ScanScreen: View {
             ScanResultsDrawer(
                 scanID: result.id,
                 highlightedHazardID: $highlightedHazardID,
+                activeRoomIndex: $activeRoomIndex,
                 onDone: {
                     // Switch to Hazards *before* the sheet closes so Scan never flashes.
                     if let tab = nav.returnTabAfterScan {
@@ -252,10 +260,79 @@ struct ScanScreen: View {
                 nav.pendingHazardID = nil
             }
         }
+        .onChange(of: activeRoomIndex) { _, _ in
+            syncRoomPreviewImage()
+        }
         .onDisappear {
             camera.stop()
             chrome.hidesTabBar = false
         }
+    }
+
+    private func displayedHazards(for result: ScanResult) -> [ScanHazardDTO] {
+        if result.isVideoScan, let room = result.room(at: activeRoomIndex) {
+            return room.hazards
+        }
+        return result.hazards
+    }
+
+    private func syncRoomPreviewImage() {
+        guard let scan = liveScanResult, scan.isVideoScan else { return }
+        resultImage = history.image(for: scan, roomIndex: activeRoomIndex)
+        highlightedHazardID = nil
+    }
+
+    private var captureControlCluster: some View {
+        VStack(spacing: 6) {
+            HStack(spacing: 14) {
+                captureModeButton(.photo, systemImage: "camera.fill", label: "Photo")
+                captureModeButton(.video, systemImage: "video.fill", label: "Video")
+            }
+
+            Button {
+                Haptics.medium()
+                if captureMode == .video {
+                    Task { await handleVideoCaptureTap() }
+                } else {
+                    Task { await takePhoto() }
+                }
+            } label: {
+                ZStack {
+                    Circle()
+                        .strokeBorder(.white, lineWidth: 4)
+                        .frame(width: 78, height: 78)
+                    Circle()
+                        .fill(captureMode == .video ? Color.red : Color.white)
+                        .frame(width: 64, height: 64)
+                        .opacity(isCapturing ? 0.55 : 1)
+                }
+            }
+            .buttonStyle(.plain)
+            .disabled(showThinking || !camera.isAuthorized || (captureMode == .photo && isCapturing))
+            .accessibilityLabel(captureMode == .video ? "Record video" : "Take photo")
+        }
+    }
+
+    private func captureModeButton(
+        _ mode: CaptureMode,
+        systemImage: String,
+        label: String
+    ) -> some View {
+        let selected = captureMode == mode
+        return Button {
+            guard captureMode != mode else { return }
+            Haptics.select()
+            captureMode = mode
+        } label: {
+            Image(systemName: systemImage)
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(selected ? .white : .white.opacity(0.4))
+                .frame(width: 32, height: 28)
+        }
+        .buttonStyle(.plain)
+        .disabled(isCapturing || showThinking || isRetrying)
+        .accessibilityLabel(label)
+        .accessibilityAddTraits(selected ? .isSelected : [])
     }
 
     private var liveScanResult: ScanResult? {
@@ -294,7 +371,8 @@ struct ScanScreen: View {
     }
 
     private func openScan(_ scan: ScanResult, highlightHazardID: UUID? = nil) {
-        resultImage = history.image(for: scan)
+        activeRoomIndex = 0
+        resultImage = history.image(for: scan, roomIndex: 0)
         highlightedHazardID = highlightHazardID
         resultsDetent = .medium
         showScanFailed = false
@@ -305,6 +383,7 @@ struct ScanScreen: View {
     private func finishDismissingResults() {
         highlightedHazardID = nil
         resultImage = nil
+        activeRoomIndex = 0
         resultsDetent = .medium
         if let tab = nav.returnTabAfterScan {
             nav.returnTabAfterScan = nil
@@ -317,6 +396,87 @@ struct ScanScreen: View {
         retryImage = nil
         thinkingImage = nil
         chrome.hidesTabBar = false
+    }
+
+    private func handleVideoCaptureTap() async {
+        guard !isCapturing else { return }
+        if camera.isRecordingVideo {
+            await finishVideoRecording()
+        } else {
+            guard subs.canScan else {
+                showPaywall = true
+                return
+            }
+            camera.startVideoRecording()
+        }
+    }
+
+    private func finishVideoRecording() async {
+        isCapturing = true
+        let videoURL = await camera.stopVideoRecording()
+        isCapturing = false
+        guard let videoURL else { return }
+        await processVideo(at: videoURL)
+        try? FileManager.default.removeItem(at: videoURL)
+    }
+
+    private func processVideo(at url: URL) async {
+        nav.returnTabAfterScan = nil
+        let thumbs = VideoScanPipeline.sampleThumbnails(from: url)
+        thinkingImage = thumbs[safe: thumbs.count / 2] ?? thumbs.first
+        chrome.hidesTabBar = true
+        var present = Transaction()
+        present.disablesAnimations = true
+        withTransaction(present) {
+            showThinking = true
+            showScanFailed = false
+        }
+
+        let route = await VideoRouterService().route(thumbnails: thumbs, maxRooms: 4)
+        let segments = route.segments.isEmpty
+            ? VideoScanPipeline.fallbackSegments(frameCount: thumbs.count)
+            : route.segments
+
+        var built: [(label: String, image: UIImage, hazards: [ScanHazardDTO])] = []
+        for segment in segments {
+            let label = VideoScanPipeline.displayLabel(for: segment.roomLabel)
+            guard let image = VideoScanPipeline.fullFrame(from: url, at: segment.bestFrameIndex) else {
+                continue
+            }
+            built.append((
+                label: label,
+                image: image,
+                hazards: VideoScanPipeline.placeholderHazards(roomLabel: label)
+            ))
+        }
+
+        if built.isEmpty, let fallback = VideoScanPipeline.fullFrame(from: url, at: 0) {
+            built.append((
+                label: "Room",
+                image: fallback,
+                hazards: VideoScanPipeline.placeholderHazards(roomLabel: "Room")
+            ))
+        }
+
+        subs.recordScan()
+        let scanId = UUID()
+        let saved = history.saveVideoScan(scanId: scanId, rooms: built)
+        history.syncInsights()
+
+        activeRoomIndex = 0
+        resultImage = history.image(for: saved, roomIndex: 0)
+
+        var dismiss = Transaction()
+        dismiss.disablesAnimations = true
+        withTransaction(dismiss) {
+            showThinking = false
+        }
+        thinkingImage = nil
+        retryImage = nil
+        showScanFailed = false
+        resultsDetent = .medium
+        try? await Task.sleep(nanoseconds: 200_000_000)
+        scanResult = saved
     }
 
     private func takePhoto() async {
@@ -430,5 +590,12 @@ struct ScanScreen: View {
         resultsDetent = .medium
         try? await Task.sleep(nanoseconds: 200_000_000)
         scanResult = saved
+        activeRoomIndex = 0
+    }
+}
+
+private extension Array {
+    subscript(safe index: Int) -> Element? {
+        indices.contains(index) ? self[index] : nil
     }
 }

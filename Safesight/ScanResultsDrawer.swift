@@ -8,6 +8,7 @@ import SwiftUI
 struct ScanResultsDrawer: View {
     let scanID: UUID
     @Binding var highlightedHazardID: UUID?
+    @Binding var activeRoomIndex: Int
     var onDone: () -> Void
     var onScanUpdated: ((ScanResult) -> Void)? = nil
 
@@ -33,6 +34,21 @@ struct ScanResultsDrawer: View {
                 products: [],
                 nextSteps: []
             )
+    }
+
+    private var roomCount: Int {
+        result.rooms?.count ?? 0
+    }
+
+    private var activeRoom: ScanVideoRoom? {
+        result.room(at: activeRoomIndex)
+    }
+
+    private var displayedHazards: [ScanHazardDTO] {
+        if result.isVideoScan, let room = activeRoom {
+            return room.hazards
+        }
+        return result.hazards
     }
 
     var body: some View {
@@ -147,13 +163,15 @@ struct ScanResultsDrawer: View {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 8)
 
+            if result.isVideoScan, roomCount > 0 {
+                roomPagerInline
+                    .padding(.top, 4)
+            }
+
             HStack(spacing: 16) {
-                metricPill(title: "Open", value: "\(result.openHazardCount)")
-                metricPill(title: "Fixed", value: "\(result.fixedHazardCount)")
-                metricPill(
-                    title: "Dismissed",
-                    value: "\(result.hazards.filter { $0.status == .dismissed }.count)"
-                )
+                metricPill(title: "Open", value: "\(openCount)")
+                metricPill(title: "Fixed", value: "\(fixedCount)")
+                metricPill(title: "Dismissed", value: "\(dismissedCount)")
             }
             .padding(.top, 4)
         }
@@ -164,6 +182,63 @@ struct ScanResultsDrawer: View {
             RoundedRectangle(cornerRadius: 24, style: .continuous)
                 .fill(Color.white)
         )
+    }
+
+    private var openCount: Int {
+        displayedHazards.filter(\.isOpen).count
+    }
+
+    private var fixedCount: Int {
+        displayedHazards.filter { $0.status == .fixed }.count
+    }
+
+    private var dismissedCount: Int {
+        displayedHazards.filter { $0.status == .dismissed }.count
+    }
+
+    private var roomPagerInline: some View {
+        HStack(spacing: 12) {
+            Button {
+                guard activeRoomIndex > 0 else { return }
+                Haptics.select()
+                activeRoomIndex -= 1
+                highlightedHazardID = nil
+            } label: {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(activeRoomIndex > 0 ? ink : mute.opacity(0.35))
+                    .frame(width: 36, height: 36)
+                    .background(Circle().fill(Color.black.opacity(0.05)))
+            }
+            .buttonStyle(.plain)
+            .disabled(activeRoomIndex <= 0)
+
+            VStack(spacing: 2) {
+                Text(activeRoom?.label ?? "Room")
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundStyle(ink)
+                Text("\(activeRoomIndex + 1) of \(roomCount)")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(mute)
+            }
+            .frame(maxWidth: .infinity)
+
+            Button {
+                guard activeRoomIndex < roomCount - 1 else { return }
+                Haptics.select()
+                activeRoomIndex += 1
+                highlightedHazardID = nil
+            } label: {
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(activeRoomIndex < roomCount - 1 ? ink : mute.opacity(0.35))
+                    .frame(width: 36, height: 36)
+                    .background(Circle().fill(Color.black.opacity(0.05)))
+            }
+            .buttonStyle(.plain)
+            .disabled(activeRoomIndex >= roomCount - 1)
+        }
+        .padding(.horizontal, 4)
     }
 
     private func metricPill(title: String, value: String) -> some View {
@@ -185,7 +260,8 @@ struct ScanResultsDrawer: View {
     }
 
     private var scoreLabel: String {
-        if result.openHazardCount == 0 && !result.hazards.isEmpty { return "All clear here" }
+        if openCount == 0 && !displayedHazards.isEmpty { return "All clear here" }
+        if result.isVideoScan { return "Room preview" }
         if result.score >= 85 { return "Looking solid" }
         if result.score >= 65 { return "Needs attention" }
         return "High risk areas"
@@ -193,9 +269,9 @@ struct ScanResultsDrawer: View {
 
     private var hazardsSection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            sectionTitle("Hazards")
+            sectionTitle(result.isVideoScan ? "Preview hazards" : "Hazards")
 
-            if result.hazards.isEmpty {
+            if displayedHazards.isEmpty {
                 Text("No hazards in this scan.")
                     .font(.system(size: 14))
                     .foregroundStyle(mute)
@@ -207,10 +283,10 @@ struct ScanResultsDrawer: View {
                     )
             } else {
                 VStack(spacing: 0) {
-                    ForEach(Array(result.hazards.enumerated()), id: \.element.id) { index, hazard in
+                    ForEach(Array(displayedHazards.enumerated()), id: \.element.id) { index, hazard in
                         hazardRow(hazard, expanded: expandedHazardID == hazard.id)
 
-                        if index < result.hazards.count - 1 {
+                        if index < displayedHazards.count - 1 {
                             Divider().padding(.leading, 56)
                         }
                     }

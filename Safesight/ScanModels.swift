@@ -360,6 +360,43 @@ enum HazardSeverity: String, Codable, CaseIterable {
     }
 }
 
+// MARK: - Video walkthrough
+
+struct ScanVideoRoom: Codable, Identifiable, Hashable {
+    var id: UUID
+    var label: String
+    var imageFileName: String
+    var hazards: [ScanHazardDTO]
+
+    init(
+        id: UUID = UUID(),
+        label: String,
+        imageFileName: String,
+        hazards: [ScanHazardDTO]
+    ) {
+        self.id = id
+        self.label = label
+        self.imageFileName = imageFileName
+        self.hazards = hazards
+    }
+}
+
+struct VideoRouteSegment: Codable, Hashable {
+    var roomLabel: String
+    var bestFrameIndex: Int
+    var confidence: Double
+
+    enum CodingKeys: String, CodingKey {
+        case roomLabel = "room_label"
+        case bestFrameIndex = "best_frame_index"
+        case confidence
+    }
+}
+
+struct VideoRouteResponse: Codable {
+    var segments: [VideoRouteSegment]
+}
+
 // MARK: - Persisted scan
 
 struct ScanResult: Codable, Identifiable, Hashable {
@@ -373,6 +410,18 @@ struct ScanResult: Codable, Identifiable, Hashable {
     var nextSteps: [String]
     /// Starred scans skip the 60-day auto-delete.
     var isStarred: Bool
+    /// Populated for video walkthrough scans — one entry per distinct room.
+    var rooms: [ScanVideoRoom]?
+
+    var isVideoScan: Bool {
+        guard let rooms, !rooms.isEmpty else { return false }
+        return true
+    }
+
+    func room(at index: Int) -> ScanVideoRoom? {
+        guard let rooms, rooms.indices.contains(index) else { return nil }
+        return rooms[index]
+    }
 
     init(
         id: UUID = UUID(),
@@ -383,7 +432,8 @@ struct ScanResult: Codable, Identifiable, Hashable {
         hazards: [ScanHazardDTO],
         products: [ScanProductDTO],
         nextSteps: [String],
-        isStarred: Bool = false
+        isStarred: Bool = false,
+        rooms: [ScanVideoRoom]? = nil
     ) {
         self.id = id
         self.createdAt = createdAt
@@ -394,6 +444,7 @@ struct ScanResult: Codable, Identifiable, Hashable {
         self.products = products
         self.nextSteps = nextSteps
         self.isStarred = isStarred
+        self.rooms = rooms
     }
 
     init(id: UUID, imageFileName: String, response: ScanAnalysisResponse) {
@@ -410,7 +461,7 @@ struct ScanResult: Codable, Identifiable, Hashable {
     }
 
     enum CodingKeys: String, CodingKey {
-        case id, createdAt, imageFileName, score, summary, hazards, products, nextSteps, isStarred
+        case id, createdAt, imageFileName, score, summary, hazards, products, nextSteps, isStarred, rooms
     }
 
     init(from decoder: Decoder) throws {
@@ -424,6 +475,7 @@ struct ScanResult: Codable, Identifiable, Hashable {
         products = try c.decode([ScanProductDTO].self, forKey: .products)
         nextSteps = try c.decode([String].self, forKey: .nextSteps)
         isStarred = try c.decodeIfPresent(Bool.self, forKey: .isStarred) ?? false
+        rooms = try c.decodeIfPresent([ScanVideoRoom].self, forKey: .rooms)
     }
 
     var openHazards: [ScanHazardDTO] {

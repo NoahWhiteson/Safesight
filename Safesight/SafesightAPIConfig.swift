@@ -37,6 +37,10 @@ enum SafesightAPIConfig {
         baseURL.appendingPathComponent("v1/analyze")
     }
 
+    static var videoRouteURL: URL {
+        baseURL.appendingPathComponent("v1/video/route")
+    }
+
     static var healthURL: URL {
         baseURL.appendingPathComponent("health")
     }

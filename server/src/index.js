@@ -6,6 +6,7 @@ import multer from "multer";
 import path from "path";
 import { fileURLToPath } from "url";
 import { analyzeWithGemini } from "./gemini.js";
+import { routeVideoWithGemini } from "./routeVideo.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PUBLIC_DIR = path.join(__dirname, "../public");
@@ -14,6 +15,7 @@ const DEMO_VIDEO = path.join(PUBLIC_DIR, "demovideo.mp4");
 const PORT = Number(process.env.PORT || 8787);
 const GEMINI_API_KEY = (process.env.GEMINI_API_KEY || "").trim();
 const GEMINI_MODEL = (process.env.GEMINI_MODEL || "gemini-3.8-flash").trim();
+const GEMINI_ROUTE_MODEL = (process.env.GEMINI_ROUTE_MODEL || "gemini-3.1-flash-lite").trim();
 const API_SECRET = (process.env.SAFESIGHT_API_SECRET || "").trim();
 
 /** Soft cap so a leaked client key still can't freely burn Gemini. */
@@ -23,6 +25,11 @@ const RATE_LIMIT_MAX = Number(process.env.SAFESIGHT_RATE_LIMIT_PER_HOUR || 40);
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 12 * 1024 * 1024 },
+});
+
+const uploadVideoRoute = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 512 * 1024, files: 24 },
 });
 
 const app = express();
@@ -91,6 +98,7 @@ app.get("/health", (_req, res) => {
     ok: true,
     service: "safesight-api",
     model: GEMINI_MODEL,
+    routeModel: GEMINI_ROUTE_MODEL,
     hasKey: Boolean(GEMINI_API_KEY),
     authRequired: Boolean(API_SECRET),
   });
@@ -118,6 +126,42 @@ app.get(["/demovideo", "/demovideo/", "/demovideo.mp4"], sendDemoVideo);
  * multipart: meta (JSON string of ScanAnalysisRequest fields) + image (jpeg)
  * Auth: Authorization: Bearer <SAFESIGHT_API_SECRET>  OR  X-Safesight-Key: <secret>
  */
+/**
+ * POST /v1/video/route
+ * multipart: frames[] (jpeg thumbnails, max 24) — clusters distinct rooms via Flash-Lite.
+ */
+app.post(
+  "/v1/video/route",
+  requireApiSecret,
+  rateLimitAnalyze,
+  uploadVideoRoute.array("frames", 24),
+  async (req, res) => {
+    try {
+      if (!GEMINI_API_KEY) {
+        return res.status(500).json({ error: "GEMINI_API_KEY not configured on server" });
+      }
+      const files = req.files || [];
+      if (!files.length) {
+        return res.status(400).json({ error: "Missing frame images" });
+      }
+      const maxRooms = Math.min(6, Math.max(1, Number(req.body?.maxRooms ?? 4)));
+      const result = await routeVideoWithGemini({
+        apiKey: GEMINI_API_KEY,
+        model: GEMINI_ROUTE_MODEL,
+        imageBuffers: files.map((f) => f.buffer),
+        maxRooms,
+      });
+      res.json(result);
+    } catch (error) {
+      console.error("video route failed:", error?.message || error, error?.detail || "");
+      res.status(502).json({
+        error: "Video routing failed",
+        detail: error?.message || "unknown",
+      });
+    }
+  }
+);
+
 app.post(
   "/v1/analyze",
   requireApiSecret,

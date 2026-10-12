@@ -37,7 +37,17 @@ final class ScanHistoryStore: ObservableObject {
     var latest: ScanResult? { scans.first }
 
     func image(for result: ScanResult) -> UIImage? {
-        let url = folderURL.appendingPathComponent(result.imageFileName)
+        image(for: result, roomIndex: 0)
+    }
+
+    func image(for result: ScanResult, roomIndex: Int) -> UIImage? {
+        let fileName: String
+        if let rooms = result.rooms, rooms.indices.contains(roomIndex) {
+            fileName = rooms[roomIndex].imageFileName
+        } else {
+            fileName = result.imageFileName
+        }
+        let url = folderURL.appendingPathComponent(fileName)
         guard let data = try? Data(contentsOf: url) else { return nil }
         return UIImage(data: data)
     }
@@ -57,6 +67,60 @@ final class ScanHistoryStore: ObservableObject {
         return result
     }
 
+    @discardableResult
+    func saveVideoScan(
+        scanId: UUID = UUID(),
+        rooms: [(label: String, image: UIImage, hazards: [ScanHazardDTO])]
+    ) -> ScanResult {
+        guard let first = rooms.first else {
+            let empty = ScanAnalysisResponse(
+                score: 0,
+                summary: "No rooms detected",
+                hazards: [],
+                products: [],
+                nextSteps: []
+            )
+            return save(image: UIImage(), response: empty, scanId: scanId)
+        }
+
+        var videoRooms: [ScanVideoRoom] = []
+        for (index, room) in rooms.enumerated() {
+            let fileName = "\(scanId.uuidString)-room-\(index).jpg"
+            let url = folderURL.appendingPathComponent(fileName)
+            if let data = room.image.jpegData(compressionQuality: 0.86) {
+                try? data.write(to: url, options: .atomic)
+            }
+            videoRooms.append(
+                ScanVideoRoom(
+                    label: room.label,
+                    imageFileName: fileName,
+                    hazards: room.hazards
+                )
+            )
+        }
+
+        let allHazards = videoRooms.flatMap(\.hazards)
+        let score = max(55, min(92, 88 - allHazards.count * 4))
+        let summary = rooms.count == 1
+            ? "Video scan — \(rooms[0].label)"
+            : "Video walkthrough — \(rooms.count) rooms"
+
+        let result = ScanResult(
+            id: scanId,
+            imageFileName: videoRooms[0].imageFileName,
+            score: score,
+            summary: summary,
+            hazards: allHazards,
+            products: [],
+            nextSteps: ["Review each room from the walkthrough."],
+            rooms: videoRooms
+        )
+        scans.insert(result, at: 0)
+        persistIndex()
+        syncInsights()
+        return result
+    }
+
     func delete(_ result: ScanResult) {
         delete(ids: [result.id])
     }
@@ -65,8 +129,14 @@ final class ScanHistoryStore: ObservableObject {
         guard !ids.isEmpty else { return }
         for id in ids {
             if let scan = scans.first(where: { $0.id == id }) {
-                let url = folderURL.appendingPathComponent(scan.imageFileName)
-                try? FileManager.default.removeItem(at: url)
+                var names = Set<String>([scan.imageFileName])
+                if let rooms = scan.rooms {
+                    for room in rooms { names.insert(room.imageFileName) }
+                }
+                for name in names {
+                    let url = folderURL.appendingPathComponent(name)
+                    try? FileManager.default.removeItem(at: url)
+                }
             }
         }
         scans.removeAll { ids.contains($0.id) }
